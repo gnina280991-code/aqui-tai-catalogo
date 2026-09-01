@@ -29,10 +29,9 @@
     .container {
       max-width: 800px;
       margin: 0 auto;
-      display: none; /* Se muestra solo al estar autenticado */
+      display: none;
     }
 
-    /* MODAL LOGIN */
     .login-overlay {
       position: fixed;
       inset: 0;
@@ -49,14 +48,13 @@
       border: 1px solid var(--border-color);
       padding: 30px;
       border-radius: 16px;
-      width: min(100%, 380px);
+      width: min(100%, 360px);
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
 
-    .login-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; text-align: center; }
+    .login-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; text-align: center; }
     .login-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center; }
 
-    /* ESTILOS PANEL */
     .top-admin {
       display: flex;
       justify-content: space-between;
@@ -121,7 +119,6 @@
       cursor: pointer;
     }
 
-    /* INVENTARIO */
     .item-row {
       display: flex;
       align-items: center;
@@ -149,37 +146,37 @@
 </head>
 <body>
 
-  <!-- FORMULARIO DE INICIO DE SESIÓN SUPABASE -->
+  <!-- MODAL DE LOGIN CON SUPABASE AUTH -->
   <div class="login-overlay" id="loginOverlay">
     <div class="login-box">
-      <div class="login-title">🔐 Iniciar Sesión</div>
-      <div class="login-sub">Acceso administrativo vía Supabase</div>
+      <div class="login-title">🔐 Panel de Control</div>
+      <div class="login-sub">Acceso con credenciales de Supabase</div>
       
       <form onsubmit="handleLogin(event)">
         <div class="form-group">
-          <label>Correo Electrónico</label>
+          <label>Correo de Administrador</label>
           <input type="email" id="emailInput" placeholder="admin@ejemplo.com" required autofocus>
         </div>
         <div class="form-group">
           <label>Contraseña</label>
           <input type="password" id="passInput" placeholder="••••••••" required>
         </div>
-        <button type="submit" class="btn-submit" id="btnLogin">Entrar</button>
+        <button type="submit" class="btn-submit" id="btnLogin">Ingresar</button>
       </form>
     </div>
   </div>
 
-  <!-- PANEL DE ADMINISTRACIÓN -->
+  <!-- CONTENIDO PANEL ADMIN -->
   <div class="container" id="adminContainer">
     <div class="top-admin">
       <div>
-        <h2 style="margin:0; font-size: 20px;">📦 Panel de Control</h2>
-        <span id="userEmail" style="font-size: 12px; color: var(--text-muted);"></span>
+        <h2 style="margin:0;">📦 Administración de Productos</h2>
+        <small id="userEmailDisplay" style="color: var(--text-muted);"></small>
       </div>
       <button class="btn-logout" onclick="logout()">🔒 Cerrar Sesión</button>
     </div>
 
-    <!-- FORMULARIO AGREGAR PRODUCTO -->
+    <!-- FORMULARIO AGREGAR -->
     <div class="card">
       <h3 style="margin-top:0; margin-bottom:16px;">➕ Nuevo Producto</h3>
       <form id="productForm" onsubmit="saveProduct(event)">
@@ -201,7 +198,7 @@
 
         <div class="form-group">
           <label>Categoría</label>
-          <input type="text" id="pCat" placeholder="Ej: Electrónica, Sorpresas...">
+          <input type="text" id="pCat" placeholder="Ej: Electrónica, Hogar...">
         </div>
 
         <div class="form-group">
@@ -218,7 +215,7 @@
       </form>
     </div>
 
-    <!-- LISTA DE INVENTARIO -->
+    <!-- INVENTARIO -->
     <div class="card">
       <h3 style="margin-top:0; margin-bottom:16px;">📋 Inventario Actual</h3>
       <div id="productList">Cargando...</div>
@@ -231,14 +228,14 @@
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // COMPROBAR SESIÓN AUTOMÁTICAMENTE
+    // COMPROBACIÓN DE SESIÓN CON SUPABASE NATIVO
     async function checkAuth() {
       const { data: { session } } = await supabaseClient.auth.getSession();
-      
+
       if (session) {
         document.getElementById("loginOverlay").style.display = "none";
         document.getElementById("adminContainer").style.display = "block";
-        document.getElementById("userEmail").textContent = session.user.email;
+        document.getElementById("userEmailDisplay").textContent = session.user.email;
         loadProducts();
       } else {
         document.getElementById("loginOverlay").style.display = "flex";
@@ -246,7 +243,7 @@
       }
     }
 
-    // INICIAR SESIÓN CON SUPABASE AUTH
+    // LOGIN CON SUPABASE AUTH
     async function handleLogin(e) {
       e.preventDefault();
       const btn = document.getElementById("btnLogin");
@@ -262,24 +259,23 @@
       });
 
       if (error) {
-        alert("Error al iniciar sesión: " + error.message);
+        alert("Credenciales incorrectas: " + error.message);
         btn.disabled = false;
-        btn.textContent = "Entrar";
+        btn.textContent = "Ingresar";
       } else {
-        document.getElementById("passInput").value = "";
         btn.disabled = false;
-        btn.textContent = "Entrar";
+        btn.textContent = "Ingresar";
         checkAuth();
       }
     }
 
-    // CERRAR SESIÓN
+    // LOGOUT CON SUPABASE AUTH
     async function logout() {
       await supabaseClient.auth.signOut();
       checkAuth();
     }
 
-    // CARGAR INVENTARIO
+    // GESTIÓN DE PRODUCTOS
     async function loadProducts() {
       const list = document.getElementById("productList");
       try {
@@ -319,7 +315,6 @@
       }
     }
 
-    // GUARDAR PRODUCTO
     async function saveProduct(e) {
       e.preventDefault();
       const btn = document.getElementById("btnSave");
@@ -355,14 +350,13 @@
         document.getElementById("productForm").reset();
         loadProducts();
       } catch (err) {
-        alert("Error al guardar (Verifica permisos RLS): " + err.message);
+        alert("Error al guardar: " + err.message);
       } finally {
         btn.disabled = false;
         btn.textContent = "Guardar Producto";
       }
     }
 
-    // ELIMINAR PRODUCTO
     async function deleteProduct(id) {
       if (!confirm("¿Seguro que deseas eliminar este producto?")) return;
 
@@ -375,7 +369,7 @@
         if (error) throw error;
         loadProducts();
       } catch (err) {
-        alert("Error al eliminar (Verifica permisos RLS): " + err.message);
+        alert("Error al eliminar: " + err.message);
       }
     }
 
@@ -387,12 +381,6 @@
         .replace(/"/g, "&quot;");
     }
 
-    // Detectar cambios de sesión en tiempo real
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-      checkAuth();
-    });
-
-    // Inicio
     checkAuth();
   </script>
 </body>
