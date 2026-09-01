@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Administración | Aquí tái</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f6f8;font-family:Arial,sans-serif;color:#171717}
+header{background:#fff;padding:18px 16px;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:3}
+.wrap{max-width:700px;margin:auto;padding:18px 14px}.box{background:#fff;border-radius:18px;padding:18px;margin-bottom:15px}
+h1{margin:0;font-size:24px}h2{margin-top:0}.hint{color:#666;font-size:13px;line-height:1.4}
+label{display:block;font-weight:700;margin:12px 0 6px}input,textarea,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:11px;font:inherit}
+button{border:0;border-radius:11px;padding:12px 15px;font-weight:700;cursor:pointer}.save{background:#111;color:white;width:100%;margin-top:15px}
+.danger{background:#eee}.item{display:flex;gap:12px;align-items:center;border-top:1px solid #eee;padding:12px 0}.thumb{width:65px;height:65px;object-fit:cover;border-radius:10px;background:#eee}.item-info{flex:1}.price{font-weight:800}
+#preview{max-width:120px;max-height:120px;border-radius:12px;margin-top:8px;display:none}
+</style>
+</head>
+<body>
+<header><div class="wrap" style="padding:0"><h1>⚙️ Administración — Aquí tái</h1></div></header>
+<main class="wrap">
+<div class="box">
+<h2>➕ Agregar producto</h2>
+<p class="hint">Esta versión guarda los productos en este navegador. Para que los cambios sean visibles públicamente para todos tus clientes, en el siguiente paso conectaremos el catálogo a una base de datos/servicio gratuito.</p>
+<label>Nombre</label><input id="name" placeholder="Ej. Producto nuevo">
+<label>Precio (Bs)</label><input id="price" type="number" min="0" step="0.01" placeholder="90">
+<label>Categoría</label><input id="category" placeholder="Ej. Hogar">
+<label>Descripción</label><textarea id="description" rows="4" placeholder="Características del producto"></textarea>
+<label>Foto</label><input id="image" type="file" accept="image/*">
+<img id="preview" alt="Vista previa">
+<button class="save" onclick="addProduct()">💾 Guardar producto</button>
+</div>
+<div class="box">
+<h2>📦 Productos</h2>
+<div id="list"></div>
+</div>
+<div class="box">
+<button class="danger" onclick="resetProducts()">↩️ Restaurar producto de ejemplo</button>
+<button style="margin-left:6px" onclick="location.href='index.html'">🛍️ Ver catálogo</button>
+</div>
+</main>
+<script>
+const initial=[{id:1,name:"Lanzador de bola de nieve",description:"Lanzador de bolas de nieve o pistola con mira para nieve. Incluye pinzas o moldes para formar bolas y bloques de nieve de manera rápida.",price:90,category:"Juguetes",image:"lanzador-bola-nieve.webp",stock:10}];
+let products=JSON.parse(localStorage.getItem("aqui_tai_products")||"null")||initial;
+image.onchange=()=>{let f=image.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{preview.src=e.target.result;preview.style.display="block"};r.readAsDataURL(f)};
+function persist(){localStorage.setItem("aqui_tai_products",JSON.stringify(products));render()}
+function addProduct(){
+let n=name.value.trim(),p=parseFloat(price.value),c=category.value.trim()||"General",d=description.value.trim();
+if(!n||isNaN(p)){alert("Coloca al menos nombre y precio.");return}
+let f=image.files[0];
+if(f){let r=new FileReader();r.onload=e=>save(n,p,c,d,e.target.result);r.readAsDataURL(f)}
+else save(n,p,c,d,"");
+}
+function save(n,p,c,d,img){products.push({id:Date.now(),name:n,price:p,category:c,description:d,image:img||"lanzador-bola-nieve.webp",stock:10});persist();name.value=price.value=category.value=description.value="";image.value="";preview.style.display="none";alert("Producto guardado.")}
+function del(id){if(confirm("¿Eliminar este producto?")){products=products.filter(p=>p.id!==id);persist()}}
+function render(){list.innerHTML=products.map(p=>`<div class="item"><img class="thumb" src="${p.image}"><div class="item-info"><b>${p.name}</b><br><span>${p.category} · <span class="price">Bs ${p.price}</span></span></div><button onclick="del(${p.id})">🗑️</button></div>`).join("")}
+function resetProducts(){products=initial;persist()}
+render();
+</script>
+</body></html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aquí tái | Catálogo</title>
+<meta name="description" content="Catálogo de productos Aquí tái">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f6f7f9;color:#171717}
+header{background:#fff;border-bottom:1px solid #eee;position:sticky;top:0;z-index:10}
+.top{max-width:1100px;margin:auto;padding:12px 16px;display:flex;align-items:center;gap:14px}
+.logo{height:62px;width:62px;border-radius:50%;object-fit:cover;border:1px solid #eee}.brand{font-size:25px;font-weight:800}.sub{font-size:13px;color:#666}
+.wrap{max-width:1100px;margin:auto;padding:22px 16px}.hero{background:#fff;border-radius:20px;padding:22px;margin-bottom:20px}
+.hero h1{margin:0 0 6px;font-size:30px}.hero p{margin:0;color:#666}
+.search{width:100%;padding:14px 16px;border:1px solid #ddd;border-radius:14px;font-size:16px;margin-top:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 3px 15px #0000000c}.pic{width:100%;aspect-ratio:1/1;object-fit:cover;background:#fafafa}.body{padding:14px}
+.cat{font-size:12px;color:#777}.name{font-size:18px;font-weight:700;margin:5px 0}.desc{font-size:13px;color:#666;line-height:1.4;min-height:54px}.price{font-size:22px;font-weight:800;margin:12px 0}.btn{width:100%;border:0;border-radius:12px;padding:13px;background:#111;color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+.cart{position:fixed;right:18px;bottom:18px;border:0;border-radius:999px;padding:15px 20px;background:#ff9d00;color:#111;font-weight:800;box-shadow:0 5px 20px #0003;cursor:pointer}
+.panel{position:fixed;inset:0;background:#0008;display:none;z-index:20}.panel.open{display:flex;align-items:flex-end;justify-content:center}.sheet{background:#fff;width:min(100%,560px);max-height:90vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px}
+.row{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #eee}.close{float:right;border:0;background:#eee;border-radius:50%;width:36px;height:36px;cursor:pointer}
+textarea,input[type=text]{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin:6px 0 12px;font:inherit}
+@media(max-width:480px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{border-radius:14px}.body{padding:10px}.name{font-size:15px}.desc{font-size:12px;min-height:70px}.price{font-size:18px}.hero h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header><div class="top">
+<img class="logo" src="logo.png" alt="Aquí tái" onerror="this.style.display='none'">
+<div><div class="brand">Aquí tái</div><div class="sub">Catálogo de productos · Bolivia</div></div>
+</div></header>
+<main class="wrap">
+<section class="hero"><h1>🛍️ Nuestro catálogo</h1><p>Elige tus productos y envíanos tu pedido directamente por WhatsApp.</p>
+<input id="search" class="search" placeholder="🔎 Buscar productos..."></section>
+<section id="grid" class="grid"></section>
+</main>
+<button class="cart" onclick="openCart()">🛒 Carrito (<span id="count">0</span>)</button>
+<div id="panel" class="panel" onclick="if(event.target===this)closeCart()"><div class="sheet">
+<button class="close" onclick="closeCart()">✕</button><h2>Tu pedido</h2><div id="cartItems"></div>
+<div id="total" style="font-size:20px;font-weight:800;margin:16px 0"></div>
+<label>Tu nombre</label><input id="customer" type="text" placeholder="Ej. Juan Pérez">
+<label>Dirección o zona de entrega</label><textarea id="address" placeholder="Ej. Zona Central"></textarea>
+<button class="btn" onclick="sendWhatsApp()">📲 Enviar pedido por WhatsApp</button>
+</div></div>
+<script>
+let products=[],cart=[];
+let saved=localStorage.getItem("aqui_tai_products");
+if(saved){try{products=JSON.parse(saved);render(products)}catch(e){loadDefault()}}else loadDefault();
+function loadDefault(){fetch("products.json").then(r=>r.json()).then(p=>{products=p;render(p)}).catch(()=>{})}
+function render(list){grid.innerHTML=list.map(p=>`<article class="card"><img class="pic" src="${p.image}" alt="${p.name}"><div class="body"><div class="cat">${p.category}</div><div class="name">${p.name}</div><div class="desc">${p.description}</div><div class="price">Bs ${p.price}</div><button class="btn" onclick="add(${p.id})">Agregar al carrito</button></div></article>`).join("")}
+search.oninput=()=>{let q=search.value.toLowerCase();render(products.filter(p=>(p.name+" "+p.description+" "+p.category).toLowerCase().includes(q)))}
+function add(id){let p=products.find(x=>x.id===id),x=cart.find(x=>x.id===id);x?x.qty++:cart.push({...p,qty:1});update();openCart()}
+function update(){count.textContent=cart.reduce((a,x)=>a+x.qty,0);cartItems.innerHTML=cart.length?cart.map((x,i)=>`<div class="row"><div><b>${x.name}</b><br>Bs ${x.price} × ${x.qty}</div><button onclick="removeItem(${i})">🗑️</button></div>`).join(""):"<p>Tu carrito está vacío.</p>";total.textContent="Total: Bs "+cart.reduce((a,x)=>a+x.price*x.qty,0)}
+function removeItem(i){cart.splice(i,1);update()}
+function openCart(){panel.classList.add("open");update()} function closeCart(){panel.classList.remove("open")}
+function sendWhatsApp(){if(!cart.length)return alert("Agrega al menos un producto.");let name=customer.value.trim()||"No indicado",addr=address.value.trim()||"No indicada";let msg="🛍️ *NUEVO PEDIDO - AQUÍ TÁI*%0A%0A"+cart.map(x=>`• ${x.name} × ${x.qty} = Bs ${x.price*x.qty}`).join("%0A")+"%0A%0A💰 *Total: Bs "+cart.reduce((a,x)=>a+x.price*x.qty,0)+"*%0A👤 Cliente: "+encodeURIComponent(name)+"%0A📍 Entrega: "+encodeURIComponent(addr);location.href="https://wa.me/59171440907?text="+msg}
+</script>
+</body></html>

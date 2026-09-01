@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "name": "Lanzador de bola de nieve",
+    "description": "Lanzador de bolas de nieve o pistola con mira para nieve. Incluye pinzas o moldes para formar bolas y bloques de nieve de manera rápida.",
+    "price": 90,
+    "category": "Juguetes",
+    "image": "lanzador-bola-nieve.webp",
+    "stock": 10
+  }
+]
