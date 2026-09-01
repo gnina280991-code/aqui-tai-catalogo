@@ -6,7 +6,7 @@
 
 <meta
   name="viewport"
-  content="width=device-width, initial-scale=1.0"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 >
 
 <title>Aquí tái | Catálogo</title>
@@ -16,7 +16,12 @@
   content="Catálogo de productos Aquí tái - Bolivia"
 >
 
+<!-- =====================================================
+     SUPABASE
+===================================================== -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <style>
 
@@ -36,13 +41,21 @@ body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
   background:#f5f6f8;
-  color:#171717;
+  color:#151515;
 }
 
 button,
 input,
 textarea{
   font-family:inherit;
+}
+
+button{
+  -webkit-tap-highlight-color:transparent;
+}
+
+img{
+  max-width:100%;
 }
 
 
@@ -59,32 +72,33 @@ header{
 }
 
 .top{
+  width:100%;
   max-width:1100px;
   margin:auto;
   padding:14px 22px;
   display:flex;
   align-items:center;
-  gap:18px;
+  gap:16px;
 }
 
 .logo{
-  width:82px;
-  height:82px;
+  width:88px;
+  height:88px;
   border-radius:50%;
   object-fit:cover;
-  border:1px solid #eee;
-  flex:none;
+  border:1px solid #e5e5e5;
+  background:#fff;
 }
 
 .brand{
   font-size:34px;
   font-weight:800;
-  line-height:1.1;
+  line-height:1.05;
 }
 
 .sub{
-  margin-top:5px;
-  font-size:18px;
+  margin-top:8px;
+  font-size:19px;
   color:#666;
 }
 
@@ -94,9 +108,10 @@ header{
 ===================================================== */
 
 .wrap{
+  width:100%;
   max-width:1100px;
   margin:auto;
-  padding:26px 20px 120px;
+  padding:26px 20px 110px;
 }
 
 
@@ -107,34 +122,35 @@ header{
 .hero{
   background:#fff;
   border-radius:28px;
-  padding:30px;
-  margin-bottom:24px;
-  box-shadow:0 2px 15px #00000008;
+  padding:34px;
+  margin-bottom:26px;
+  box-shadow:0 2px 10px #00000005;
 }
 
 .hero h1{
-  margin:0 0 8px;
-  font-size:38px;
+  margin:0 0 10px;
+  font-size:42px;
   line-height:1.15;
 }
 
 .hero p{
   margin:0;
   color:#666;
-  font-size:22px;
-  line-height:1.55;
+  line-height:1.5;
+  font-size:25px;
 }
 
 .search{
+  display:block;
   width:100%;
-  height:64px;
-  padding:0 20px;
+  height:70px;
+  padding:0 22px;
+  margin-top:28px;
   border:1px solid #ddd;
-  border-radius:18px;
-  font-size:21px;
-  margin-top:24px;
-  outline:none;
+  border-radius:20px;
   background:#fff;
+  font-size:22px;
+  outline:none;
 }
 
 .search:focus{
@@ -143,9 +159,9 @@ header{
 }
 
 .product-count{
-  margin-top:16px;
-  color:#777;
-  font-size:16px;
+  margin-top:20px;
+  color:#666;
+  font-size:18px;
 }
 
 
@@ -156,7 +172,7 @@ header{
 .grid{
   display:grid;
   grid-template-columns:1fr;
-  gap:16px;
+  gap:18px;
 }
 
 
@@ -165,57 +181,12 @@ header{
 ===================================================== */
 
 .card{
+  width:100%;
   background:#fff;
-  border-radius:22px;
+  border-radius:24px;
   overflow:hidden;
-  box-shadow:0 3px 15px #0000000c;
-  display:grid;
-  grid-template-columns:280px 1fr;
+  box-shadow:0 3px 15px #0000000b;
   min-width:0;
-}
-
-.body{
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  min-width:0;
-}
-
-.cat{
-  font-size:14px;
-  color:#777;
-  margin-bottom:4px;
-}
-
-.name{
-  font-size:22px;
-  font-weight:800;
-  margin:2px 0 6px;
-}
-
-.desc{
-  font-size:15px;
-  color:#666;
-  line-height:1.45;
-  margin-bottom:8px;
-}
-
-.price{
-  font-size:24px;
-  font-weight:800;
-  margin:8px 0 4px;
-}
-
-.stock{
-  font-size:14px;
-  color:#555;
-  margin-bottom:14px;
-}
-
-.stock.out{
-  color:#c00020;
-  font-weight:700;
 }
 
 
@@ -225,15 +196,19 @@ header{
 
 .gallery{
   width:100%;
-  background:#fafafa;
-  min-width:0;
+  background:#fff;
 }
+
+
+/* =====================================================
+   IMAGEN PRINCIPAL
+===================================================== */
 
 .main-image-wrap{
   position:relative;
   width:100%;
-  aspect-ratio:1/1;
-  background:#f5f5f5;
+  height:280px;
+  background:#f8f8f8;
   overflow:hidden;
   cursor:zoom-in;
 }
@@ -246,37 +221,8 @@ header{
   transition:transform .25s ease;
 }
 
-.main-image-wrap:hover .main-image{
+.main-image-wrap:active .main-image{
   transform:scale(1.02);
-}
-
-
-/* =====================================================
-   ESTADO ACTIVO
-===================================================== */
-
-.active-badge{
-  position:absolute;
-  top:10px;
-  right:10px;
-  background:#fff;
-  border-radius:999px;
-  padding:7px 11px;
-  box-shadow:0 2px 8px #0002;
-  font-size:12px;
-  font-weight:700;
-  color:#25843d;
-  z-index:4;
-}
-
-.active-badge::before{
-  content:"";
-  display:inline-block;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#5cb85c;
-  margin-right:5px;
 }
 
 
@@ -288,13 +234,14 @@ header{
   position:absolute;
   top:50%;
   transform:translateY(-50%);
-  width:42px;
-  height:42px;
+  width:44px;
+  height:44px;
   border:0;
   border-radius:50%;
-  background:#ffffffdd;
+  background:#ffffffdf;
+  color:#111;
   box-shadow:0 2px 10px #0003;
-  font-size:26px;
+  font-size:28px;
   font-weight:bold;
   cursor:pointer;
   display:flex;
@@ -304,33 +251,33 @@ header{
 }
 
 .gallery-arrow.left{
-  left:10px;
+  left:12px;
 }
 
 .gallery-arrow.right{
-  right:10px;
+  right:12px;
 }
 
-.gallery-arrow:hover{
-  background:#fff;
+.gallery-arrow:active{
+  transform:translateY(-50%) scale(.94);
 }
 
 
 /* =====================================================
-   CONTADOR
+   CONTADOR DE FOTOS
 ===================================================== */
 
 .photo-counter{
   position:absolute;
-  left:10px;
-  bottom:10px;
-  background:#000c;
+  left:12px;
+  bottom:12px;
+  background:#000b;
   color:#fff;
   border-radius:999px;
-  padding:6px 10px;
-  font-size:12px;
+  padding:7px 12px;
+  font-size:14px;
   font-weight:700;
-  z-index:5;
+  z-index:6;
 }
 
 
@@ -340,14 +287,15 @@ header{
 
 .thumbnails{
   display:flex;
-  gap:7px;
-  padding:8px;
+  gap:8px;
+  padding:9px 10px 5px;
   overflow-x:auto;
   background:#fff;
+  scrollbar-width:thin;
 }
 
 .thumbnails::-webkit-scrollbar{
-  height:4px;
+  height:5px;
 }
 
 .thumbnails::-webkit-scrollbar-thumb{
@@ -356,12 +304,12 @@ header{
 }
 
 .thumb{
-  flex:0 0 58px;
-  width:58px;
-  height:58px;
+  flex:0 0 62px;
+  width:62px;
+  height:62px;
   padding:0;
   border:3px solid transparent;
-  border-radius:10px;
+  border-radius:11px;
   overflow:hidden;
   background:#f5f5f5;
   cursor:pointer;
@@ -378,9 +326,14 @@ header{
   border-color:#ff9d00;
 }
 
+
+/* =====================================================
+   INFORMACIÓN DE FOTOS
+===================================================== */
+
 .photo-info{
   text-align:center;
-  padding:2px 8px 8px;
+  padding:3px 8px 9px;
   font-size:12px;
   color:#777;
   background:#fff;
@@ -388,32 +341,71 @@ header{
 
 
 /* =====================================================
-   UNA SOLA FOTO
+   CUERPO DE TARJETA
 ===================================================== */
 
-.gallery.single .thumbnails,
-.gallery.single .photo-info{
-  display:none;
+.body{
+  padding:20px 22px 22px;
+}
+
+.cat{
+  font-size:14px;
+  color:#777;
+  margin-bottom:5px;
+}
+
+.name{
+  font-size:23px;
+  font-weight:800;
+  line-height:1.2;
+  margin-bottom:7px;
+}
+
+.desc{
+  font-size:16px;
+  color:#666;
+  line-height:1.45;
+  min-height:0;
+}
+
+.price{
+  font-size:25px;
+  font-weight:800;
+  margin-top:17px;
+  margin-bottom:5px;
+}
+
+.stock{
+  font-size:15px;
+  color:#555;
+  margin-bottom:16px;
+}
+
+.stock.out{
+  color:#c00020;
+  font-weight:700;
 }
 
 
 /* =====================================================
-   BOTONES
+   BOTÓN
 ===================================================== */
 
 .btn{
+  width:100%;
+  min-height:50px;
   border:0;
-  border-radius:12px;
-  padding:13px 18px;
+  border-radius:13px;
+  padding:13px 16px;
   background:#111;
   color:#fff;
   font-weight:700;
-  font-size:15px;
+  font-size:16px;
   cursor:pointer;
 }
 
-.btn:hover{
-  opacity:.9;
+.btn:active{
+  transform:scale(.98);
 }
 
 .btn:disabled{
@@ -423,7 +415,7 @@ header{
 
 
 /* =====================================================
-   CARRITO
+   CARRITO FLOTANTE
 ===================================================== */
 
 .cart{
@@ -432,29 +424,30 @@ header{
   bottom:20px;
   border:0;
   border-radius:999px;
-  padding:17px 25px;
+  min-height:60px;
+  padding:16px 25px;
   background:#ff9d00;
   color:#111;
   font-weight:800;
-  box-shadow:0 5px 25px #0003;
+  box-shadow:0 6px 24px #0004;
   cursor:pointer;
   z-index:150;
   font-size:20px;
 }
 
-.cart:hover{
-  transform:translateY(-2px);
+.cart:active{
+  transform:scale(.96);
 }
 
 
 /* =====================================================
-   PANEL CARRITO
+   PANEL DEL CARRITO
 ===================================================== */
 
 .panel{
   position:fixed;
   inset:0;
-  background:#0008;
+  background:#0009;
   display:none;
   z-index:300;
 }
@@ -467,11 +460,11 @@ header{
 
 .sheet{
   background:#fff;
-  width:min(100%,560px);
-  max-height:90vh;
+  width:min(100%,620px);
+  max-height:92vh;
   overflow:auto;
-  border-radius:24px 24px 0 0;
-  padding:22px;
+  border-radius:26px 26px 0 0;
+  padding:24px;
 }
 
 .close{
@@ -479,46 +472,61 @@ header{
   border:0;
   background:#eee;
   border-radius:50%;
-  width:38px;
-  height:38px;
+  width:42px;
+  height:42px;
   cursor:pointer;
-  font-size:18px;
+  font-size:20px;
+}
+
+.sheet h2{
+  margin-top:4px;
+  font-size:27px;
 }
 
 .row{
   display:flex;
   justify-content:space-between;
-  gap:10px;
-  padding:13px 0;
+  gap:12px;
+  padding:15px 0;
   border-bottom:1px solid #eee;
 }
 
 .row button{
+  flex:0 0 auto;
+  align-self:center;
   border:0;
-  background:#eee;
+  background:#fee;
+  color:#b00020;
   border-radius:10px;
-  padding:8px 11px;
+  padding:10px 12px;
   cursor:pointer;
 }
 
 textarea,
 input[type=text]{
   width:100%;
-  padding:13px;
+  padding:14px;
   border:1px solid #ddd;
   border-radius:12px;
-  margin:6px 0 12px;
+  margin:7px 0 14px;
   font:inherit;
+  font-size:16px;
+  outline:none;
 }
 
 textarea{
-  min-height:90px;
+  min-height:95px;
   resize:vertical;
+}
+
+textarea:focus,
+input[type=text]:focus{
+  border-color:#ff9d00;
 }
 
 
 /* =====================================================
-   LIGHTBOX
+   VISOR
 ===================================================== */
 
 .lightbox{
@@ -529,7 +537,7 @@ textarea{
   align-items:center;
   justify-content:center;
   z-index:500;
-  padding:20px;
+  padding:16px;
 }
 
 .lightbox.open{
@@ -546,19 +554,19 @@ textarea{
 }
 
 .lightbox-image{
-  max-width:92vw;
-  max-height:86vh;
+  max-width:94vw;
+  max-height:84vh;
   object-fit:contain;
-  border-radius:8px;
+  border-radius:10px;
   user-select:none;
 }
 
 .lightbox-close{
   position:absolute;
-  top:10px;
-  right:10px;
-  width:44px;
-  height:44px;
+  top:8px;
+  right:8px;
+  width:46px;
+  height:46px;
   border:0;
   border-radius:50%;
   background:#fff;
@@ -572,8 +580,8 @@ textarea{
   position:absolute;
   top:50%;
   transform:translateY(-50%);
-  width:50px;
-  height:50px;
+  width:48px;
+  height:48px;
   border:0;
   border-radius:50%;
   background:#ffffffdd;
@@ -593,14 +601,14 @@ textarea{
 
 .lightbox-counter{
   position:absolute;
-  bottom:18px;
+  bottom:16px;
   left:50%;
   transform:translateX(-50%);
   background:#000b;
   color:#fff;
-  padding:7px 13px;
+  padding:8px 14px;
   border-radius:999px;
-  font-size:13px;
+  font-size:14px;
 }
 
 
@@ -610,7 +618,7 @@ textarea{
 
 .loading{
   background:#fff;
-  border-radius:22px;
+  border-radius:24px;
   padding:40px 25px;
   text-align:center;
   color:#666;
@@ -619,64 +627,154 @@ textarea{
 
 .error{
   background:#fff;
-  border-radius:22px;
-  padding:30px;
+  border-radius:24px;
+  padding:38px 25px;
   text-align:center;
-  color:#a00025;
+  color:#a00020;
   font-size:17px;
-  line-height:1.6;
+  line-height:1.55;
 }
 
-.error strong{
+.error-title{
+  font-size:22px;
   font-weight:800;
+  margin-bottom:12px;
 }
 
-.error-code{
+.error-detail{
   margin-top:15px;
-  padding:12px;
+  padding:14px;
   background:#fff3f5;
   border-radius:12px;
-  font-size:13px;
-  color:#70001c;
+  color:#8b001c;
+  font-size:14px;
   word-break:break-word;
+}
+
+.retry{
+  margin-top:18px;
+  border:0;
+  background:#ff9d00;
+  color:#111;
+  font-weight:800;
+  border-radius:12px;
+  padding:13px 22px;
+  cursor:pointer;
 }
 
 
 /* =====================================================
-   RESPONSIVE
+   UNA SOLA IMAGEN
 ===================================================== */
 
-@media(max-width:700px){
+.gallery.single .main-image-wrap{
+  cursor:zoom-in;
+}
+
+.gallery.single .main-image-wrap{
+  height:280px;
+}
+
+.gallery.single .thumbnails,
+.gallery.single .photo-info{
+  display:none;
+}
+
+
+/* =====================================================
+   TABLET / PC
+===================================================== */
+
+@media(min-width:700px){
+
+  .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+}
+
+
+/* =====================================================
+   PANTALLA GRANDE
+===================================================== */
+
+@media(min-width:1000px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    min-height:280px;
+  }
+
+  .gallery{
+    height:100%;
+  }
+
+  .main-image-wrap,
+  .gallery.single .main-image-wrap{
+    height:280px;
+  }
+
+  .body{
+    padding:25px 28px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  .desc{
+    max-width:700px;
+  }
+
+  .body .btn{
+    width:auto;
+    align-self:flex-start;
+    min-width:210px;
+  }
+
+}
+
+
+/* =====================================================
+   CELULAR
+===================================================== */
+
+@media(max-width:699px){
 
   .top{
-    padding:12px 18px;
-    gap:13px;
+    padding:10px 18px;
+    gap:12px;
   }
 
   .logo{
-    width:76px;
-    height:76px;
+    width:74px;
+    height:74px;
   }
 
   .brand{
-    font-size:30px;
+    font-size:28px;
   }
 
   .sub{
-    font-size:16px;
+    margin-top:5px;
+    font-size:15px;
   }
 
   .wrap{
-    padding:20px 18px 110px;
+    padding:20px 14px 105px;
   }
 
   .hero{
-    padding:28px;
+    padding:25px 20px;
     border-radius:25px;
   }
 
   .hero h1{
-    font-size:34px;
+    font-size:32px;
   }
 
   .hero p{
@@ -686,172 +784,109 @@ textarea{
   .search{
     height:62px;
     font-size:19px;
+    margin-top:23px;
+  }
+
+  .product-count{
+    font-size:15px;
   }
 
   .card{
-    grid-template-columns:175px 1fr;
     border-radius:20px;
   }
 
-  .body{
-    padding:14px;
-  }
-
-  .name{
-    font-size:18px;
-  }
-
-  .desc{
-    font-size:13px;
-  }
-
-  .price{
-    font-size:20px;
-  }
-
-  .btn{
-    font-size:13px;
-    padding:11px 10px;
-  }
-
-  .cart{
-    right:15px;
-    bottom:15px;
-    font-size:18px;
-    padding:16px 22px;
-  }
-
-}
-
-
-@media(max-width:480px){
-
-  .top{
-    padding:10px 16px;
-  }
-
-  .logo{
-    width:66px;
-    height:66px;
-  }
-
-  .brand{
-    font-size:27px;
-  }
-
-  .sub{
-    font-size:14px;
-  }
-
-  .wrap{
-    padding:16px 14px 100px;
-  }
-
-  .hero{
-    padding:22px;
-    border-radius:23px;
-  }
-
-  .hero h1{
-    font-size:29px;
-  }
-
-  .hero p{
-    font-size:18px;
-  }
-
-  .search{
-    font-size:17px;
-    height:58px;
-  }
-
-  .grid{
-    gap:12px;
-  }
-
-  .card{
-    grid-template-columns:145px 1fr;
-    border-radius:17px;
+  .main-image-wrap,
+  .gallery.single .main-image-wrap{
+    height:240px;
   }
 
   .body{
-    padding:11px;
+    padding:17px;
   }
 
   .cat{
-    font-size:11px;
+    font-size:12px;
   }
 
   .name{
-    font-size:16px;
+    font-size:19px;
   }
 
   .desc{
-    font-size:12px;
-    line-height:1.35;
+    font-size:14px;
   }
 
   .price{
-    font-size:18px;
+    font-size:22px;
   }
 
   .stock{
-    font-size:12px;
-    margin-bottom:9px;
+    font-size:14px;
   }
 
   .btn{
-    width:100%;
-    font-size:12px;
-    padding:10px 6px;
+    min-height:48px;
   }
 
-  .thumb{
-    flex-basis:55px;
-    width:55px;
-    height:55px;
+  .cart{
+    right:12px;
+    bottom:14px;
+    font-size:18px;
+    min-height:58px;
+    padding:15px 22px;
   }
 
-  .gallery-arrow{
-    width:34px;
-    height:34px;
-    font-size:21px;
-  }
-
-  .lightbox{
-    padding:8px;
-  }
-
-  .lightbox-image{
-    max-width:96vw;
-    max-height:80vh;
-  }
-
-  .lightbox-arrow{
-    width:42px;
-    height:42px;
-    font-size:23px;
+  .sheet{
+    padding:20px;
   }
 
 }
 
 
 /* =====================================================
-   CELULAR MUY PEQUEÑO
+   CELULAR PEQUEÑO
 ===================================================== */
 
-@media(max-width:370px){
+@media(max-width:380px){
 
-  .card{
-    grid-template-columns:125px 1fr;
+  .logo{
+    width:65px;
+    height:65px;
   }
 
-  .name{
-    font-size:14px;
+  .brand{
+    font-size:25px;
   }
 
-  .price{
-    font-size:17px;
+  .sub{
+    font-size:13px;
+  }
+
+  .hero h1{
+    font-size:28px;
+  }
+
+  .hero p{
+    font-size:18px;
+  }
+
+  .main-image-wrap,
+  .gallery.single .main-image-wrap{
+    height:220px;
+  }
+
+}
+
+
+/* =====================================================
+   REDUCIR ANIMACIONES
+===================================================== */
+
+@media(prefers-reduced-motion:reduce){
+
+  *{
+    scroll-behavior:auto !important;
+    transition:none !important;
   }
 
 }
@@ -859,6 +894,7 @@ textarea{
 </style>
 
 </head>
+
 
 <body>
 
@@ -901,6 +937,7 @@ textarea{
 
 <main class="wrap">
 
+
   <section class="hero">
 
     <h1>
@@ -915,9 +952,10 @@ textarea{
     <input
       id="search"
       class="search"
-      type="text"
+      type="search"
       placeholder="🔎 Buscar productos..."
       autocomplete="off"
+      aria-label="Buscar productos"
     >
 
     <div
@@ -949,8 +987,10 @@ textarea{
 ===================================================== -->
 
 <button
+  id="cartButton"
   class="cart"
   onclick="openCart()"
+  type="button"
 >
   🛒 Carrito (<span id="count">0</span>)
 </button>
@@ -971,6 +1011,8 @@ textarea{
     <button
       class="close"
       onclick="closeCart()"
+      type="button"
+      aria-label="Cerrar carrito"
     >
       ✕
     </button>
@@ -984,15 +1026,16 @@ textarea{
     <div
       id="total"
       style="
-        font-size:20px;
+        font-size:21px;
         font-weight:800;
-        margin:16px 0;
+        margin:18px 0;
       "
     >
       Total: Bs 0.00
     </div>
 
-    <label>
+
+    <label for="customer">
       Tu nombre
     </label>
 
@@ -1002,7 +1045,8 @@ textarea{
       placeholder="Ej. Juan Pérez"
     >
 
-    <label>
+
+    <label for="address">
       Dirección o zona de entrega
     </label>
 
@@ -1011,9 +1055,11 @@ textarea{
       placeholder="Ej. Zona Central"
     ></textarea>
 
+
     <button
       class="btn"
       onclick="sendWhatsApp()"
+      type="button"
     >
       📲 Enviar pedido por WhatsApp
     </button>
@@ -1024,7 +1070,7 @@ textarea{
 
 
 <!-- =====================================================
-     LIGHTBOX
+     VISOR DE IMAGEN
 ===================================================== -->
 
 <div
@@ -1038,17 +1084,23 @@ textarea{
     <button
       class="lightbox-close"
       onclick="closeLightbox()"
+      type="button"
+      aria-label="Cerrar imagen"
     >
       ✕
     </button>
+
 
     <button
       id="lightboxPrev"
       class="lightbox-arrow left"
       onclick="event.stopPropagation();changeLightboxImage(-1)"
+      type="button"
+      aria-label="Imagen anterior"
     >
       ‹
     </button>
+
 
     <img
       id="lightboxImage"
@@ -1057,13 +1109,17 @@ textarea{
       alt="Imagen del producto"
     >
 
+
     <button
       id="lightboxNext"
       class="lightbox-arrow right"
       onclick="event.stopPropagation();changeLightboxImage(1)"
+      type="button"
+      aria-label="Imagen siguiente"
     >
       ›
     </button>
+
 
     <div
       id="lightboxCounter"
@@ -1091,14 +1147,46 @@ const SUPABASE_KEY =
 
 
 /* =====================================================
-   CONEXIÓN
+   CREAR CLIENTE SUPABASE
 ===================================================== */
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
+let supabaseClient = null;
+
+try{
+
+  if(
+    window.supabase &&
+    typeof window.supabase.createClient === "function"
+  ){
+
+    supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+        {
+          auth:{
+            persistSession:false,
+            autoRefreshToken:false,
+            detectSessionInUrl:false
+          },
+          global:{
+            headers:{
+              "x-client-info":"aqui-tai-catalogo"
+            }
+          }
+        }
+      );
+
+  }
+
+}catch(error){
+
+  console.error(
+    "No se pudo inicializar Supabase:",
+    error
   );
+
+}
 
 
 /* =====================================================
@@ -1114,6 +1202,8 @@ let galleryStates = {};
 let currentLightboxImages = [];
 
 let currentLightboxIndex = 0;
+
+let loadingRequest = false;
 
 
 /* =====================================================
@@ -1164,7 +1254,23 @@ const lightboxNext =
 
 
 /* =====================================================
-   CONVERTIR IMÁGENES A ARRAY
+   ESCAPAR HTML
+===================================================== */
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+   IMÁGENES
 ===================================================== */
 
 function getImages(value){
@@ -1172,6 +1278,7 @@ function getImages(value){
   if(!value){
     return [];
   }
+
 
   if(Array.isArray(value)){
 
@@ -1181,8 +1288,10 @@ function getImages(value){
 
   }
 
+
   const text =
     String(value).trim();
+
 
   if(!text){
     return [];
@@ -1209,10 +1318,10 @@ function getImages(value){
 
       }
 
-    }catch(e){
+    }catch(error){
 
       console.log(
-        "JSON de imágenes inválido"
+        "La columna image no contiene JSON válido."
       );
 
     }
@@ -1250,17 +1359,115 @@ function getImages(value){
 
 
 /* =====================================================
-   ESCAPAR HTML
+   NORMALIZAR PRODUCTO
 ===================================================== */
 
-function escapeHTML(value){
+function normalizeProduct(product){
 
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+  return {
+
+    id:product.id,
+
+    name:
+      product.name ||
+      "Producto sin nombre",
+
+    category:
+      product.category ||
+      "Sin categoría",
+
+    description:
+      product.description ||
+      "",
+
+    price:
+      Number(product.price || 0),
+
+    image:
+      product.image ||
+      "",
+
+    stock:
+      Number(product.stock || 0),
+
+    active:
+      product.active === true
+
+  };
+
+}
+
+
+/* =====================================================
+   MENSAJE DE ERROR
+===================================================== */
+
+function showCatalogError(error){
+
+  console.error(
+    "Error completo al cargar productos:",
+    error
+  );
+
+
+  let detail =
+    "No se pudo establecer comunicación con Supabase.";
+
+
+  if(error){
+
+    if(error.message){
+
+      detail =
+        error.message;
+
+    }else if(error.error_description){
+
+      detail =
+        error.error_description;
+
+    }else if(typeof error === "string"){
+
+      detail =
+        error;
+
+    }
+
+  }
+
+
+  productCount.textContent =
+    "No se pudo cargar el catálogo.";
+
+
+  grid.innerHTML = `
+
+    <div class="error">
+
+      <div class="error-title">
+        ❌ No se pudo cargar el catálogo
+      </div>
+
+      <div>
+        Estamos intentando conectar con
+        nuestra base de datos.
+      </div>
+
+      <div class="error-detail">
+        ${escapeHTML(detail)}
+      </div>
+
+      <button
+        class="retry"
+        onclick="loadProducts()"
+        type="button"
+      >
+        🔄 Reintentar
+      </button>
+
+    </div>
+
+  `;
 
 }
 
@@ -1271,17 +1478,44 @@ function escapeHTML(value){
 
 async function loadProducts(){
 
+  if(loadingRequest){
+    return;
+  }
+
+
+  loadingRequest = true;
+
+
   grid.innerHTML = `
+
     <div class="loading">
-      ⏳ Cargando productos...
+      ⏳ Cargando catálogo...
     </div>
+
   `;
+
 
   productCount.textContent =
     "Cargando productos...";
 
 
   try{
+
+    if(!supabaseClient){
+
+      throw new Error(
+        "La biblioteca de Supabase no pudo inicializarse."
+      );
+
+    }
+
+
+    /*
+      IMPORTANTE:
+
+      El cliente solamente solicita las columnas
+      necesarias para mostrar el catálogo.
+    */
 
     const result =
       await supabaseClient
@@ -1304,66 +1538,20 @@ async function loadProducts(){
 
     if(error){
 
-      console.error(
-        "ERROR SUPABASE:",
-        error
-      );
-
-
-      /*
-         Error específico de permisos
-      */
-
-      if(
-        error.code === "42501" ||
-        error.message?.toLowerCase().includes("permission") ||
-        error.message?.toLowerCase().includes("row-level security")
-      ){
-
-        showSupabasePermissionError(
-          error
-        );
-
-        return;
-
-      }
-
-
-      grid.innerHTML = `
-        <div class="error">
-
-          <div style="font-size:42px">
-            ❌
-          </div>
-
-          <strong>
-            No se pudo cargar el catálogo.
-          </strong>
-
-          <br><br>
-
-          Verifica la conexión con Supabase.
-
-          <div class="error-code">
-            ${escapeHTML(
-              error.message || "Error desconocido"
-            )}
-          </div>
-
-        </div>
-      `;
-
-      productCount.textContent =
-        "Error al cargar productos.";
-
-      return;
+      throw error;
 
     }
 
 
     products =
-      data || [];
+      Array.isArray(data)
+      ? data.map(normalizeProduct)
+      : [];
 
+
+    /*
+      Reiniciar estados de galerías
+    */
 
     galleryStates = {};
 
@@ -1387,32 +1575,11 @@ async function loadProducts(){
 
   }catch(error){
 
-    console.error(error);
+    showCatalogError(error);
 
+  }finally{
 
-    grid.innerHTML = `
-      <div class="error">
-
-        <div style="font-size:42px">
-          ❌
-        </div>
-
-        <strong>
-          Ocurrió un error al cargar
-          el catálogo.
-        </strong>
-
-        <div class="error-code">
-          ${escapeHTML(
-            error.message || error
-          )}
-        </div>
-
-      </div>
-    `;
-
-    productCount.textContent =
-      "Error al cargar productos.";
+    loadingRequest = false;
 
   }
 
@@ -1420,54 +1587,7 @@ async function loadProducts(){
 
 
 /* =====================================================
-   ERROR DE PERMISOS
-===================================================== */
-
-function showSupabasePermissionError(error){
-
-  productCount.textContent =
-    "No se pueden leer los productos.";
-
-  grid.innerHTML = `
-
-    <div class="error">
-
-      <div style="font-size:48px">
-        ❌
-      </div>
-
-      <strong style="font-size:22px">
-        No se pudieron cargar los productos.
-      </strong>
-
-      <br><br>
-
-      La tabla <strong>products</strong>
-      no permite actualmente la lectura pública.
-
-      <br><br>
-
-      Debes habilitar una política
-      <strong>SELECT</strong>
-      para usuarios públicos
-      en Supabase.
-
-      <div class="error-code">
-        Código:
-        ${escapeHTML(error.code || "42501")}
-        <br>
-        ${escapeHTML(error.message || "")}
-      </div>
-
-    </div>
-
-  `;
-
-}
-
-
-/* =====================================================
-   GALERÍA
+   GALERÍA HTML
 ===================================================== */
 
 function galleryHTML(product){
@@ -1477,12 +1597,13 @@ function galleryHTML(product){
 
 
   const fallback =
-    "https://via.placeholder.com/600x600?text=Aqui+tai";
+    "https://via.placeholder.com/800x600?text=Aqui+tai";
 
 
   if(!images.length){
 
-    images = [fallback];
+    images =
+      [fallback];
 
   }
 
@@ -1522,6 +1643,10 @@ function galleryHTML(product){
     images[state.index];
 
 
+  /* ===================================================
+     UNA SOLA FOTO
+  =================================================== */
+
   if(images.length === 1){
 
     return `
@@ -1533,10 +1658,6 @@ function galleryHTML(product){
           onclick="openLightbox(${Number(product.id)},0)"
         >
 
-          <div class="active-badge">
-            Activo
-          </div>
-
           <img
             id="main-image-${Number(product.id)}"
             class="main-image"
@@ -1544,7 +1665,8 @@ function galleryHTML(product){
             alt="${escapeHTML(product.name)}"
             loading="lazy"
             onerror="
-              this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
+              this.onerror=null;
+              this.src='https://via.placeholder.com/800x600?text=Sin+imagen';
             "
           >
 
@@ -1556,6 +1678,10 @@ function galleryHTML(product){
 
   }
 
+
+  /* ===================================================
+     VARIAS FOTOS
+  =================================================== */
 
   return `
 
@@ -1569,10 +1695,6 @@ function galleryHTML(product){
         onclick="openLightbox(${Number(product.id)},${state.index})"
       >
 
-        <div class="active-badge">
-          Activo
-        </div>
-
         <img
           id="main-image-${Number(product.id)}"
           class="main-image"
@@ -1580,35 +1702,43 @@ function galleryHTML(product){
           alt="${escapeHTML(product.name)}"
           loading="lazy"
           onerror="
-            this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
+            this.onerror=null;
+            this.src='https://via.placeholder.com/800x600?text=Sin+imagen';
           "
         >
+
 
         <button
           class="gallery-arrow left"
           onclick="
             event.stopPropagation();
-            changeGallery(${Number(product.id)},-1)
+            changeGallery(${Number(product.id)},-1);
           "
+          type="button"
+          aria-label="Imagen anterior"
         >
           ‹
         </button>
+
 
         <button
           class="gallery-arrow right"
           onclick="
             event.stopPropagation();
-            changeGallery(${Number(product.id)},1)
+            changeGallery(${Number(product.id)},1);
           "
+          type="button"
+          aria-label="Imagen siguiente"
         >
           ›
         </button>
+
 
         <div
           id="counter-${Number(product.id)}"
           class="photo-counter"
         >
-          📷 ${state.index + 1} / ${images.length}
+          ${state.index + 1} / ${images.length}
         </div>
 
       </div>
@@ -1624,16 +1754,18 @@ function galleryHTML(product){
           <button
             class="thumb ${
               index === state.index
-                ? "active"
-                : ""
+              ? "active"
+              : ""
             }"
             onclick="
               event.stopPropagation();
               selectGalleryImage(
                 ${Number(product.id)},
                 ${index}
-              )
+              );
             "
+            type="button"
+            aria-label="Ver imagen ${index + 1}"
           >
 
             <img
@@ -1641,7 +1773,8 @@ function galleryHTML(product){
               alt="Foto ${index + 1}"
               loading="lazy"
               onerror="
-                this.src='https://via.placeholder.com/100x100?text=Foto'
+                this.onerror=null;
+                this.src='https://via.placeholder.com/100x100?text=Foto';
               "
             >
 
@@ -1653,10 +1786,8 @@ function galleryHTML(product){
 
 
       <div class="photo-info">
-
         📷 ${images.length}
         ${images.length === 1 ? "foto" : "fotos"}
-
       </div>
 
     </div>
@@ -1684,9 +1815,17 @@ function render(list){
   if(!list.length){
 
     grid.innerHTML = `
+
       <div class="loading">
+
         🔎 No encontramos productos.
+
+        <br><br>
+
+        Prueba con otro nombre o categoría.
+
       </div>
+
     `;
 
     return;
@@ -1695,10 +1834,10 @@ function render(list){
 
 
   grid.innerHTML =
-    list.map(p => {
+    list.map(product => {
 
       const stock =
-        Number(p.stock || 0);
+        Number(product.stock || 0);
 
 
       const disabled =
@@ -1707,59 +1846,67 @@ function render(list){
         : "";
 
 
+      const stockHTML =
+        stock > 0
+
+        ? `
+          <div class="stock">
+            📦 Disponible: ${stock}
+          </div>
+        `
+
+        : `
+          <div class="stock out">
+            ❌ Agotado
+          </div>
+        `;
+
+
       return `
 
         <article class="card">
 
-          ${galleryHTML(p)}
+          ${galleryHTML(product)}
+
 
           <div class="body">
 
             <div class="cat">
-              ${escapeHTML(
-                p.category ||
-                "Sin categoría"
-              )}
+              ${escapeHTML(product.category)}
             </div>
+
 
             <div class="name">
-              ${escapeHTML(
-                p.name
-              )}
+              ${escapeHTML(product.name)}
             </div>
 
-            <div class="desc">
-              ${escapeHTML(
-                p.description || ""
-              )}
-            </div>
+
+            ${
+              product.description
+              ? `
+                <div class="desc">
+                  ${escapeHTML(product.description)}
+                </div>
+              `
+              : ""
+            }
+
 
             <div class="price">
               Bs ${Number(
-                p.price || 0
+                product.price || 0
               ).toFixed(2)}
             </div>
 
-            ${
-              stock > 0
 
-              ? `
-                <div class="stock">
-                  📦 Disponible: ${stock}
-                </div>
-              `
+            ${stockHTML}
 
-              : `
-                <div class="stock out">
-                  ❌ Agotado
-                </div>
-              `
-            }
 
             <button
               class="btn"
               ${disabled}
-              onclick="add(${Number(p.id)})"
+              onclick="add(${Number(product.id)})"
+              type="button"
             >
 
               ${
@@ -1877,6 +2024,10 @@ function updateGallery(id){
   }
 
 
+  const image =
+    state.images[state.index];
+
+
   const mainImage =
     document.getElementById(
       "main-image-" + id
@@ -1891,14 +2042,16 @@ function updateGallery(id){
 
   const thumbs =
     document.querySelectorAll(
-      "#thumbs-" + id + " .thumb"
+      "#thumbs-" +
+      id +
+      " .thumb"
     );
 
 
   if(mainImage){
 
     mainImage.src =
-      state.images[state.index];
+      image;
 
   }
 
@@ -1906,7 +2059,6 @@ function updateGallery(id){
   if(counter){
 
     counter.textContent =
-      "📷 " +
       (state.index + 1) +
       " / " +
       state.images.length;
@@ -1925,11 +2077,39 @@ function updateGallery(id){
     }
   );
 
+
+  /*
+    Actualizar onclick de la imagen
+    para abrir el visor en la foto actual.
+  */
+
+  if(mainImage){
+
+    const wrapper =
+      mainImage.parentElement;
+
+
+    if(wrapper){
+
+      wrapper.onclick =
+        function(){
+
+          openLightbox(
+            id,
+            state.index
+          );
+
+        };
+
+    }
+
+  }
+
 }
 
 
 /* =====================================================
-   LIGHTBOX
+   VISOR
 ===================================================== */
 
 function openLightbox(id,index){
@@ -1947,8 +2127,19 @@ function openLightbox(id,index){
     state.images;
 
 
+  if(!currentLightboxImages.length){
+    return;
+  }
+
+
   currentLightboxIndex =
-    index;
+    Math.max(
+      0,
+      Math.min(
+        Number(index) || 0,
+        currentLightboxImages.length - 1
+      )
+    );
 
 
   updateLightbox();
@@ -1981,7 +2172,9 @@ function updateLightbox(){
     currentLightboxImages.length;
 
 
-  if(currentLightboxImages.length <= 1){
+  if(
+    currentLightboxImages.length <= 1
+  ){
 
     lightboxPrev.style.display =
       "none";
@@ -2108,12 +2301,22 @@ document.addEventListener(
 
 let touchStartX = 0;
 
+let touchEndX = 0;
+
+
 lightbox.addEventListener(
   "touchstart",
   function(event){
 
-    touchStartX =
-      event.changedTouches[0].screenX;
+    if(
+      event.changedTouches &&
+      event.changedTouches.length
+    ){
+
+      touchStartX =
+        event.changedTouches[0].screenX;
+
+    }
 
   },
   {
@@ -2126,8 +2329,19 @@ lightbox.addEventListener(
   "touchend",
   function(event){
 
-    const touchEndX =
+    if(
+      !event.changedTouches ||
+      !event.changedTouches.length
+    ){
+
+      return;
+
+    }
+
+
+    touchEndX =
       event.changedTouches[0].screenX;
+
 
     const difference =
       touchStartX - touchEndX;
@@ -2181,13 +2395,13 @@ search.addEventListener(
 
 
     const filtered =
-      products.filter(p => {
+      products.filter(product => {
 
         const text =
           [
-            p.name,
-            p.description,
-            p.category
+            product.name,
+            product.description,
+            product.category
           ]
           .filter(Boolean)
           .join(" ")
@@ -2206,7 +2420,7 @@ search.addEventListener(
 
 
 /* =====================================================
-   AGREGAR
+   CARRITO
 ===================================================== */
 
 function add(id){
@@ -2255,7 +2469,10 @@ function add(id){
 
   if(existing){
 
-    if(existing.qty >= stock){
+    if(
+      Number(existing.qty) >=
+      stock
+    ){
 
       alert(
         "No puedes agregar más unidades de las disponibles."
@@ -2288,16 +2505,13 @@ function add(id){
 }
 
 
-/* =====================================================
-   CARRITO
-===================================================== */
-
 function updateCart(){
 
   const quantity =
     cart.reduce(
       (sum,item) =>
-        sum + Number(item.qty),
+        sum +
+        Number(item.qty || 0),
       0
     );
 
@@ -2308,11 +2522,18 @@ function updateCart(){
 
   if(!cart.length){
 
-    cartItems.innerHTML =
-      "<p>Tu carrito está vacío.</p>";
+    cartItems.innerHTML = `
+
+      <p>
+        Tu carrito está vacío.
+      </p>
+
+    `;
+
 
     total.textContent =
       "Total: Bs 0.00";
+
 
     return;
 
@@ -2343,7 +2564,8 @@ function updateCart(){
               item.price || 0
             ).toFixed(2)}
 
-            × ${item.qty}
+            ×
+            ${item.qty}
 
             <br>
 
@@ -2354,8 +2576,11 @@ function updateCart(){
 
           </div>
 
+
           <button
             onclick="removeItem(${index})"
+            type="button"
+            aria-label="Eliminar producto"
           >
             🗑️
           </button>
@@ -2385,6 +2610,16 @@ function updateCart(){
 
 
 function removeItem(index){
+
+  if(
+    index < 0 ||
+    index >= cart.length
+  ){
+
+    return;
+
+  }
+
 
   cart.splice(index,1);
 
@@ -2486,8 +2721,14 @@ function sendWhatsApp(){
 
 
   const encodedMessage =
-    encodeURIComponent(message);
+    encodeURIComponent(
+      message
+    );
 
+
+  /*
+    Número de WhatsApp de la tienda.
+  */
 
   const whatsappURL =
     "https://wa.me/59171440907?text=" +
@@ -2501,10 +2742,38 @@ function sendWhatsApp(){
 
 
 /* =====================================================
-   INICIAR
+   CERRAR CARRITO CON ESCAPE
 ===================================================== */
 
-loadProducts();
+document.addEventListener(
+  "keydown",
+  function(event){
+
+    if(
+      event.key === "Escape" &&
+      panel.classList.contains("open")
+    ){
+
+      closeCart();
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   INICIAR CATÁLOGO
+===================================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    loadProducts();
+
+  }
+);
 
 </script>
 
