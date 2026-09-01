@@ -11,10 +11,6 @@
 
 <title>Aquí tái | Panel Admin</title>
 
-<!-- =====================================================
-     SUPABASE
-===================================================== -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
@@ -67,6 +63,44 @@ textarea{
   font-family:inherit;
 }
 
+/* =====================================================
+   MODAL DE LOGIN SUPABASE AUTH
+===================================================== */
+
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 16px;
+}
+
+.login-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 30px;
+  border-radius: 20px;
+  width: min(100%, 380px);
+  box-shadow: 0 10px 30px #0002;
+}
+
+.login-title { 
+  font-size: 22px; 
+  font-weight: 800; 
+  margin-bottom: 4px; 
+  text-align: center; 
+}
+
+.login-sub { 
+  font-size: 13px; 
+  color: var(--text-muted); 
+  margin-bottom: 20px; 
+  text-align: center; 
+}
+
 
 /* =====================================================
    HEADER
@@ -111,6 +145,12 @@ header{
   color:var(--text-muted);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .theme-btn{
   background:none;
   border:1px solid var(--border-color);
@@ -119,6 +159,17 @@ header{
   border-radius:20px;
   cursor:pointer;
   font-size:16px;
+}
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid var(--danger-color);
+  color: var(--danger-color);
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
 }
 
 
@@ -130,6 +181,7 @@ header{
   max-width:1200px;
   margin:auto;
   padding:20px 16px 80px;
+  display: none; /* Oculto hasta verificar sesión */
 }
 
 
@@ -210,6 +262,8 @@ label{
 
 input[type=text],
 input[type=number],
+input[type=email],
+input[type=password],
 select,
 textarea{
   padding:12px;
@@ -519,10 +573,27 @@ th{
 
 <body>
 
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-title">🔐 Panel Admin</div>
+    <div class="login-sub">Ingresa con tus credenciales de Supabase</div>
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label>Correo Electrónico</label>
+        <input type="email" id="loginEmail" required placeholder="tu-correo@ejemplo.com" autofocus>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label>Contraseña</label>
+        <input type="password" id="loginPassword" required placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="btnLoginSubmit" style="width: 100%;">Ingresar al Panel</button>
+    </form>
+  </div>
+</div>
+
 
 <header>
 
@@ -537,31 +608,36 @@ th{
 
     <div class="brand-wrap">
       <div class="brand">Aquí tái</div>
-      <div class="sub">Panel Administrador · Bolivia</div>
+      <div class="sub" id="adminUserSub">Panel Administrador · Bolivia</div>
     </div>
 
-    <button
-      id="themeBtn"
-      class="theme-btn"
-      onclick="toggleTheme()"
-      title="Cambiar tema"
-    >
-      🌙
-    </button>
+    <div class="header-actions">
+      <button
+        id="themeBtn"
+        class="theme-btn"
+        onclick="toggleTheme()"
+        title="Cambiar tema"
+      >
+        🌙
+      </button>
+
+      <button
+        id="logoutBtn"
+        class="logout-btn"
+        onclick="logout()"
+        style="display:none;"
+      >
+        🔒 Salir
+      </button>
+    </div>
 
   </div>
 
 </header>
 
 
-<!-- =====================================================
-     CONTENIDO
-===================================================== -->
+<main class="wrap" id="mainWrap">
 
-<main class="wrap">
-
-
-  <!-- MÉTRICAS DE INVENTARIO -->
 
   <section class="kpi-grid">
 
@@ -588,8 +664,6 @@ th{
   </section>
 
 
-  <!-- FORMULARIO DE PRODUCTO -->
-
   <section class="card-form">
 
     <h2 id="formTitle">
@@ -603,13 +677,11 @@ th{
 
       <div class="form-grid">
 
-        <!-- NOMBRE -->
         <div class="form-group full">
           <label>Nombre del Producto *</label>
           <input type="text" id="name" required placeholder="Ej. Caja Sorpresa Herramientas Amazon">
         </div>
 
-        <!-- CATEGORÍA CON ATAJOS -->
         <div class="form-group">
           <label>Categoría</label>
           <input type="text" id="category" placeholder="Ej. Cajas Sorpresa">
@@ -621,13 +693,11 @@ th{
           </div>
         </div>
 
-        <!-- PRECIO -->
         <div class="form-group">
           <label>Precio (Bs) *</label>
           <input type="number" id="price" step="0.01" min="0" required placeholder="0.00">
         </div>
 
-        <!-- STOCK CON ATAJOS -->
         <div class="form-group">
           <label>Stock (Unidades) *</label>
           <input type="number" id="stock" min="0" required placeholder="1">
@@ -639,13 +709,11 @@ th{
           </div>
         </div>
 
-        <!-- DESCRIPCIÓN -->
         <div class="form-group full">
           <label>Descripción</label>
           <textarea id="description" placeholder="Detalles de la caja o contenido..."></textarea>
         </div>
 
-        <!-- BOTÓN DE SUBIDA DESDE CELULAR -->
         <div class="form-group full">
           <label>Imágenes del Producto</label>
           <div class="upload-box" onclick="document.getElementById('fileInput').click()">
@@ -655,7 +723,6 @@ th{
           <div id="previewContainer" class="preview-container"></div>
         </div>
 
-        <!-- ESTADO ACTIVO -->
         <div class="form-group">
           <label>Estado Inicial en Catálogo</label>
           <select id="active">
@@ -674,8 +741,6 @@ th{
 
   </section>
 
-
-  <!-- CONTROLES Y FILTROS DE TABLA -->
 
   <div class="table-controls">
 
@@ -696,8 +761,6 @@ th{
 
   </div>
 
-
-  <!-- TABLA DE INVENTARIO -->
 
   <section class="table-wrap">
 
@@ -727,10 +790,6 @@ th{
 
 </main>
 
-
-<!-- =====================================================
-     MODAL DE VISTA PREVIA COMPLETA
-===================================================== -->
 
 <div id="viewModal" class="modal" onclick="if(event.target===this)closeModal()">
 
@@ -815,6 +874,64 @@ const cancelEditBtn = document.getElementById("cancelEditBtn");
 const themeBtn = document.getElementById("themeBtn");
 const viewModal = document.getElementById("viewModal");
 
+const loginOverlay = document.getElementById("loginOverlay");
+const mainWrap = document.getElementById("mainWrap");
+const logoutBtn = document.getElementById("logoutBtn");
+const adminUserSub = document.getElementById("adminUserSub");
+
+
+/* =====================================================
+   CONTROL DE AUTENTICACIÓN (SUPABASE AUTH)
+===================================================== */
+
+async function checkAuth(){
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  if (session) {
+    loginOverlay.style.display = "none";
+    mainWrap.style.display = "block";
+    logoutBtn.style.display = "inline-block";
+    adminUserSub.textContent = `Sesión: ${session.user.email}`;
+    loadInventory();
+  } else {
+    loginOverlay.style.display = "flex";
+    mainWrap.style.display = "none";
+    logoutBtn.style.display = "none";
+    adminUserSub.textContent = "Panel Administrador · Bolivia";
+  }
+}
+
+async function handleLogin(e){
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const btn = document.getElementById("btnLoginSubmit");
+
+  btn.disabled = true;
+  btn.textContent = "Verificando...";
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  if (error) {
+    alert("❌ Error de acceso: " + error.message);
+    btn.disabled = false;
+    btn.textContent = "Ingresar al Panel";
+  } else {
+    document.getElementById("loginPassword").value = "";
+    btn.disabled = false;
+    btn.textContent = "Ingresar al Panel";
+    checkAuth();
+  }
+}
+
+async function logout(){
+  await supabaseClient.auth.signOut();
+  checkAuth();
+}
+
 
 /* =====================================================
    MODO OSCURO / CLARO
@@ -846,7 +963,7 @@ async function loadInventory(){
       .order("id", { ascending: false });
 
     if(error){
-      inventoryTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger-color);">❌ Error al cargar datos.</td></tr>`;
+      inventoryTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger-color);">❌ Error al cargar datos: ${escapeHTML(error.message)}</td></tr>`;
       return;
     }
 
@@ -1053,152 +1170,3 @@ function removeImage(idx){
 
 function setCategory(cat){
   categoryInput.value = cat;
-}
-
-function addStockShortcut(amount){
-  const val = Number(stockInput.value || 0);
-  stockInput.value = val + amount;
-}
-
-
-/* =====================================================
-   GUARDAR / EDITAR PRODUCTO
-===================================================== */
-
-async function saveProduct(e){
-  e.preventDefault();
-
-  const id = productId.value;
-
-  const payload = {
-    name: nameInput.value.trim(),
-    category: categoryInput.value.trim(),
-    price: parseFloat(priceInput.value),
-    stock: parseInt(stockInput.value),
-    description: descInput.value.trim(),
-    active: activeSelect.value === "true",
-    images: currentImages,
-    image: currentImages[0] || null
-  };
-
-  let error;
-
-  if(id){
-    const res = await supabaseClient.from("products").update(payload).eq("id", id);
-    error = res.error;
-  } else {
-    const res = await supabaseClient.from("products").insert([payload]);
-    error = res.error;
-  }
-
-  if(error){
-    alert("❌ Error al guardar el producto.");
-  } else {
-    resetForm();
-    loadInventory();
-  }
-}
-
-function editProduct(id){
-  const p = products.find(x => x.id === id);
-  if(!p) return;
-
-  productId.value = p.id;
-  nameInput.value = p.name || "";
-  categoryInput.value = p.category || "";
-  priceInput.value = p.price || "";
-  stockInput.value = p.stock || 0;
-  descInput.value = p.description || "";
-  activeSelect.value = String(p.active);
-
-  currentImages = getImagesArray(p);
-  renderImagePreviews();
-
-  formTitle.querySelector("span").textContent = "✏️ Editar Producto";
-  cancelEditBtn.style.display = "inline-block";
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function resetForm(){
-  productId.value = "";
-  productForm.reset();
-  currentImages = [];
-  previewContainer.innerHTML = "";
-  formTitle.querySelector("span").textContent = "📦 Agregar Producto";
-  cancelEditBtn.style.display = "none";
-}
-
-
-/* =====================================================
-   ACCIONES RÁPIDAS (TABLA)
-===================================================== */
-
-async function quickStockChange(id, delta){
-  const p = products.find(x => x.id === id);
-  if(!p) return;
-
-  const newStock = Math.max(0, Number(p.stock || 0) + delta);
-
-  const { error } = await supabaseClient
-    .from("products")
-    .update({ stock: newStock })
-    .eq("id", id);
-
-  if(!error){
-    p.stock = newStock;
-    updateMetrics();
-    filterTable();
-  }
-}
-
-async function toggleActive(id, newStatus){
-  const { error } = await supabaseClient
-    .from("products")
-    .update({ active: newStatus })
-    .eq("id", id);
-
-  if(!error){
-    const p = products.find(x => x.id === id);
-    if(p) p.active = newStatus;
-    updateMetrics();
-    filterTable();
-  } else {
-    alert("❌ No se pudo actualizar el estado.");
-  }
-}
-
-async function deleteProduct(id){
-  if(!confirm("¿Seguro que deseas eliminar este producto permanentemente?")) return;
-
-  const { error } = await supabaseClient
-    .from("products")
-    .delete()
-    .eq("id", id);
-
-  if(!error){
-    loadInventory();
-  } else {
-    alert("❌ No se pudo eliminar el producto.");
-  }
-}
-
-
-function escapeHTML(str){
-  return String(str || '')
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-
-/* =====================================================
-   INICIALIZACIÓN
-===================================================== */
-
-loadInventory();
-
-</script>
-
-</body>
-</html>
