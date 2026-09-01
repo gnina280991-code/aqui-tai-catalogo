@@ -6,7 +6,7 @@
 
 <meta
   name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  content="width=device-width, initial-scale=1.0"
 >
 
 <title>Aquí tái | Catálogo</title>
@@ -20,9 +20,9 @@
 
 <style>
 
-/* =========================================================
+/* =====================================================
    GENERAL
-========================================================= */
+===================================================== */
 
 *{
   box-sizing:border-box;
@@ -35,7 +35,7 @@ html{
 body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
-  background:#f4f5f7;
+  background:#f5f6f8;
   color:#171717;
 }
 
@@ -45,18 +45,14 @@ textarea{
   font-family:inherit;
 }
 
-button{
-  -webkit-tap-highlight-color:transparent;
-}
 
-
-/* =========================================================
+/* =====================================================
    HEADER
-========================================================= */
+===================================================== */
 
 header{
   background:#fff;
-  border-bottom:1px solid #e9e9e9;
+  border-bottom:1px solid #e8e8e8;
   position:sticky;
   top:0;
   z-index:100;
@@ -65,7 +61,6 @@ header{
 .top{
   max-width:1100px;
   margin:auto;
-  min-height:96px;
   padding:14px 22px;
   display:flex;
   align-items:center;
@@ -73,61 +68,61 @@ header{
 }
 
 .logo{
-  width:76px;
-  height:76px;
+  width:82px;
+  height:82px;
   border-radius:50%;
   object-fit:cover;
-  border:1px solid #e4e4e4;
-  background:#fff;
+  border:1px solid #eee;
+  flex:none;
 }
 
 .brand{
   font-size:34px;
   font-weight:800;
-  line-height:1.05;
+  line-height:1.1;
 }
 
 .sub{
-  margin-top:7px;
-  font-size:17px;
-  color:#777;
+  margin-top:5px;
+  font-size:18px;
+  color:#666;
 }
 
 
-/* =========================================================
+/* =====================================================
    CONTENEDOR
-========================================================= */
+===================================================== */
 
 .wrap{
-  width:min(1100px,100%);
+  max-width:1100px;
   margin:auto;
-  padding:26px 22px 120px;
+  padding:26px 20px 120px;
 }
 
 
-/* =========================================================
+/* =====================================================
    HERO
-========================================================= */
+===================================================== */
 
 .hero{
   background:#fff;
   border-radius:28px;
-  padding:32px;
+  padding:30px;
   margin-bottom:24px;
-  box-shadow:0 3px 18px rgba(0,0,0,.04);
+  box-shadow:0 2px 15px #00000008;
 }
 
 .hero h1{
-  margin:0 0 10px;
+  margin:0 0 8px;
   font-size:38px;
   line-height:1.15;
 }
 
 .hero p{
   margin:0;
-  color:#707070;
-  font-size:20px;
-  line-height:1.5;
+  color:#666;
+  font-size:22px;
+  line-height:1.55;
 }
 
 .search{
@@ -135,85 +130,87 @@ header{
   height:64px;
   padding:0 20px;
   border:1px solid #ddd;
-  border-radius:17px;
-  font-size:19px;
-  margin-top:25px;
+  border-radius:18px;
+  font-size:21px;
+  margin-top:24px;
   outline:none;
   background:#fff;
 }
 
 .search:focus{
   border-color:#ff9d00;
-  box-shadow:0 0 0 3px rgba(255,157,0,.12);
+  box-shadow:0 0 0 3px #ff9d0020;
 }
 
 .product-count{
-  margin-top:17px;
+  margin-top:16px;
   color:#777;
   font-size:16px;
 }
 
 
-/* =========================================================
+/* =====================================================
    GRID
-========================================================= */
+===================================================== */
 
 .grid{
   display:grid;
-  grid-template-columns:
-    repeat(2,minmax(0,1fr));
-  gap:18px;
+  grid-template-columns:1fr;
+  gap:16px;
 }
 
 
-/* =========================================================
-   PRODUCT CARD
-========================================================= */
+/* =====================================================
+   CARD
+===================================================== */
 
 .card{
   background:#fff;
   border-radius:22px;
   overflow:hidden;
-  box-shadow:0 4px 18px rgba(0,0,0,.06);
+  box-shadow:0 3px 15px #0000000c;
+  display:grid;
+  grid-template-columns:280px 1fr;
   min-width:0;
-  border:1px solid #eeeeee;
 }
 
 .body{
-  padding:17px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
 }
 
 .cat{
+  font-size:14px;
   color:#777;
-  font-size:13px;
   margin-bottom:4px;
 }
 
 .name{
-  font-size:21px;
+  font-size:22px;
   font-weight:800;
-  line-height:1.2;
-  margin-bottom:7px;
+  margin:2px 0 6px;
 }
 
 .desc{
+  font-size:15px;
   color:#666;
-  font-size:14px;
   line-height:1.45;
-  min-height:40px;
+  margin-bottom:8px;
 }
 
 .price{
-  font-size:25px;
+  font-size:24px;
   font-weight:800;
-  margin-top:15px;
-  margin-bottom:6px;
+  margin:8px 0 4px;
 }
 
 .stock{
   font-size:14px;
-  color:#666;
-  margin-bottom:13px;
+  color:#555;
+  margin-bottom:14px;
 }
 
 .stock.out{
@@ -222,20 +219,21 @@ header{
 }
 
 
-/* =========================================================
+/* =====================================================
    GALERÍA
-========================================================= */
+===================================================== */
 
 .gallery{
   width:100%;
-  background:#fff;
+  background:#fafafa;
+  min-width:0;
 }
 
 .main-image-wrap{
   position:relative;
   width:100%;
   aspect-ratio:1/1;
-  background:#f7f7f7;
+  background:#f5f5f5;
   overflow:hidden;
   cursor:zoom-in;
 }
@@ -245,12 +243,46 @@ header{
   height:100%;
   object-fit:cover;
   display:block;
+  transition:transform .25s ease;
+}
+
+.main-image-wrap:hover .main-image{
+  transform:scale(1.02);
 }
 
 
-/* =========================================================
+/* =====================================================
+   ESTADO ACTIVO
+===================================================== */
+
+.active-badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#fff;
+  border-radius:999px;
+  padding:7px 11px;
+  box-shadow:0 2px 8px #0002;
+  font-size:12px;
+  font-weight:700;
+  color:#25843d;
+  z-index:4;
+}
+
+.active-badge::before{
+  content:"";
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#5cb85c;
+  margin-right:5px;
+}
+
+
+/* =====================================================
    FLECHAS
-========================================================= */
+===================================================== */
 
 .gallery-arrow{
   position:absolute;
@@ -260,16 +292,15 @@ header{
   height:42px;
   border:0;
   border-radius:50%;
-  background:rgba(255,255,255,.94);
-  box-shadow:0 3px 12px rgba(0,0,0,.2);
-  color:#111;
-  font-size:27px;
+  background:#ffffffdd;
+  box-shadow:0 2px 10px #0003;
+  font-size:26px;
   font-weight:bold;
   cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:4;
+  z-index:5;
 }
 
 .gallery-arrow.left{
@@ -280,28 +311,32 @@ header{
   right:10px;
 }
 
-
-/* =========================================================
-   CONTADOR
-========================================================= */
-
-.photo-counter{
-  position:absolute;
-  left:12px;
-  bottom:12px;
-  background:rgba(0,0,0,.78);
-  color:#fff;
-  border-radius:999px;
-  padding:7px 11px;
-  font-size:13px;
-  font-weight:700;
-  z-index:4;
+.gallery-arrow:hover{
+  background:#fff;
 }
 
 
-/* =========================================================
+/* =====================================================
+   CONTADOR
+===================================================== */
+
+.photo-counter{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  background:#000c;
+  color:#fff;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:700;
+  z-index:5;
+}
+
+
+/* =====================================================
    MINIATURAS
-========================================================= */
+===================================================== */
 
 .thumbnails{
   display:flex;
@@ -309,11 +344,15 @@ header{
   padding:8px;
   overflow-x:auto;
   background:#fff;
-  scrollbar-width:none;
 }
 
 .thumbnails::-webkit-scrollbar{
-  display:none;
+  height:4px;
+}
+
+.thumbnails::-webkit-scrollbar-thumb{
+  background:#ccc;
+  border-radius:20px;
 }
 
 .thumb{
@@ -321,15 +360,11 @@ header{
   width:58px;
   height:58px;
   padding:0;
-  border:2px solid transparent;
-  border-radius:9px;
+  border:3px solid transparent;
+  border-radius:10px;
   overflow:hidden;
-  background:#f3f3f3;
+  background:#f5f5f5;
   cursor:pointer;
-}
-
-.thumb.active{
-  border-color:#ff9d00;
 }
 
 .thumb img{
@@ -339,71 +374,87 @@ header{
   display:block;
 }
 
+.thumb.active{
+  border-color:#ff9d00;
+}
+
 .photo-info{
   text-align:center;
-  color:#777;
+  padding:2px 8px 8px;
   font-size:12px;
-  padding:0 8px 8px;
+  color:#777;
+  background:#fff;
 }
 
 
-/* =========================================================
-   BOTÓN
-========================================================= */
+/* =====================================================
+   UNA SOLA FOTO
+===================================================== */
+
+.gallery.single .thumbnails,
+.gallery.single .photo-info{
+  display:none;
+}
+
+
+/* =====================================================
+   BOTONES
+===================================================== */
 
 .btn{
-  width:100%;
-  height:48px;
   border:0;
-  border-radius:13px;
-  background:#ff9d00;
-  color:#111;
-  font-size:16px;
-  font-weight:800;
+  border-radius:12px;
+  padding:13px 18px;
+  background:#111;
+  color:#fff;
+  font-weight:700;
+  font-size:15px;
   cursor:pointer;
 }
 
-.btn:active{
-  transform:scale(.98);
+.btn:hover{
+  opacity:.9;
 }
 
 .btn:disabled{
-  background:#ddd;
-  color:#888;
+  background:#aaa;
+  cursor:not-allowed;
 }
 
 
-/* =========================================================
-   CARRITO FLOTANTE
-========================================================= */
+/* =====================================================
+   CARRITO
+===================================================== */
 
 .cart{
   position:fixed;
-  right:22px;
+  right:20px;
   bottom:20px;
-  min-width:220px;
-  height:62px;
   border:0;
   border-radius:999px;
-  padding:0 25px;
+  padding:17px 25px;
   background:#ff9d00;
   color:#111;
-  font-size:19px;
   font-weight:800;
-  box-shadow:0 8px 28px rgba(0,0,0,.2);
+  box-shadow:0 5px 25px #0003;
   cursor:pointer;
   z-index:150;
+  font-size:20px;
+}
+
+.cart:hover{
+  transform:translateY(-2px);
 }
 
 
-/* =========================================================
+/* =====================================================
    PANEL CARRITO
-========================================================= */
+===================================================== */
 
 .panel{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.6);
+  background:#0008;
   display:none;
   z-index:300;
 }
@@ -416,16 +467,11 @@ header{
 
 .sheet{
   background:#fff;
-  width:min(100%,600px);
+  width:min(100%,560px);
   max-height:90vh;
   overflow:auto;
-  border-radius:26px 26px 0 0;
+  border-radius:24px 24px 0 0;
   padding:22px;
-}
-
-.sheet h2{
-  margin-top:5px;
-  font-size:26px;
 }
 
 .close{
@@ -433,66 +479,57 @@ header{
   border:0;
   background:#eee;
   border-radius:50%;
-  width:40px;
-  height:40px;
+  width:38px;
+  height:38px;
   cursor:pointer;
-  font-size:19px;
+  font-size:18px;
 }
 
 .row{
   display:flex;
   justify-content:space-between;
-  gap:15px;
-  padding:15px 0;
+  gap:10px;
+  padding:13px 0;
   border-bottom:1px solid #eee;
 }
 
 .row button{
-  flex:0 0 auto;
-  width:42px;
-  height:42px;
   border:0;
-  border-radius:11px;
-  background:#ffe2e2;
+  background:#eee;
+  border-radius:10px;
+  padding:8px 11px;
   cursor:pointer;
 }
 
-.sheet label{
-  display:block;
-  font-weight:700;
-  margin-top:16px;
-}
-
-.sheet input,
-.sheet textarea{
+textarea,
+input[type=text]{
   width:100%;
   padding:13px;
   border:1px solid #ddd;
-  border-radius:11px;
-  margin-top:7px;
-  outline:none;
-  font-size:15px;
+  border-radius:12px;
+  margin:6px 0 12px;
+  font:inherit;
 }
 
-.sheet textarea{
+textarea{
   min-height:90px;
   resize:vertical;
 }
 
 
-/* =========================================================
+/* =====================================================
    LIGHTBOX
-========================================================= */
+===================================================== */
 
 .lightbox{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.93);
+  background:#000e;
   display:none;
   align-items:center;
   justify-content:center;
   z-index:500;
-  padding:15px;
+  padding:20px;
 }
 
 .lightbox.open{
@@ -509,7 +546,7 @@ header{
 }
 
 .lightbox-image{
-  max-width:94vw;
+  max-width:92vw;
   max-height:86vh;
   object-fit:contain;
   border-radius:8px;
@@ -518,15 +555,15 @@ header{
 
 .lightbox-close{
   position:absolute;
-  top:8px;
-  right:8px;
-  width:46px;
-  height:46px;
+  top:10px;
+  right:10px;
+  width:44px;
+  height:44px;
   border:0;
   border-radius:50%;
   background:#fff;
   color:#111;
-  font-size:24px;
+  font-size:25px;
   cursor:pointer;
   z-index:5;
 }
@@ -539,7 +576,7 @@ header{
   height:50px;
   border:0;
   border-radius:50%;
-  background:#fff;
+  background:#ffffffdd;
   color:#111;
   font-size:30px;
   cursor:pointer;
@@ -559,79 +596,160 @@ header{
   bottom:18px;
   left:50%;
   transform:translateX(-50%);
-  background:#000;
+  background:#000b;
   color:#fff;
-  padding:8px 14px;
+  padding:7px 13px;
   border-radius:999px;
   font-size:13px;
 }
 
 
-/* =========================================================
+/* =====================================================
    ESTADOS
-========================================================= */
+===================================================== */
 
 .loading{
-  grid-column:1/-1;
   background:#fff;
-  border-radius:20px;
-  padding:40px 20px;
+  border-radius:22px;
+  padding:40px 25px;
   text-align:center;
-  color:#777;
+  color:#666;
+  font-size:18px;
 }
 
 .error{
-  grid-column:1/-1;
   background:#fff;
-  border-radius:20px;
-  padding:35px 25px;
+  border-radius:22px;
+  padding:30px;
   text-align:center;
-  color:#a50020;
+  color:#a00025;
   font-size:17px;
   line-height:1.6;
 }
 
 .error strong{
-  display:block;
-  font-size:21px;
-  margin-bottom:10px;
+  font-weight:800;
+}
+
+.error-code{
+  margin-top:15px;
+  padding:12px;
+  background:#fff3f5;
+  border-radius:12px;
+  font-size:13px;
+  color:#70001c;
+  word-break:break-word;
 }
 
 
-/* =========================================================
-   MOBILE
-========================================================= */
+/* =====================================================
+   RESPONSIVE
+===================================================== */
 
-@media(max-width:650px){
+@media(max-width:700px){
 
   .top{
-    min-height:78px;
-    padding:10px 14px;
-    gap:12px;
+    padding:12px 18px;
+    gap:13px;
   }
 
   .logo{
-    width:58px;
-    height:58px;
+    width:76px;
+    height:76px;
   }
 
   .brand{
-    font-size:25px;
+    font-size:30px;
   }
 
   .sub{
-    font-size:13px;
-    margin-top:4px;
+    font-size:16px;
   }
 
   .wrap{
-    padding:15px 10px 110px;
+    padding:20px 18px 110px;
   }
 
   .hero{
-    padding:22px 17px;
+    padding:28px;
+    border-radius:25px;
+  }
+
+  .hero h1{
+    font-size:34px;
+  }
+
+  .hero p{
+    font-size:20px;
+  }
+
+  .search{
+    height:62px;
+    font-size:19px;
+  }
+
+  .card{
+    grid-template-columns:175px 1fr;
+    border-radius:20px;
+  }
+
+  .body{
+    padding:14px;
+  }
+
+  .name{
+    font-size:18px;
+  }
+
+  .desc{
+    font-size:13px;
+  }
+
+  .price{
+    font-size:20px;
+  }
+
+  .btn{
+    font-size:13px;
+    padding:11px 10px;
+  }
+
+  .cart{
+    right:15px;
+    bottom:15px;
+    font-size:18px;
+    padding:16px 22px;
+  }
+
+}
+
+
+@media(max-width:480px){
+
+  .top{
+    padding:10px 16px;
+  }
+
+  .logo{
+    width:66px;
+    height:66px;
+  }
+
+  .brand{
+    font-size:27px;
+  }
+
+  .sub{
+    font-size:14px;
+  }
+
+  .wrap{
+    padding:16px 14px 100px;
+  }
+
+  .hero{
+    padding:22px;
     border-radius:23px;
-    margin-bottom:14px;
   }
 
   .hero h1{
@@ -639,131 +757,103 @@ header{
   }
 
   .hero p{
-    font-size:17px;
+    font-size:18px;
   }
 
   .search{
-    height:57px;
-    font-size:16px;
-    margin-top:18px;
-  }
-
-  .product-count{
-    font-size:13px;
+    font-size:17px;
+    height:58px;
   }
 
   .grid{
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
-    gap:9px;
+    gap:12px;
   }
 
   .card{
-    border-radius:15px;
+    grid-template-columns:145px 1fr;
+    border-radius:17px;
   }
 
   .body{
-    padding:10px;
+    padding:11px;
   }
 
   .cat{
-    font-size:10px;
+    font-size:11px;
   }
 
   .name{
-    font-size:14px;
-    min-height:34px;
+    font-size:16px;
   }
 
   .desc{
-    font-size:11px;
-    min-height:45px;
+    font-size:12px;
+    line-height:1.35;
   }
 
   .price{
     font-size:18px;
-    margin-top:10px;
   }
 
   .stock{
-    font-size:11px;
+    font-size:12px;
     margin-bottom:9px;
   }
 
   .btn{
-    height:40px;
-    border-radius:10px;
+    width:100%;
     font-size:12px;
-  }
-
-  .gallery-arrow{
-    width:32px;
-    height:32px;
-    font-size:20px;
-  }
-
-  .photo-counter{
-    font-size:10px;
-    padding:5px 8px;
-    bottom:7px;
-    left:7px;
-  }
-
-  .thumbnails{
-    gap:5px;
-    padding:6px;
+    padding:10px 6px;
   }
 
   .thumb{
-    flex-basis:43px;
-    width:43px;
-    height:43px;
-    border-radius:7px;
+    flex-basis:55px;
+    width:55px;
+    height:55px;
   }
 
-  .photo-info{
-    font-size:10px;
-    padding-bottom:6px;
-  }
-
-  .cart{
-    right:12px;
-    bottom:13px;
-    min-width:190px;
-    height:56px;
-    font-size:17px;
-  }
-
-  .sheet{
-    padding:18px;
-    border-radius:22px 22px 0 0;
+  .gallery-arrow{
+    width:34px;
+    height:34px;
+    font-size:21px;
   }
 
   .lightbox{
-    padding:5px;
+    padding:8px;
   }
 
   .lightbox-image{
-    max-width:97vw;
+    max-width:96vw;
     max-height:80vh;
   }
 
   .lightbox-arrow{
     width:42px;
     height:42px;
-    font-size:24px;
+    font-size:23px;
   }
 
 }
 
 
-/* =========================================================
-   UNA SOLA FOTO
-========================================================= */
+/* =====================================================
+   CELULAR MUY PEQUEÑO
+===================================================== */
 
-.gallery.single .thumbnails,
-.gallery.single .photo-info{
-  display:none;
+@media(max-width:370px){
+
+  .card{
+    grid-template-columns:125px 1fr;
+  }
+
+  .name{
+    font-size:14px;
+  }
+
+  .price{
+    font-size:17px;
+  }
+
 }
 
 </style>
@@ -773,9 +863,9 @@ header{
 <body>
 
 
-<!-- =========================================================
+<!-- =====================================================
      HEADER
-========================================================= -->
+===================================================== -->
 
 <header>
 
@@ -805,9 +895,9 @@ header{
 </header>
 
 
-<!-- =========================================================
+<!-- =====================================================
      CONTENIDO
-========================================================= -->
+===================================================== -->
 
 <main class="wrap">
 
@@ -825,7 +915,7 @@ header{
     <input
       id="search"
       class="search"
-      type="search"
+      type="text"
       placeholder="🔎 Buscar productos..."
       autocomplete="off"
     >
@@ -834,7 +924,7 @@ header{
       id="productCount"
       class="product-count"
     >
-      Cargando catálogo...
+      Cargando productos...
     </div>
 
   </section>
@@ -854,12 +944,11 @@ header{
 </main>
 
 
-<!-- =========================================================
+<!-- =====================================================
      CARRITO
-========================================================= -->
+===================================================== -->
 
 <button
-  id="cartButton"
   class="cart"
   onclick="openCart()"
 >
@@ -867,9 +956,9 @@ header{
 </button>
 
 
-<!-- =========================================================
+<!-- =====================================================
      PANEL CARRITO
-========================================================= -->
+===================================================== -->
 
 <div
   id="panel"
@@ -895,9 +984,9 @@ header{
     <div
       id="total"
       style="
-        font-size:21px;
+        font-size:20px;
         font-weight:800;
-        margin:18px 0;
+        margin:16px 0;
       "
     >
       Total: Bs 0.00
@@ -934,9 +1023,9 @@ header{
 </div>
 
 
-<!-- =========================================================
-     VISOR DE FOTOS
-========================================================= -->
+<!-- =====================================================
+     LIGHTBOX
+===================================================== -->
 
 <div
   id="lightbox"
@@ -956,7 +1045,7 @@ header{
     <button
       id="lightboxPrev"
       class="lightbox-arrow left"
-      onclick="changeLightboxImage(-1)"
+      onclick="event.stopPropagation();changeLightboxImage(-1)"
     >
       ‹
     </button>
@@ -965,13 +1054,13 @@ header{
       id="lightboxImage"
       class="lightbox-image"
       src=""
-      alt="Fotografía del producto"
+      alt="Imagen del producto"
     >
 
     <button
       id="lightboxNext"
       class="lightbox-arrow right"
-      onclick="changeLightboxImage(1)"
+      onclick="event.stopPropagation();changeLightboxImage(1)"
     >
       ›
     </button>
@@ -990,9 +1079,9 @@ header{
 
 <script>
 
-/* =========================================================
-   SUPABASE
-========================================================= */
+/* =====================================================
+   CONFIGURACIÓN SUPABASE
+===================================================== */
 
 const SUPABASE_URL =
   "https://ztsthkoejosgwkhmz.supabase.co";
@@ -1001,6 +1090,10 @@ const SUPABASE_KEY =
   "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
 
 
+/* =====================================================
+   CONEXIÓN
+===================================================== */
+
 const supabaseClient =
   window.supabase.createClient(
     SUPABASE_URL,
@@ -1008,9 +1101,9 @@ const supabaseClient =
   );
 
 
-/* =========================================================
+/* =====================================================
    VARIABLES
-========================================================= */
+===================================================== */
 
 let products = [];
 
@@ -1023,9 +1116,9 @@ let currentLightboxImages = [];
 let currentLightboxIndex = 0;
 
 
-/* =========================================================
+/* =====================================================
    ELEMENTOS
-========================================================= */
+===================================================== */
 
 const grid =
   document.getElementById("grid");
@@ -1070,9 +1163,9 @@ const lightboxNext =
   document.getElementById("lightboxNext");
 
 
-/* =========================================================
-   CONVERTIR CAMPO IMAGE A ARRAY
-========================================================= */
+/* =====================================================
+   CONVERTIR IMÁGENES A ARRAY
+===================================================== */
 
 function getImages(value){
 
@@ -1095,6 +1188,7 @@ function getImages(value){
     return [];
   }
 
+
   /* JSON */
 
   if(
@@ -1115,15 +1209,16 @@ function getImages(value){
 
       }
 
-    }catch(error){
+    }catch(e){
 
       console.log(
-        "El campo image no contiene JSON válido."
+        "JSON de imágenes inválido"
       );
 
     }
 
   }
+
 
   /* Saltos de línea */
 
@@ -1136,6 +1231,7 @@ function getImages(value){
 
   }
 
+
   /* Comas */
 
   if(text.includes(",")){
@@ -1147,14 +1243,15 @@ function getImages(value){
 
   }
 
+
   return [text];
 
 }
 
 
-/* =========================================================
+/* =====================================================
    ESCAPAR HTML
-========================================================= */
+===================================================== */
 
 function escapeHTML(value){
 
@@ -1168,9 +1265,9 @@ function escapeHTML(value){
 }
 
 
-/* =========================================================
+/* =====================================================
    CARGAR PRODUCTOS
-========================================================= */
+===================================================== */
 
 async function loadProducts(){
 
@@ -1181,28 +1278,19 @@ async function loadProducts(){
   `;
 
   productCount.textContent =
-    "Cargando catálogo...";
+    "Cargando productos...";
 
 
   try{
 
-    /*
-      IMPORTANTE:
-
-      No utilizamos .select("campos específicos")
-      para evitar errores si tu tabla tiene
-      columnas adicionales.
-
-      El cliente público solo verá productos
-      que tengan active = true.
-    */
-
     const result =
       await supabaseClient
         .from("products")
-        .select("*")
-        .eq("active", true)
-        .order("id", {
+        .select(
+          "id,name,category,description,price,image,stock,active"
+        )
+        .eq("active",true)
+        .order("id",{
           ascending:false
         });
 
@@ -1217,35 +1305,56 @@ async function loadProducts(){
     if(error){
 
       console.error(
-        "SUPABASE ERROR:",
+        "ERROR SUPABASE:",
         error
       );
 
 
-      grid.innerHTML = `
+      /*
+         Error específico de permisos
+      */
 
+      if(
+        error.code === "42501" ||
+        error.message?.toLowerCase().includes("permission") ||
+        error.message?.toLowerCase().includes("row-level security")
+      ){
+
+        showSupabasePermissionError(
+          error
+        );
+
+        return;
+
+      }
+
+
+      grid.innerHTML = `
         <div class="error">
 
-          <strong>
-            ❌ No se pudieron cargar los productos.
-          </strong>
+          <div style="font-size:42px">
+            ❌
+          </div>
 
-          La tabla <b>products</b> no permite
-          actualmente la lectura pública.
+          <strong>
+            No se pudo cargar el catálogo.
+          </strong>
 
           <br><br>
 
-          Debes habilitar una política
-          <b>SELECT</b> para usuarios públicos
-          en Supabase.
+          Verifica la conexión con Supabase.
+
+          <div class="error-code">
+            ${escapeHTML(
+              error.message || "Error desconocido"
+            )}
+          </div>
 
         </div>
-
       `;
 
-
       productCount.textContent =
-        "No se pudo cargar el catálogo.";
+        "Error al cargar productos.";
 
       return;
 
@@ -1261,13 +1370,10 @@ async function loadProducts(){
 
     products.forEach(product => {
 
-      const images =
-        getImages(product.image);
-
-
       galleryStates[product.id] = {
 
-        images:images,
+        images:
+          getImages(product.image),
 
         index:0
 
@@ -1281,38 +1387,88 @@ async function loadProducts(){
 
   }catch(error){
 
-    console.error(
-      "ERROR:",
-      error
-    );
+    console.error(error);
 
 
     grid.innerHTML = `
-
       <div class="error">
 
+        <div style="font-size:42px">
+          ❌
+        </div>
+
         <strong>
-          ❌ Error al cargar el catálogo.
+          Ocurrió un error al cargar
+          el catálogo.
         </strong>
 
-        Comprueba la conexión con Supabase.
+        <div class="error-code">
+          ${escapeHTML(
+            error.message || error
+          )}
+        </div>
 
       </div>
-
     `;
 
-
     productCount.textContent =
-      "Error al cargar catálogo.";
+      "Error al cargar productos.";
 
   }
 
 }
 
 
-/* =========================================================
-   GALERÍA HTML
-========================================================= */
+/* =====================================================
+   ERROR DE PERMISOS
+===================================================== */
+
+function showSupabasePermissionError(error){
+
+  productCount.textContent =
+    "No se pueden leer los productos.";
+
+  grid.innerHTML = `
+
+    <div class="error">
+
+      <div style="font-size:48px">
+        ❌
+      </div>
+
+      <strong style="font-size:22px">
+        No se pudieron cargar los productos.
+      </strong>
+
+      <br><br>
+
+      La tabla <strong>products</strong>
+      no permite actualmente la lectura pública.
+
+      <br><br>
+
+      Debes habilitar una política
+      <strong>SELECT</strong>
+      para usuarios públicos
+      en Supabase.
+
+      <div class="error-code">
+        Código:
+        ${escapeHTML(error.code || "42501")}
+        <br>
+        ${escapeHTML(error.message || "")}
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   GALERÍA
+===================================================== */
 
 function galleryHTML(product){
 
@@ -1321,7 +1477,7 @@ function galleryHTML(product){
 
 
   const fallback =
-    "https://via.placeholder.com/800x800?text=Aqui+tai";
+    "https://via.placeholder.com/600x600?text=Aqui+tai";
 
 
   if(!images.length){
@@ -1362,11 +1518,9 @@ function galleryHTML(product){
   }
 
 
-  const current =
+  const mainImage =
     images[state.index];
 
-
-  /* UNA FOTO */
 
   if(images.length === 1){
 
@@ -1379,14 +1533,18 @@ function galleryHTML(product){
           onclick="openLightbox(${Number(product.id)},0)"
         >
 
+          <div class="active-badge">
+            Activo
+          </div>
+
           <img
             id="main-image-${Number(product.id)}"
             class="main-image"
-            src="${escapeHTML(current)}"
+            src="${escapeHTML(mainImage)}"
             alt="${escapeHTML(product.name)}"
             loading="lazy"
             onerror="
-              this.src='https://via.placeholder.com/800x800?text=Sin+imagen'
+              this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
             "
           >
 
@@ -1398,8 +1556,6 @@ function galleryHTML(product){
 
   }
 
-
-  /* VARIAS FOTOS */
 
   return `
 
@@ -1413,17 +1569,20 @@ function galleryHTML(product){
         onclick="openLightbox(${Number(product.id)},${state.index})"
       >
 
+        <div class="active-badge">
+          Activo
+        </div>
+
         <img
           id="main-image-${Number(product.id)}"
           class="main-image"
-          src="${escapeHTML(current)}"
+          src="${escapeHTML(mainImage)}"
           alt="${escapeHTML(product.name)}"
           loading="lazy"
           onerror="
-            this.src='https://via.placeholder.com/800x800?text=Sin+imagen'
+            this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
           "
         >
-
 
         <button
           class="gallery-arrow left"
@@ -1435,7 +1594,6 @@ function galleryHTML(product){
           ‹
         </button>
 
-
         <button
           class="gallery-arrow right"
           onclick="
@@ -1445,7 +1603,6 @@ function galleryHTML(product){
         >
           ›
         </button>
-
 
         <div
           id="counter-${Number(product.id)}"
@@ -1465,10 +1622,17 @@ function galleryHTML(product){
         ${images.map((image,index) => `
 
           <button
-            class="thumb ${index === state.index ? "active" : ""}"
+            class="thumb ${
+              index === state.index
+                ? "active"
+                : ""
+            }"
             onclick="
               event.stopPropagation();
-              selectGalleryImage(${Number(product.id)},${index})
+              selectGalleryImage(
+                ${Number(product.id)},
+                ${index}
+              )
             "
           >
 
@@ -1489,8 +1653,10 @@ function galleryHTML(product){
 
 
       <div class="photo-info">
+
         📷 ${images.length}
         ${images.length === 1 ? "foto" : "fotos"}
+
       </div>
 
     </div>
@@ -1500,32 +1666,27 @@ function galleryHTML(product){
 }
 
 
-/* =========================================================
+/* =====================================================
    RENDER
-========================================================= */
+===================================================== */
 
 function render(list){
 
   productCount.textContent =
-    list.length === 1
-      ? "1 producto disponible."
-      : `${list.length} productos disponibles.`;
+    list.length +
+    (
+      list.length === 1
+      ? " producto disponible."
+      : " productos disponibles."
+    );
 
 
   if(!list.length){
 
     grid.innerHTML = `
-
       <div class="loading">
-
         🔎 No encontramos productos.
-
-        <br><br>
-
-        Prueba con otro nombre o categoría.
-
       </div>
-
     `;
 
     return;
@@ -1534,61 +1695,57 @@ function render(list){
 
 
   grid.innerHTML =
-    list.map(product => {
+    list.map(p => {
 
       const stock =
-        Number(product.stock || 0);
+        Number(p.stock || 0);
+
+
+      const disabled =
+        stock <= 0
+        ? "disabled"
+        : "";
 
 
       return `
 
         <article class="card">
 
-          ${galleryHTML(product)}
+          ${galleryHTML(p)}
 
           <div class="body">
 
             <div class="cat">
               ${escapeHTML(
-                product.category ||
+                p.category ||
                 "Sin categoría"
               )}
             </div>
 
-
             <div class="name">
               ${escapeHTML(
-                product.name ||
-                "Producto"
+                p.name
               )}
             </div>
-
 
             <div class="desc">
-
               ${escapeHTML(
-                product.description ||
-                ""
+                p.description || ""
               )}
-
             </div>
-
 
             <div class="price">
-
               Bs ${Number(
-                product.price || 0
+                p.price || 0
               ).toFixed(2)}
-
             </div>
-
 
             ${
               stock > 0
 
               ? `
                 <div class="stock">
-                  📦 Stock: ${stock}
+                  📦 Disponible: ${stock}
                 </div>
               `
 
@@ -1599,17 +1756,16 @@ function render(list){
               `
             }
 
-
             <button
               class="btn"
-              ${stock <= 0 ? "disabled" : ""}
-              onclick="add(${Number(product.id)})"
+              ${disabled}
+              onclick="add(${Number(p.id)})"
             >
 
               ${
                 stock > 0
-                  ? "🛒 Agregar al carrito"
-                  : "Agotado"
+                ? "Agregar al carrito"
+                : "Agotado"
               }
 
             </button>
@@ -1625,9 +1781,9 @@ function render(list){
 }
 
 
-/* =========================================================
-   CAMBIAR FOTO
-========================================================= */
+/* =====================================================
+   CAMBIAR GALERÍA
+===================================================== */
 
 function changeGallery(id,direction){
 
@@ -1672,9 +1828,9 @@ function changeGallery(id,direction){
 }
 
 
-/* =========================================================
+/* =====================================================
    SELECCIONAR FOTO
-========================================================= */
+===================================================== */
 
 function selectGalleryImage(id,index){
 
@@ -1706,9 +1862,9 @@ function selectGalleryImage(id,index){
 }
 
 
-/* =========================================================
+/* =====================================================
    ACTUALIZAR GALERÍA
-========================================================= */
+===================================================== */
 
 function updateGallery(id){
 
@@ -1719,10 +1875,6 @@ function updateGallery(id){
   if(!state){
     return;
   }
-
-
-  const image =
-    state.images[state.index];
 
 
   const mainImage =
@@ -1746,7 +1898,7 @@ function updateGallery(id){
   if(mainImage){
 
     mainImage.src =
-      image;
+      state.images[state.index];
 
   }
 
@@ -1776,9 +1928,9 @@ function updateGallery(id){
 }
 
 
-/* =========================================================
+/* =====================================================
    LIGHTBOX
-========================================================= */
+===================================================== */
 
 function openLightbox(id,index){
 
@@ -1824,7 +1976,9 @@ function updateLightbox(){
 
 
   lightboxCounter.textContent =
-    `${currentLightboxIndex + 1} / ${currentLightboxImages.length}`;
+    (currentLightboxIndex + 1) +
+    " / " +
+    currentLightboxImages.length;
 
 
   if(currentLightboxImages.length <= 1){
@@ -1850,8 +2004,12 @@ function updateLightbox(){
 
 function changeLightboxImage(direction){
 
-  if(currentLightboxImages.length <= 1){
+  if(
+    currentLightboxImages.length <= 1
+  ){
+
     return;
+
   }
 
 
@@ -1903,9 +2061,9 @@ function closeLightboxIfBackground(event){
 }
 
 
-/* =========================================================
+/* =====================================================
    TECLADO
-========================================================= */
+===================================================== */
 
 document.addEventListener(
   "keydown",
@@ -1914,7 +2072,9 @@ document.addEventListener(
     if(
       !lightbox.classList.contains("open")
     ){
+
       return;
+
     }
 
 
@@ -1942,14 +2102,11 @@ document.addEventListener(
 );
 
 
-/* =========================================================
+/* =====================================================
    SWIPE
-========================================================= */
+===================================================== */
 
 let touchStartX = 0;
-
-let touchEndX = 0;
-
 
 lightbox.addEventListener(
   "touchstart",
@@ -1969,16 +2126,17 @@ lightbox.addEventListener(
   "touchend",
   function(event){
 
-    touchEndX =
+    const touchEndX =
       event.changedTouches[0].screenX;
-
 
     const difference =
       touchStartX - touchEndX;
 
 
     if(Math.abs(difference) < 50){
+
       return;
+
     }
 
 
@@ -1999,9 +2157,9 @@ lightbox.addEventListener(
 );
 
 
-/* =========================================================
+/* =====================================================
    BÚSQUEDA
-========================================================= */
+===================================================== */
 
 search.addEventListener(
   "input",
@@ -2023,13 +2181,13 @@ search.addEventListener(
 
 
     const filtered =
-      products.filter(product => {
+      products.filter(p => {
 
         const text =
           [
-            product.name,
-            product.description,
-            product.category
+            p.name,
+            p.description,
+            p.category
           ]
           .filter(Boolean)
           .join(" ")
@@ -2047,9 +2205,9 @@ search.addEventListener(
 );
 
 
-/* =========================================================
-   CARRITO - AGREGAR
-========================================================= */
+/* =====================================================
+   AGREGAR
+===================================================== */
 
 function add(id){
 
@@ -2089,8 +2247,8 @@ function add(id){
 
   const existing =
     cart.find(
-      item =>
-        Number(item.id) ===
+      x =>
+        Number(x.id) ===
         Number(id)
     );
 
@@ -2100,7 +2258,7 @@ function add(id){
     if(existing.qty >= stock){
 
       alert(
-        "No hay más unidades disponibles."
+        "No puedes agregar más unidades de las disponibles."
       );
 
       return;
@@ -2130,9 +2288,9 @@ function add(id){
 }
 
 
-/* =========================================================
-   ACTUALIZAR CARRITO
-========================================================= */
+/* =====================================================
+   CARRITO
+===================================================== */
 
 function updateCart(){
 
@@ -2153,10 +2311,8 @@ function updateCart(){
     cartItems.innerHTML =
       "<p>Tu carrito está vacío.</p>";
 
-
     total.textContent =
       "Total: Bs 0.00";
-
 
     return;
 
@@ -2177,9 +2333,9 @@ function updateCart(){
 
           <div>
 
-            <strong>
+            <b>
               ${escapeHTML(item.name)}
-            </strong>
+            </b>
 
             <br>
 
@@ -2189,15 +2345,14 @@ function updateCart(){
 
             × ${item.qty}
 
-            <br><br>
+            <br>
 
-            <b>
+            <strong>
               Subtotal:
               Bs ${subtotal.toFixed(2)}
-            </b>
+            </strong>
 
           </div>
-
 
           <button
             onclick="removeItem(${index})"
@@ -2229,10 +2384,6 @@ function updateCart(){
 }
 
 
-/* =========================================================
-   ELIMINAR
-========================================================= */
-
 function removeItem(index){
 
   cart.splice(index,1);
@@ -2241,10 +2392,6 @@ function removeItem(index){
 
 }
 
-
-/* =========================================================
-   ABRIR / CERRAR CARRITO
-========================================================= */
 
 function openCart(){
 
@@ -2262,9 +2409,9 @@ function closeCart(){
 }
 
 
-/* =========================================================
+/* =====================================================
    WHATSAPP
-========================================================= */
+===================================================== */
 
 function sendWhatsApp(){
 
@@ -2338,9 +2485,13 @@ function sendWhatsApp(){
     addr;
 
 
+  const encodedMessage =
+    encodeURIComponent(message);
+
+
   const whatsappURL =
     "https://wa.me/59171440907?text=" +
-    encodeURIComponent(message);
+    encodedMessage;
 
 
   window.location.href =
@@ -2349,11 +2500,9 @@ function sendWhatsApp(){
 }
 
 
-/* =========================================================
+/* =====================================================
    INICIAR
-========================================================= */
-
-updateCart();
+===================================================== */
 
 loadProducts();
 
