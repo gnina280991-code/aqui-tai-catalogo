@@ -99,7 +99,7 @@ header{
 
 
 /* =====================================================
-   HERO
+   HERO & FILTROS
 ===================================================== */
 
 .hero{
@@ -134,6 +134,43 @@ header{
   border-color:#ff9d00;
 }
 
+/* CATEGORÍAS */
+
+.categories{
+  display:flex;
+  gap:8px;
+  margin-top:14px;
+  overflow-x:auto;
+  padding-bottom:4px;
+  scrollbar-width:none;
+}
+
+.categories::-webkit-scrollbar{
+  display:none;
+}
+
+.cat-chip{
+  background:#f0f0f0;
+  border:0;
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+  color:#444;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .2s ease;
+}
+
+.cat-chip:hover{
+  background:#e5e5e5;
+}
+
+.cat-chip.active{
+  background:#ff9d00;
+  color:#111;
+}
+
 .product-count{
   margin-top:16px;
   color:#666;
@@ -163,10 +200,15 @@ header{
   overflow:hidden;
   box-shadow:0 3px 15px #0000000c;
   min-width:0;
+  display:flex;
+  flex-direction:column;
 }
 
 .body{
   padding:14px;
+  display:flex;
+  flex-direction:column;
+  flex:1;
 }
 
 .cat{
@@ -184,13 +226,26 @@ header{
   font-size:13px;
   color:#666;
   line-height:1.4;
-  min-height:54px;
+  margin-bottom:10px;
+}
+
+.btn-toggle-desc{
+  background:none;
+  border:0;
+  color:#ff9d00;
+  font-weight:700;
+  padding:0;
+  margin-left:4px;
+  cursor:pointer;
+  font-size:12px;
+  text-decoration:underline;
 }
 
 .price{
   font-size:22px;
   font-weight:800;
-  margin:12px 0 5px;
+  margin:auto 0 5px;
+  padding-top:10px;
 }
 
 .stock{
@@ -214,9 +269,6 @@ header{
   background:#fafafa;
 }
 
-
-/* IMAGEN PRINCIPAL */
-
 .main-image-wrap{
   position:relative;
   width:100%;
@@ -237,9 +289,6 @@ header{
 .main-image-wrap:hover .main-image{
   transform:scale(1.02);
 }
-
-
-/* BOTONES DE GALERÍA */
 
 .gallery-arrow{
   position:absolute;
@@ -272,9 +321,6 @@ header{
   background:#fff;
 }
 
-
-/* CONTADOR SOBRE IMAGEN */
-
 .photo-counter{
   position:absolute;
   right:10px;
@@ -287,9 +333,6 @@ header{
   font-weight:700;
   z-index:3;
 }
-
-
-/* MINIATURAS */
 
 .thumbnails{
   display:flex;
@@ -331,9 +374,6 @@ header{
 .thumb.active{
   border-color:#ff9d00;
 }
-
-
-/* TEXTO DE FOTOS */
 
 .photo-info{
   text-align:center;
@@ -591,7 +631,6 @@ textarea{
 
   .desc{
     font-size:12px;
-    min-height:70px;
   }
 
   .price{
@@ -728,6 +767,12 @@ textarea{
       placeholder="🔎 Buscar productos..."
       autocomplete="off"
     >
+
+    <!-- FILTROS POR CATEGORÍA -->
+    <div
+      id="categoriesContainer"
+      class="categories"
+    ></div>
 
     <div
       id="productCount"
@@ -928,6 +973,8 @@ const supabaseClient =
 let products = [];
 let cart = [];
 let galleryStates = {};
+let expandedDescs = {};
+let selectedCategory = "Todas";
 let currentLightboxImages = [];
 let currentLightboxIndex = 0;
 
@@ -945,6 +992,7 @@ const panel = document.getElementById("panel");
 const customer = document.getElementById("customer");
 const address = document.getElementById("address");
 const productCount = document.getElementById("productCount");
+const categoriesContainer = document.getElementById("categoriesContainer");
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightboxImage");
 const lightboxCounter = document.getElementById("lightboxCounter");
@@ -1046,7 +1094,8 @@ async function loadProducts(){
       };
     });
 
-    render(products);
+    renderCategories();
+    filterProducts();
 
   } catch(error){
     console.error(error);
@@ -1057,6 +1106,54 @@ async function loadProducts(){
     `;
     productCount.textContent = "Error al cargar productos.";
   }
+}
+
+
+/* =====================================================
+   RENDER CATEGORÍAS
+===================================================== */
+
+function renderCategories(){
+  const cats = ["Todas", ...new Set(products.map(p => p.category?.trim()).filter(Boolean))];
+
+  categoriesContainer.innerHTML = cats.map(cat => `
+    <button
+      class="cat-chip ${cat === selectedCategory ? 'active' : ''}"
+      onclick="selectCategory('${escapeHTML(cat)}')"
+    >
+      ${escapeHTML(cat)}
+    </button>
+  `).join("");
+}
+
+function selectCategory(cat){
+  selectedCategory = cat;
+  renderCategories();
+  filterProducts();
+}
+
+
+/* =====================================================
+   FILTRAR PRODUCTOS
+===================================================== */
+
+function filterProducts(){
+  const q = search.value.trim().toLowerCase();
+
+  const filtered = products.filter(p => {
+    const matchesCat = (selectedCategory === "Todas" || p.category?.trim() === selectedCategory);
+    
+    const text = [p.name, p.description, p.category]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    const matchesSearch = !q || text.includes(q);
+
+    return matchesCat && matchesSearch;
+  });
+
+  render(filtered);
 }
 
 
@@ -1159,6 +1256,16 @@ function galleryHTML(product){
 
 
 /* =====================================================
+   TOGGLE DESCRIPCIÓN ("VER MÁS")
+===================================================== */
+
+function toggleDesc(id){
+  expandedDescs[id] = !expandedDescs[id];
+  filterProducts();
+}
+
+
+/* =====================================================
    RENDER PRODUCTOS
 ===================================================== */
 
@@ -1181,13 +1288,31 @@ function render(list){
       ? `<div class="stock">📦 Disponible: ${stock}</div>`
       : `<div class="stock out">❌ Agotado</div>`;
 
+    const fullDesc = p.description || "";
+    const isLong = fullDesc.length > 90;
+    const isExpanded = expandedDescs[p.id];
+    
+    let descHTML = escapeHTML(fullDesc);
+    if(isLong && !isExpanded){
+      descHTML = escapeHTML(fullDesc.substring(0, 90)) + "...";
+    }
+
     return `
       <article class="card">
         ${galleryHTML(p)}
         <div class="body">
           <div class="cat">${escapeHTML(p.category || "Sin categoría")}</div>
           <div class="name">${escapeHTML(p.name)}</div>
-          <div class="desc">${escapeHTML(p.description || "")}</div>
+          
+          <div class="desc">
+            ${descHTML}
+            ${isLong ? `
+              <button class="btn-toggle-desc" onclick="toggleDesc(${Number(p.id)})">
+                ${isExpanded ? "Ver menos" : "Ver más"}
+              </button>
+            ` : ""}
+          </div>
+
           <div class="price">Bs ${Number(p.price || 0).toFixed(2)}</div>
           ${stockHTML}
           <button class="btn" ${disabled} onclick="add(${Number(p.id)})">
@@ -1357,20 +1482,7 @@ lightbox.addEventListener("touchend", function(event){
    BÚSQUEDA
 ===================================================== */
 
-search.addEventListener("input", function(){
-  const q = search.value.trim().toLowerCase();
-  if(!q){
-    render(products);
-    return;
-  }
-
-  const filtered = products.filter(p => {
-    const text = [p.name, p.description, p.category].filter(Boolean).join(" ").toLowerCase();
-    return text.includes(q);
-  });
-
-  render(filtered);
-});
+search.addEventListener("input", filterProducts);
 
 
 /* =====================================================
