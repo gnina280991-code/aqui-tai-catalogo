@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -82,11 +83,6 @@ select{
   font:inherit;
 }
 
-input[type="file"]{
-  padding:10px;
-  background:#fafafa;
-}
-
 textarea{
   min-height:100px;
   resize:vertical;
@@ -125,11 +121,6 @@ label{
 .btn-gray{
   background:#eee;
   color:#111;
-}
-
-.btn:disabled{
-  opacity:.6;
-  cursor:not-allowed;
 }
 
 .top-actions{
@@ -236,72 +227,56 @@ label{
   color:#a00000;
 }
 
-.message.info{
-  display:block;
-  background:#e8f1ff;
-  color:#174d8a;
-}
-
 .hidden{
   display:none !important;
 }
 
-.preview{
-  width:180px;
-  height:180px;
-  object-fit:cover;
-  border-radius:14px;
-  display:none;
-  margin:10px 0;
-  background:#eee;
-  border:1px solid #ddd;
-}
-
-.current-image{
-  width:120px;
-  height:120px;
-  object-fit:cover;
-  border-radius:12px;
-  display:none;
-  margin:8px 0 12px;
-  background:#eee;
-}
+/* ===============================
+   IMÁGENES
+================================ */
 
 .upload-box{
   border:2px dashed #ddd;
   border-radius:14px;
-  padding:15px;
+  padding:18px;
+  text-align:center;
   background:#fafafa;
+  margin-top:6px;
 }
 
-.upload-help{
-  font-size:12px;
-  color:#777;
-  margin-top:3px;
-  line-height:1.4;
+.upload-box input[type=file]{
+  margin:0;
+  padding:10px;
+  border:0;
+  background:transparent;
 }
 
-.file-name{
+.preview{
+  width:150px;
+  height:150px;
+  object-fit:cover;
+  border-radius:14px;
+  display:none;
+  margin:12px auto;
+  border:1px solid #ddd;
+}
+
+.current-image{
   font-size:13px;
-  color:#555;
-  margin:8px 0;
-  word-break:break-word;
+  color:#666;
+  margin-top:8px;
+  word-break:break-all;
 }
 
-.loading{
-  background:#fff;
-  border-radius:18px;
-  padding:30px;
-  text-align:center;
-}
-
-.empty{
-  background:#fff;
-  border-radius:18px;
-  padding:30px;
-  text-align:center;
+.upload-status{
+  font-size:13px;
+  margin-top:8px;
   color:#666;
 }
+
+/* ===============================
+   MOBILE
+================================ */
 
 @media(max-width:650px){
 
@@ -324,13 +299,12 @@ label{
   }
 
   .products{
-    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-columns:1fr 1fr;
     gap:10px;
   }
 
   .product-card{
-    padding:10px;
-    border-radius:14px;
+    padding:12px;
   }
 
   .product-name{
@@ -345,8 +319,9 @@ label{
     font-size:17px;
   }
 
-  .actions{
-    flex-direction:column;
+  .btn{
+    padding:11px 10px;
+    font-size:13px;
   }
 
 }
@@ -356,11 +331,13 @@ label{
 
 <body>
 
+
 <header>
 
   <div class="header-inner">
 
     <div>
+
       <div class="logo-title">
         🛍️ Aquí tái
       </div>
@@ -368,6 +345,7 @@ label{
       <div class="logo-sub">
         Panel de administración
       </div>
+
     </div>
 
     <div id="userArea"></div>
@@ -397,6 +375,7 @@ label{
     class="message"
   ></div>
 
+
   <label>
     Correo electrónico
   </label>
@@ -407,6 +386,7 @@ label{
     placeholder="tu@email.com"
     autocomplete="email"
   >
+
 
   <label>
     Contraseña
@@ -419,8 +399,8 @@ label{
     autocomplete="current-password"
   >
 
+
   <button
-    id="loginButton"
     class="btn btn-primary"
     onclick="login()"
   >
@@ -442,12 +422,15 @@ label{
   <div class="admin-header">
 
     <div>
+
       <h1>📦 Productos</h1>
 
       <p>
         Agrega y administra los productos de tu catálogo.
       </p>
+
     </div>
+
 
     <div class="top-actions">
 
@@ -457,6 +440,7 @@ label{
       >
         ➕ Nuevo producto
       </button>
+
 
       <button
         class="btn btn-gray"
@@ -483,6 +467,7 @@ label{
       ➕ Nuevo producto
     </h2>
 
+
     <div
       id="formMessage"
       class="message"
@@ -498,6 +483,8 @@ label{
     <div class="form-grid">
 
 
+      <!-- NOMBRE -->
+
       <div class="full">
 
         <label>
@@ -507,11 +494,13 @@ label{
         <input
           id="productName"
           type="text"
-          placeholder="Ej. Producto nuevo"
+          placeholder="Ej. Auto de emergencia"
         >
 
       </div>
 
+
+      <!-- CATEGORIA -->
 
       <div>
 
@@ -522,11 +511,13 @@ label{
         <input
           id="productCategory"
           type="text"
-          placeholder="Ej. Juguetes"
+          placeholder="Ej. Autos"
         >
 
       </div>
 
+
+      <!-- PRECIO -->
 
       <div>
 
@@ -539,11 +530,13 @@ label{
           type="number"
           min="0"
           step="0.01"
-          placeholder="90.00"
+          placeholder="320"
         >
 
       </div>
 
+
+      <!-- STOCK -->
 
       <div>
 
@@ -561,6 +554,8 @@ label{
 
       </div>
 
+
+      <!-- ESTADO -->
 
       <div>
 
@@ -583,6 +578,8 @@ label{
       </div>
 
 
+      <!-- DESCRIPCIÓN -->
+
       <div class="full">
 
         <label>
@@ -598,7 +595,7 @@ label{
 
 
       <!-- =================================================
-           FOTO
+           SUBIR IMAGEN
       ================================================== -->
 
       <div class="full">
@@ -606,6 +603,7 @@ label{
         <label>
           📷 Foto del producto
         </label>
+
 
         <div class="upload-box">
 
@@ -616,18 +614,6 @@ label{
             onchange="handleImageSelect()"
           >
 
-          <div class="upload-help">
-            Selecciona una foto directamente desde tu celular.
-            <br>
-            Formatos recomendados: JPG, PNG o WEBP.
-            <br>
-            Tamaño máximo: 10 MB.
-          </div>
-
-          <div
-            id="fileName"
-            class="file-name"
-          ></div>
 
           <img
             id="imagePreview"
@@ -635,17 +621,32 @@ label{
             alt="Vista previa"
           >
 
+
+          <div
+            id="uploadStatus"
+            class="upload-status"
+          >
+            Selecciona una foto desde tu teléfono.
+          </div>
+
         </div>
 
 
-        <!-- URL guardada automáticamente -->
+        <!-- URL guardada internamente -->
 
         <input
           id="productImage"
           type="hidden"
         >
 
+
+        <div
+          id="currentImage"
+          class="current-image"
+        ></div>
+
       </div>
+
 
     </div>
 
@@ -659,6 +660,7 @@ label{
       >
         💾 Guardar producto
       </button>
+
 
       <button
         class="btn btn-gray"
@@ -698,6 +700,7 @@ label{
 const SUPABASE_URL =
   "https://ztsthkoejosgwkhmzfbd.supabase.co";
 
+
 const SUPABASE_KEY =
   "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
 
@@ -710,15 +713,11 @@ const supabaseClient =
 
 
 /* =====================================================
-   CONFIGURACIÓN DE IMÁGENES
+   CONFIGURACIÓN STORAGE
 ===================================================== */
 
 const STORAGE_BUCKET =
   "product-images";
-
-
-const MAX_IMAGE_SIZE =
-  10 * 1024 * 1024;
 
 
 /* =====================================================
@@ -726,6 +725,8 @@ const MAX_IMAGE_SIZE =
 ===================================================== */
 
 let currentUser = null;
+
+let selectedFile = null;
 
 
 /* =====================================================
@@ -735,14 +736,18 @@ let currentUser = null;
 const loginSection =
   document.getElementById("loginSection");
 
+
 const adminSection =
   document.getElementById("adminSection");
+
 
 const formBox =
   document.getElementById("formBox");
 
+
 const productsContainer =
   document.getElementById("productsContainer");
+
 
 const userArea =
   document.getElementById("userArea");
@@ -794,6 +799,7 @@ async function login(){
       .value
       .trim();
 
+
   const password =
     document
       .getElementById("loginPassword")
@@ -803,11 +809,6 @@ async function login(){
   const message =
     document
       .getElementById("loginMessage");
-
-
-  const button =
-    document
-      .getElementById("loginButton");
 
 
   if(!email || !password){
@@ -822,9 +823,6 @@ async function login(){
   }
 
 
-  button.disabled = true;
-
-
   showMessage(
     message,
     "Iniciando sesión...",
@@ -837,12 +835,11 @@ async function login(){
     error
   } =
     await supabaseClient.auth.signInWithPassword({
+
       email,
       password
+
     });
-
-
-  button.disabled = false;
 
 
   if(error){
@@ -861,6 +858,7 @@ async function login(){
   currentUser =
     data.user;
 
+
   showAdmin();
 
 }
@@ -876,17 +874,22 @@ function showAdmin(){
     "hidden"
   );
 
+
   adminSection.classList.remove(
     "hidden"
   );
 
 
   userArea.innerHTML = `
+
     <span style="font-size:13px">
+
       👤 ${escapeHTML(
         currentUser?.email || ""
       )}
+
     </span>
+
   `;
 
 
@@ -903,15 +906,19 @@ async function logout(){
 
   await supabaseClient.auth.signOut();
 
+
   currentUser = null;
+
 
   adminSection.classList.add(
     "hidden"
   );
 
+
   loginSection.classList.remove(
     "hidden"
   );
+
 
   userArea.innerHTML = "";
 
@@ -925,9 +932,13 @@ async function logout(){
 async function loadProducts(){
 
   productsContainer.innerHTML = `
+
     <div class="admin-box">
+
       ⏳ Cargando productos...
+
     </div>
+
   `;
 
 
@@ -948,10 +959,15 @@ async function loadProducts(){
   if(error){
 
     productsContainer.innerHTML = `
+
       <div class="message error">
+
         ❌ Error al cargar productos:
+
         ${escapeHTML(error.message)}
+
       </div>
+
     `;
 
     return;
@@ -961,13 +977,19 @@ async function loadProducts(){
   if(!data || !data.length){
 
     productsContainer.innerHTML = `
+
       <div class="admin-box">
-        <h3>No hay productos todavía.</h3>
+
+        <h3>
+          No hay productos todavía.
+        </h3>
 
         <p>
           Pulsa "Nuevo producto" para agregar el primero.
         </p>
+
       </div>
+
     `;
 
     return;
@@ -990,7 +1012,7 @@ async function loadProducts(){
 
 
 /* =====================================================
-   TARJETA DEL PRODUCTO
+   TARJETA PRODUCTO
 ===================================================== */
 
 function productCard(p){
@@ -1002,15 +1024,25 @@ function productCard(p){
 
   const status =
     p.active
+
     ? `
+
       <span class="status active">
+
         🟢 Activo
+
       </span>
+
     `
+
     : `
+
       <span class="status inactive">
+
         ⚪ Oculto
+
       </span>
+
     `;
 
 
@@ -1018,25 +1050,38 @@ function productCard(p){
 
     <article class="product-card">
 
+
       <img
+
         class="product-image"
+
         src="${escapeHTML(image)}"
-        alt="${escapeHTML(p.name)}"
+
+        alt="${escapeHTML(
+          p.name || "Producto"
+        )}"
+
         onerror="
           this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
         "
+
       >
 
 
       <div class="product-name">
-        ${escapeHTML(p.name)}
+
+        ${escapeHTML(
+          p.name
+        )}
+
       </div>
 
 
       <div class="product-info">
 
         ${escapeHTML(
-          p.category || "Sin categoría"
+          p.category ||
+          "Sin categoría"
         )}
 
       </div>
@@ -1054,36 +1099,60 @@ function productCard(p){
       <div class="product-info">
 
         📦 Stock:
+
         <strong>
-          ${Number(p.stock || 0)}
+
+          ${Number(
+            p.stock || 0
+          )}
+
         </strong>
 
       </div>
 
 
       <div style="margin-top:8px">
+
         ${status}
+
       </div>
 
 
       <div class="actions">
 
+
         <button
+
           class="btn btn-orange"
-          onclick="editProduct(${Number(p.id)})"
+
+          onclick="editProduct(
+            ${Number(p.id)}
+          )"
+
         >
+
           ✏️ Editar
+
         </button>
 
 
         <button
+
           class="btn btn-danger"
-          onclick="deleteProduct(${Number(p.id)})"
+
+          onclick="deleteProduct(
+            ${Number(p.id)}
+          )"
+
         >
+
           🗑️
+
         </button>
+
 
       </div>
+
 
     </article>
 
@@ -1100,6 +1169,7 @@ function newProduct(){
 
   clearForm();
 
+
   document
     .getElementById("formTitle")
     .textContent =
@@ -1112,9 +1182,239 @@ function newProduct(){
 
 
   window.scrollTo({
+
     top:0,
+
     behavior:"smooth"
+
   });
+
+}
+
+
+/* =====================================================
+   SELECCIONAR IMAGEN
+===================================================== */
+
+function handleImageSelect(){
+
+  const fileInput =
+    document.getElementById(
+      "productFile"
+    );
+
+
+  const preview =
+    document.getElementById(
+      "imagePreview"
+    );
+
+
+  const status =
+    document.getElementById(
+      "uploadStatus"
+    );
+
+
+  const file =
+    fileInput.files[0];
+
+
+  if(!file){
+
+    selectedFile = null;
+
+    preview.style.display =
+      "none";
+
+    status.textContent =
+      "Selecciona una foto desde tu teléfono.";
+
+    return;
+  }
+
+
+  /* Verificar que sea imagen */
+
+  if(!file.type.startsWith("image/")){
+
+    selectedFile = null;
+
+    fileInput.value = "";
+
+    preview.style.display =
+      "none";
+
+    status.textContent =
+      "❌ El archivo debe ser una imagen.";
+
+    return;
+  }
+
+
+  /* Límite de 5 MB */
+
+  if(file.size > 5 * 1024 * 1024){
+
+    selectedFile = null;
+
+    fileInput.value = "";
+
+    preview.style.display =
+      "none";
+
+    status.textContent =
+      "❌ La imagen no puede superar 5 MB.";
+
+    return;
+  }
+
+
+  selectedFile = file;
+
+
+  /* Vista previa */
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload =
+    function(event){
+
+      preview.src =
+        event.target.result;
+
+      preview.style.display =
+        "block";
+
+    };
+
+
+  reader.readAsDataURL(file);
+
+
+  status.textContent =
+    "📷 " +
+    file.name +
+    " seleccionada correctamente.";
+
+}
+
+
+/* =====================================================
+   SUBIR IMAGEN A SUPABASE
+===================================================== */
+
+async function uploadImage(){
+
+  if(!selectedFile){
+
+    return null;
+  }
+
+
+  const status =
+    document.getElementById(
+      "uploadStatus"
+    );
+
+
+  status.textContent =
+    "⏳ Subiendo imagen...";
+
+
+  /*
+    Crear nombre único.
+
+    Ejemplo:
+
+    1723456789-auto-emergencia.jpg
+  */
+
+  const extension =
+    selectedFile.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+
+  const fileName =
+    Date.now() +
+    "-" +
+    Math.random()
+      .toString(36)
+      .substring(2,10) +
+    "." +
+    extension;
+
+
+  /*
+    Guardamos directamente
+    en el bucket product-images.
+  */
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .storage
+      .from(STORAGE_BUCKET)
+      .upload(
+        fileName,
+        selectedFile,
+        {
+          cacheControl:"3600",
+          upsert:false,
+          contentType:selectedFile.type
+        }
+      );
+
+
+  if(error){
+
+    console.error(
+      "Error subiendo imagen:",
+      error
+    );
+
+    throw new Error(
+      "No se pudo subir la imagen: " +
+      error.message
+    );
+
+  }
+
+
+  /*
+    Obtener URL pública.
+  */
+
+  const {
+    data
+  } =
+    supabaseClient
+      .storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(
+        fileName
+      );
+
+
+  if(!data || !data.publicUrl){
+
+    throw new Error(
+      "No se pudo obtener la URL pública de la imagen."
+    );
+
+  }
+
+
+  status.textContent =
+    "✅ Imagen subida correctamente.";
+
+
+  return data.publicUrl;
 
 }
 
@@ -1148,45 +1448,64 @@ async function editProduct(id){
 
   document
     .getElementById("productId")
-    .value = data.id;
+    .value =
+      data.id;
 
 
   document
     .getElementById("productName")
-    .value = data.name || "";
+    .value =
+      data.name || "";
 
 
   document
     .getElementById("productCategory")
-    .value = data.category || "";
+    .value =
+      data.category || "";
 
 
   document
     .getElementById("productDescription")
-    .value = data.description || "";
+    .value =
+      data.description || "";
 
 
   document
     .getElementById("productPrice")
-    .value = data.price ?? "";
-
-
-  document
-    .getElementById("productImage")
-    .value = data.image || "";
+    .value =
+      data.price ?? "";
 
 
   document
     .getElementById("productStock")
-    .value = data.stock ?? 0;
+    .value =
+      data.stock ?? 0;
 
 
   document
     .getElementById("productActive")
     .value =
       data.active
-      ? "true"
-      : "false";
+        ? "true"
+        : "false";
+
+
+  /*
+    Guardar URL actual.
+  */
+
+  document
+    .getElementById("productImage")
+    .value =
+      data.image || "";
+
+
+  /*
+    Limpiar selección
+    de archivo nuevo.
+  */
+
+  selectedFile = null;
 
 
   document
@@ -1194,15 +1513,19 @@ async function editProduct(id){
     .value = "";
 
 
-  document
-    .getElementById("fileName")
-    .textContent =
-      "";
-
+  /*
+    Mostrar imagen actual.
+  */
 
   const preview =
     document.getElementById(
       "imagePreview"
+    );
+
+
+  const currentImage =
+    document.getElementById(
+      "currentImage"
     );
 
 
@@ -1214,12 +1537,28 @@ async function editProduct(id){
     preview.style.display =
       "block";
 
+
+    currentImage.innerHTML = `
+
+      📌 Imagen actual guardada.
+
+    `;
+
   }else{
 
     preview.style.display =
       "none";
 
+    currentImage.textContent =
+      "Este producto todavía no tiene imagen.";
+
   }
+
+
+  document
+    .getElementById("uploadStatus")
+    .textContent =
+      "Puedes mantener la imagen actual o seleccionar una nueva.";
 
 
   document
@@ -1234,250 +1573,12 @@ async function editProduct(id){
 
 
   window.scrollTo({
+
     top:0,
+
     behavior:"smooth"
+
   });
-
-}
-
-
-/* =====================================================
-   SELECCIONAR IMAGEN
-===================================================== */
-
-function handleImageSelect(){
-
-  const fileInput =
-    document.getElementById(
-      "productFile"
-    );
-
-
-  const file =
-    fileInput.files[0];
-
-
-  const preview =
-    document.getElementById(
-      "imagePreview"
-    );
-
-
-  const fileName =
-    document.getElementById(
-      "fileName"
-    );
-
-
-  if(!file){
-
-    fileName.textContent =
-      "";
-
-    return;
-  }
-
-
-  if(!file.type.startsWith("image/")){
-
-    alert(
-      "El archivo seleccionado no es una imagen."
-    );
-
-    fileInput.value = "";
-
-    preview.style.display =
-      "none";
-
-    fileName.textContent =
-      "";
-
-    return;
-  }
-
-
-  if(file.size > MAX_IMAGE_SIZE){
-
-    alert(
-      "La imagen es demasiado grande. " +
-      "El máximo permitido es 10 MB."
-    );
-
-    fileInput.value = "";
-
-    preview.style.display =
-      "none";
-
-    fileName.textContent =
-      "";
-
-    return;
-  }
-
-
-  fileName.textContent =
-    "📷 " + file.name;
-
-
-  const objectURL =
-    URL.createObjectURL(file);
-
-
-  preview.src =
-    objectURL;
-
-  preview.style.display =
-    "block";
-
-}
-
-
-/* =====================================================
-   SUBIR IMAGEN A SUPABASE STORAGE
-===================================================== */
-
-async function uploadImage(file){
-
-  if(!file){
-
-    return null;
-
-  }
-
-
-  if(!file.type.startsWith("image/")){
-
-    throw new Error(
-      "El archivo seleccionado no es una imagen."
-    );
-
-  }
-
-
-  if(file.size > MAX_IMAGE_SIZE){
-
-    throw new Error(
-      "La imagen supera el límite de 10 MB."
-    );
-
-  }
-
-
-  const extension =
-    getFileExtension(
-      file.name,
-      file.type
-    );
-
-
-  const randomPart =
-    Math.random()
-      .toString(36)
-      .substring(2,10);
-
-
-  const fileName =
-    Date.now() +
-    "_" +
-    randomPart +
-    extension;
-
-
-  const filePath =
-    fileName;
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .storage
-      .from(STORAGE_BUCKET)
-      .upload(
-        filePath,
-        file,
-        {
-          cacheControl:"3600",
-          upsert:false,
-          contentType:file.type
-        }
-      );
-
-
-  if(error){
-
-    throw new Error(
-      "No se pudo subir la imagen: " +
-      error.message
-    );
-
-  }
-
-
-  const {
-    data
-  } =
-    supabaseClient
-      .storage
-      .from(STORAGE_BUCKET)
-      .getPublicUrl(filePath);
-
-
-  if(!data || !data.publicUrl){
-
-    throw new Error(
-      "La imagen se subió, pero no se pudo obtener su URL."
-    );
-
-  }
-
-
-  return data.publicUrl;
-
-}
-
-
-/* =====================================================
-   OBTENER EXTENSIÓN
-===================================================== */
-
-function getFileExtension(
-  fileName,
-  mimeType
-){
-
-  const original =
-    String(fileName || "")
-      .toLowerCase();
-
-
-  const dot =
-    original.lastIndexOf(".");
-
-
-  if(dot !== -1){
-
-    return original.substring(dot);
-
-  }
-
-
-  if(mimeType === "image/png"){
-    return ".png";
-  }
-
-
-  if(mimeType === "image/webp"){
-    return ".webp";
-  }
-
-
-  if(mimeType === "image/gif"){
-    return ".gif";
-  }
-
-
-  return ".jpg";
 
 }
 
@@ -1523,13 +1624,6 @@ async function saveProduct(){
     );
 
 
-  const currentImage =
-    document
-      .getElementById("productImage")
-      .value
-      .trim();
-
-
   const stock =
     Number(
       document
@@ -1544,16 +1638,6 @@ async function saveProduct(){
       .value === "true";
 
 
-  const fileInput =
-    document.getElementById(
-      "productFile"
-    );
-
-
-  const file =
-    fileInput.files[0] || null;
-
-
   const message =
     document
       .getElementById("formMessage");
@@ -1564,133 +1648,153 @@ async function saveProduct(){
       .getElementById("saveButton");
 
 
-  /* -----------------------------------------
-     VALIDACIONES
-  ----------------------------------------- */
-
   if(!name){
 
     showMessage(
+
       message,
+
       "Escribe el nombre del producto.",
+
       "error"
+
     );
 
     return;
   }
 
 
-  if(price < 0 || Number.isNaN(price)){
+  if(
+    price < 0 ||
+    Number.isNaN(price)
+  ){
 
     showMessage(
+
       message,
+
       "El precio no es válido.",
+
       "error"
+
     );
 
     return;
   }
 
 
-  if(stock < 0 || Number.isNaN(stock)){
+  if(
+    stock < 0 ||
+    Number.isNaN(stock)
+  ){
 
     showMessage(
+
       message,
+
       "El stock no es válido.",
+
       "error"
+
     );
 
     return;
   }
 
 
-  if(file){
-
-    if(!file.type.startsWith("image/")){
-
-      showMessage(
-        message,
-        "El archivo seleccionado no es una imagen.",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if(file.size > MAX_IMAGE_SIZE){
-
-      showMessage(
-        message,
-        "La imagen supera el límite de 10 MB.",
-        "error"
-      );
-
-      return;
-    }
-
-  }
-
+  /*
+    Desactivar botón
+    para evitar doble guardado.
+  */
 
   saveButton.disabled =
     true;
 
 
+  saveButton.textContent =
+    "⏳ Guardando...";
+
+
   try{
 
-    let imageURL =
-      currentImage;
+
+    /*
+      URL de imagen actual.
+    */
+
+    let image =
+      document
+        .getElementById(
+          "productImage"
+        )
+        .value
+        .trim();
 
 
-    /* ---------------------------------------
-       SUBIR NUEVA IMAGEN SI SE SELECCIONÓ
-    --------------------------------------- */
+    /*
+      Si seleccionó una foto nueva,
+      primero la subimos.
+    */
 
-    if(file){
+    if(selectedFile){
 
       showMessage(
+
         message,
+
         "📷 Subiendo imagen...",
-        "info"
+
+        "ok"
+
       );
 
 
-      imageURL =
-        await uploadImage(file);
+      image =
+        await uploadImage();
 
     }
 
 
-    /* ---------------------------------------
-       DATOS DEL PRODUCTO
-    --------------------------------------- */
+    /*
+      Crear producto.
+    */
 
     const product = {
 
       name,
+
       category,
+
       description,
+
       price,
-      image:imageURL || "",
+
+      image,
+
       stock,
+
       active
 
     };
 
 
     showMessage(
+
       message,
+
       "💾 Guardando producto...",
-      "info"
+
+      "ok"
+
     );
 
 
     let result;
 
 
-    /* ---------------------------------------
-       EDITAR
-    --------------------------------------- */
+    /*
+      EDITAR
+    */
 
     if(id){
 
@@ -1698,21 +1802,25 @@ async function saveProduct(){
         await supabaseClient
           .from("products")
           .update(product)
-          .eq("id",Number(id));
+          .eq(
+            "id",
+            Number(id)
+          );
 
     }
 
-
-    /* ---------------------------------------
-       CREAR
-    --------------------------------------- */
+    /*
+      NUEVO
+    */
 
     else{
 
       result =
         await supabaseClient
           .from("products")
-          .insert(product);
+          .insert(
+            product
+          );
 
     }
 
@@ -1727,11 +1835,20 @@ async function saveProduct(){
 
 
     showMessage(
+
       message,
+
       "✅ Producto guardado correctamente.",
+
       "ok"
+
     );
 
+
+    /*
+      Limpiar después
+      de guardar.
+    */
 
     setTimeout(() => {
 
@@ -1743,7 +1860,7 @@ async function saveProduct(){
 
       loadProducts();
 
-    },900);
+    },800);
 
 
   }catch(error){
@@ -1752,9 +1869,14 @@ async function saveProduct(){
 
 
     showMessage(
+
       message,
-      "❌ " + error.message,
+
+      "❌ Error: " +
+      error.message,
+
       "error"
+
     );
 
 
@@ -1762,6 +1884,9 @@ async function saveProduct(){
 
     saveButton.disabled =
       false;
+
+    saveButton.textContent =
+      "💾 Guardar producto";
 
   }
 
@@ -1792,7 +1917,10 @@ async function deleteProduct(id){
     await supabaseClient
       .from("products")
       .delete()
-      .eq("id",id);
+      .eq(
+        "id",
+        id
+      );
 
 
   if(error){
@@ -1848,11 +1976,6 @@ function clearForm(){
 
 
   document
-    .getElementById("productImage")
-    .value = "";
-
-
-  document
     .getElementById("productStock")
     .value = "0";
 
@@ -1863,13 +1986,13 @@ function clearForm(){
 
 
   document
-    .getElementById("productFile")
+    .getElementById("productImage")
     .value = "";
 
 
   document
-    .getElementById("fileName")
-    .textContent = "";
+    .getElementById("productFile")
+    .value = "";
 
 
   document
@@ -1883,6 +2006,22 @@ function clearForm(){
     .style.display =
       "none";
 
+
+  document
+    .getElementById("currentImage")
+    .textContent =
+      "";
+
+
+  document
+    .getElementById("uploadStatus")
+    .textContent =
+      "Selecciona una foto desde tu teléfono.";
+
+
+  selectedFile =
+    null;
+
 }
 
 
@@ -1893,6 +2032,7 @@ function clearForm(){
 function cancelForm(){
 
   clearForm();
+
 
   formBox.classList.add(
     "hidden"
@@ -1920,6 +2060,7 @@ async function checkSession(){
     currentUser =
       data.session.user;
 
+
     showAdmin();
 
   }
@@ -1936,4 +2077,4 @@ checkSession();
 </script>
 
 </body>
-  </html>
+</html>
