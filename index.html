@@ -7,6 +7,9 @@
 <title>Aquí tái | Catálogo</title>
 <meta name="description" content="Catálogo de productos Aquí tái · Bolivia">
 
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{
   box-sizing:border-box;
@@ -80,7 +83,7 @@ header{
 
 .search{
   width:100%;
-  padding:15px 16px;
+  padding:14px 16px;
   border:1px solid #ddd;
   border-radius:14px;
   font-size:16px;
@@ -93,9 +96,9 @@ header{
 }
 
 .status{
-  margin-top:12px;
-  font-size:13px;
-  color:#777;
+  margin-top:14px;
+  color:#666;
+  font-size:14px;
 }
 
 .grid{
@@ -116,7 +119,6 @@ header{
   aspect-ratio:1/1;
   object-fit:cover;
   background:#fafafa;
-  display:block;
 }
 
 .body{
@@ -144,7 +146,13 @@ header{
 .price{
   font-size:22px;
   font-weight:800;
-  margin:12px 0;
+  margin:12px 0 4px;
+}
+
+.stock{
+  font-size:12px;
+  color:#666;
+  margin-bottom:10px;
 }
 
 .btn{
@@ -159,8 +167,9 @@ header{
   cursor:pointer;
 }
 
-.btn:active{
-  transform:scale(.98);
+.btn:disabled{
+  background:#aaa;
+  cursor:not-allowed;
 }
 
 .cart{
@@ -204,9 +213,40 @@ header{
 .row{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   gap:10px;
   padding:12px 0;
   border-bottom:1px solid #eee;
+}
+
+.row-controls{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.qty{
+  min-width:25px;
+  text-align:center;
+  font-weight:700;
+}
+
+.small-btn{
+  border:0;
+  background:#eee;
+  border-radius:8px;
+  width:32px;
+  height:32px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.delete{
+  border:0;
+  background:#f3f3f3;
+  border-radius:8px;
+  padding:8px;
+  cursor:pointer;
 }
 
 .close{
@@ -217,7 +257,6 @@ header{
   width:36px;
   height:36px;
   cursor:pointer;
-  font-size:18px;
 }
 
 textarea,
@@ -230,25 +269,25 @@ input[type=text]{
   font:inherit;
 }
 
-textarea{
-  min-height:90px;
-  resize:vertical;
+label{
+  display:block;
+  font-weight:600;
+  margin-top:10px;
 }
 
 .empty{
   background:#fff;
-  border-radius:18px;
+  border-radius:16px;
   padding:30px;
   text-align:center;
-  color:#777;
+  color:#666;
 }
 
 .loading{
   background:#fff;
-  border-radius:18px;
+  border-radius:16px;
   padding:30px;
   text-align:center;
-  color:#777;
 }
 
 @media(max-width:480px){
@@ -283,13 +322,13 @@ textarea{
     font-size:24px;
   }
 
-  .logo{
-    height:55px;
-    width:55px;
-  }
-
   .brand{
     font-size:22px;
+  }
+
+  .logo{
+    width:55px;
+    height:55px;
   }
 }
 </style>
@@ -315,7 +354,6 @@ textarea{
   </div>
 </header>
 
-
 <main class="wrap">
 
   <section class="hero">
@@ -331,7 +369,6 @@ textarea{
       class="search"
       type="text"
       placeholder="🔎 Buscar productos..."
-      autocomplete="off"
     >
 
     <div id="status" class="status">
@@ -340,22 +377,16 @@ textarea{
 
   </section>
 
-
-  <section id="grid" class="grid">
-
-    <div class="loading">
-      Cargando catálogo...
-    </div>
-
-  </section>
+  <section id="grid" class="grid"></section>
 
 </main>
-
 
 <button class="cart" onclick="openCart()">
   🛒 Carrito (<span id="count">0</span>)
 </button>
 
+
+<!-- CARRITO -->
 
 <div
   id="panel"
@@ -379,9 +410,12 @@ textarea{
     <div
       id="total"
       style="font-size:20px;font-weight:800;margin:16px 0"
-    ></div>
+    >
+    </div>
 
-    <label>Tu nombre</label>
+    <label for="customer">
+      Tu nombre
+    </label>
 
     <input
       id="customer"
@@ -389,7 +423,9 @@ textarea{
       placeholder="Ej. Juan Pérez"
     >
 
-    <label>Dirección o zona de entrega</label>
+    <label for="address">
+      Dirección o zona de entrega
+    </label>
 
     <textarea
       id="address"
@@ -410,9 +446,9 @@ textarea{
 
 <script>
 
-/* ==========================================
+/* =====================================================
    CONFIGURACIÓN SUPABASE
-   ========================================== */
+===================================================== */
 
 const SUPABASE_URL =
   "https://ztsthkoejosgwkhmzfbd.supabase.co";
@@ -421,17 +457,30 @@ const SUPABASE_KEY =
   "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
 
 
-/* ==========================================
+/*
+   IMPORTANTE:
+   Si la clave de arriba da error, usa exactamente
+   la Publishable Key que aparece en Supabase.
+*/
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =====================================================
    VARIABLES
-   ========================================== */
+===================================================== */
 
 let products = [];
 let cart = [];
 
 
-/* ==========================================
+/* =====================================================
    ELEMENTOS
-   ========================================== */
+===================================================== */
 
 const grid =
   document.getElementById("grid");
@@ -451,180 +500,47 @@ const total =
 const panel =
   document.getElementById("panel");
 
+const status =
+  document.getElementById("status");
+
 const customer =
   document.getElementById("customer");
 
 const address =
   document.getElementById("address");
 
-const status =
-  document.getElementById("status");
 
-
-/* ==========================================
+/* =====================================================
    CARGAR PRODUCTOS DESDE SUPABASE
-   ========================================== */
+===================================================== */
 
 async function loadProducts(){
 
   status.textContent =
-    "Conectando con el catálogo...";
+    "Cargando productos...";
 
-  try{
-
-    const response = await fetch(
-      SUPABASE_URL +
-      "/rest/v1/products?select=*&active=eq.true&order=id.asc",
-      {
-        method:"GET",
-
-        headers:{
-          "apikey":SUPABASE_KEY,
-          "Authorization":
-            "Bearer " + SUPABASE_KEY,
-          "Content-Type":
-            "application/json"
-        }
-      }
-    );
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("products")
+    .select("*")
+    .eq("active", true)
+    .order("id", { ascending:true });
 
 
-    if(!response.ok){
-
-      throw new Error(
-        "Supabase respondió con error " +
-        response.status
-      );
-
-    }
-
-
-    const data =
-      await response.json();
-
-
-    products =
-      Array.isArray(data)
-        ? data
-        : [];
-
-
-    if(products.length > 0){
-
-      render(products);
-
-      status.textContent =
-        products.length +
-        " producto(s) disponible(s).";
-
-    }else{
-
-      grid.innerHTML = `
-        <div class="empty">
-          <h3>🛍️ Catálogo vacío</h3>
-          <p>
-            Todavía no hay productos disponibles.
-          </p>
-        </div>
-      `;
-
-      status.textContent =
-        "No hay productos activos.";
-
-    }
-
-
-  }catch(error){
-
-    console.error(
-      "Error cargando Supabase:",
-      error
-    );
-
-
-    status.textContent =
-      "No se pudo conectar con Supabase. Intentando cargar respaldo...";
-
-
-    loadBackup();
-
-  }
-
-}
-
-
-/* ==========================================
-   RESPALDO: products.json
-   ========================================== */
-
-async function loadBackup(){
-
-  try{
-
-    const response =
-      await fetch("products.json");
-
-
-    if(!response.ok){
-
-      throw new Error(
-        "No existe products.json"
-      );
-
-    }
-
-
-    const data =
-      await response.json();
-
-
-    products =
-      Array.isArray(data)
-        ? data
-        : [];
-
-
-    render(products);
-
-
-    status.textContent =
-      "Catálogo cargado desde respaldo.";
-
-  }catch(error){
+  if(error){
 
     console.error(error);
 
-    grid.innerHTML = `
-      <div class="empty">
-
-        <h3>⚠️ No se pudo cargar el catálogo</h3>
-
-        <p>
-          Revisa la conexión con Supabase.
-        </p>
-
-      </div>
-    `;
-
     status.textContent =
-      "Error cargando productos.";
-
-  }
-
-}
-
-
-/* ==========================================
-   MOSTRAR PRODUCTOS
-   ========================================== */
-
-function render(list){
-
-  if(!list.length){
+      "No se pudieron cargar los productos.";
 
     grid.innerHTML = `
       <div class="empty">
-        No se encontraron productos.
+        ❌ Error al cargar los productos.
+        <br><br>
+        Revisa la conexión con Supabase.
       </div>
     `;
 
@@ -632,79 +548,106 @@ function render(list){
   }
 
 
-  grid.innerHTML =
-    list.map(p => {
+  products = data || [];
 
-      const image =
-        p.image ||
-        "logo.png";
+  status.textContent =
+    products.length +
+    " producto(s) disponible(s).";
 
-      const category =
-        p.category ||
-        "Productos";
-
-      const name =
-        p.name ||
-        "Producto";
-
-      const description =
-        p.description ||
-        "";
-
-      const price =
-        Number(p.price || 0);
-
-
-      return `
-
-        <article class="card">
-
-          <img
-            class="pic"
-            src="${escapeHTML(image)}"
-            alt="${escapeHTML(name)}"
-            onerror="this.src='logo.png'"
-          >
-
-          <div class="body">
-
-            <div class="cat">
-              ${escapeHTML(category)}
-            </div>
-
-            <div class="name">
-              ${escapeHTML(name)}
-            </div>
-
-            <div class="desc">
-              ${escapeHTML(description)}
-            </div>
-
-            <div class="price">
-              Bs ${price.toFixed(2)}
-            </div>
-
-            <button
-              class="btn"
-              onclick="add(${Number(p.id)})"
-            >
-              Agregar al carrito
-            </button>
-
-          </div>
-
-        </article>
-
-      `;
-
-    }).join("");
-
+  render(products);
 }
 
 
-/* ==========================================
+/* =====================================================
+   MOSTRAR PRODUCTOS
+===================================================== */
+
+function render(list){
+
+  if(!list.length){
+
+    grid.innerHTML = `
+      <div class="empty">
+        No encontramos productos.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  grid.innerHTML = list.map(p => {
+
+    const stock =
+      Number(p.stock || 0);
+
+    const image =
+      p.image ||
+      "https://via.placeholder.com/600?text=Aqui+Tai";
+
+
+    return `
+
+      <article class="card">
+
+        <img
+          class="pic"
+          src="${escapeHTML(image)}"
+          alt="${escapeHTML(p.name || "Producto")}"
+          onerror="this.src='https://via.placeholder.com/600?text=Sin+imagen'"
+        >
+
+        <div class="body">
+
+          <div class="cat">
+            ${escapeHTML(p.category || "")}
+          </div>
+
+          <div class="name">
+            ${escapeHTML(p.name || "")}
+          </div>
+
+          <div class="desc">
+            ${escapeHTML(p.description || "")}
+          </div>
+
+          <div class="price">
+            Bs ${Number(p.price || 0).toFixed(2)}
+          </div>
+
+          <div class="stock">
+            ${
+              stock > 0
+              ? "📦 Disponible: " + stock
+              : "❌ Agotado"
+            }
+          </div>
+
+          <button
+            class="btn"
+            onclick="add(${Number(p.id)})"
+            ${stock <= 0 ? "disabled" : ""}
+          >
+            ${
+              stock > 0
+              ? "Agregar al carrito"
+              : "Agotado"
+            }
+          </button>
+
+        </div>
+
+      </article>
+
+    `;
+
+  }).join("");
+}
+
+
+/* =====================================================
    BUSCADOR
-   ========================================== */
+===================================================== */
 
 search.addEventListener(
   "input",
@@ -728,21 +671,18 @@ search.addEventListener(
             (p.category || "")
           ).toLowerCase();
 
-
         return text.includes(q);
-
       });
 
 
     render(filtered);
-
   }
 );
 
 
-/* ==========================================
+/* =====================================================
    AGREGAR AL CARRITO
-   ========================================== */
+===================================================== */
 
 function add(id){
 
@@ -752,14 +692,11 @@ function add(id){
     );
 
 
-  if(!product){
+  if(!product) return;
 
-    alert(
-      "No se encontró el producto."
-    );
 
-    return;
-  }
+  const stock =
+    Number(product.stock || 0);
 
 
   const existing =
@@ -769,6 +706,15 @@ function add(id){
 
 
   if(existing){
+
+    if(existing.qty >= stock){
+
+      alert(
+        "No hay más unidades disponibles."
+      );
+
+      return;
+    }
 
     existing.qty++;
 
@@ -782,29 +728,27 @@ function add(id){
   }
 
 
-  updateCart();
+  update();
 
   openCart();
-
 }
 
 
-/* ==========================================
+/* =====================================================
    ACTUALIZAR CARRITO
-   ========================================== */
+===================================================== */
 
-function updateCart(){
+function update(){
 
-  const quantity =
+  const totalItems =
     cart.reduce(
-      (sum,item) =>
-        sum + item.qty,
+      (sum,p) => sum + p.qty,
       0
     );
 
 
   count.textContent =
-    quantity;
+    totalItems;
 
 
   if(!cart.length){
@@ -816,105 +760,167 @@ function updateCart(){
       "Total: Bs 0.00";
 
     return;
-
   }
 
 
   cartItems.innerHTML =
-    cart.map(
-      (item,index) => `
+    cart.map((p,index) => {
+
+      const subtotal =
+        Number(p.price || 0) * p.qty;
+
+
+      return `
 
         <div class="row">
 
           <div>
 
             <b>
-              ${escapeHTML(item.name)}
+              ${escapeHTML(p.name)}
             </b>
 
             <br>
 
-            Bs ${Number(item.price).toFixed(2)}
-            × ${item.qty}
+            Bs ${Number(p.price).toFixed(2)}
+            × ${p.qty}
+
+            <br>
+
+            <strong>
+              Subtotal: Bs ${subtotal.toFixed(2)}
+            </strong>
 
           </div>
 
-          <button
-            onclick="removeItem(${index})"
-            style="
-              border:0;
-              background:#eee;
-              border-radius:8px;
-              padding:8px;
-              cursor:pointer;
-            "
-          >
-            🗑️
-          </button>
+
+          <div class="row-controls">
+
+            <button
+              class="small-btn"
+              onclick="changeQty(${index},-1)"
+            >
+              −
+            </button>
+
+            <span class="qty">
+              ${p.qty}
+            </span>
+
+            <button
+              class="small-btn"
+              onclick="changeQty(${index},1)"
+            >
+              +
+            </button>
+
+            <button
+              class="delete"
+              onclick="removeItem(${index})"
+            >
+              🗑️
+            </button>
+
+          </div>
 
         </div>
 
-      `
-    ).join("");
+      `;
+
+    }).join("");
 
 
-  const totalValue =
+  const grandTotal =
     cart.reduce(
-      (sum,item) =>
+      (sum,p) =>
         sum +
-        Number(item.price || 0) *
-        item.qty,
+        Number(p.price || 0) * p.qty,
       0
     );
 
 
   total.textContent =
     "Total: Bs " +
-    totalValue.toFixed(2);
-
+    grandTotal.toFixed(2);
 }
 
 
-/* ==========================================
+/* =====================================================
+   CAMBIAR CANTIDAD
+===================================================== */
+
+function changeQty(index,change){
+
+  const item =
+    cart[index];
+
+  if(!item) return;
+
+
+  const stock =
+    Number(item.stock || 0);
+
+
+  const newQty =
+    item.qty + change;
+
+
+  if(newQty <= 0){
+
+    cart.splice(index,1);
+
+  }else if(newQty > stock){
+
+    alert(
+      "No hay más unidades disponibles."
+    );
+
+    return;
+
+  }else{
+
+    item.qty =
+      newQty;
+  }
+
+
+  update();
+}
+
+
+/* =====================================================
    ELIMINAR PRODUCTO
-   ========================================== */
+===================================================== */
 
 function removeItem(index){
 
   cart.splice(index,1);
 
-  updateCart();
-
+  update();
 }
 
 
-/* ==========================================
-   ABRIR CARRITO
-   ========================================== */
+/* =====================================================
+   ABRIR / CERRAR CARRITO
+===================================================== */
 
 function openCart(){
 
   panel.classList.add("open");
 
-  updateCart();
-
+  update();
 }
 
-
-/* ==========================================
-   CERRAR CARRITO
-   ========================================== */
 
 function closeCart(){
 
   panel.classList.remove("open");
-
 }
 
 
-/* ==========================================
-   ENVIAR PEDIDO POR WHATSAPP
-   ========================================== */
+/* =====================================================
+   ENVIAR PEDIDO A WHATSAPP
+===================================================== */
 
 function sendWhatsApp(){
 
@@ -925,7 +931,6 @@ function sendWhatsApp(){
     );
 
     return;
-
   }
 
 
@@ -939,61 +944,72 @@ function sendWhatsApp(){
     "No indicada";
 
 
-  const lines =
-    cart.map(item => {
-
-      const subtotal =
-        Number(item.price || 0) *
-        item.qty;
-
-
-      return (
-        "• " +
-        item.name +
-        " × " +
-        item.qty +
-        " = Bs " +
-        subtotal.toFixed(2)
-      );
-
-    });
-
-
-  const totalValue =
+  const grandTotal =
     cart.reduce(
-      (sum,item) =>
+      (sum,p) =>
         sum +
-        Number(item.price || 0) *
-        item.qty,
+        Number(p.price || 0) * p.qty,
       0
     );
 
 
-  const message =
-`🛍️ *NUEVO PEDIDO - AQUÍ TÁI*
-
-${lines.join("\n")}
-
-💰 *Total: Bs ${totalValue.toFixed(2)}*
-
-👤 Cliente: ${name}
-📍 Entrega: ${addr}`;
+  let message =
+    "🛍️ *NUEVO PEDIDO - AQUÍ TÁI*\n\n";
 
 
-  const whatsappURL =
-    "https://wa.me/59171440907?text=" +
+  cart.forEach(p => {
+
+    const subtotal =
+      Number(p.price || 0) * p.qty;
+
+
+    message +=
+      "• " +
+      p.name +
+      " × " +
+      p.qty +
+      " = Bs " +
+      subtotal.toFixed(2) +
+      "\n";
+
+  });
+
+
+  message +=
+    "\n💰 *Total: Bs " +
+    grandTotal.toFixed(2) +
+    "*";
+
+
+  message +=
+    "\n👤 Cliente: " +
+    name;
+
+
+  message +=
+    "\n📍 Entrega: " +
+    addr;
+
+
+  const phone =
+    "59171440907";
+
+
+  const url =
+    "https://wa.me/" +
+    phone +
+    "?text=" +
     encodeURIComponent(message);
 
 
   window.location.href =
-    whatsappURL;
-
+    url;
 }
 
 
-/* ==========================================
-   SEGURIDAD PARA TEXTO HTML
-   ========================================== */
+/* =====================================================
+   SEGURIDAD BÁSICA PARA TEXTO
+===================================================== */
 
 function escapeHTML(value){
 
@@ -1003,13 +1019,12 @@ function escapeHTML(value){
     .replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
-
 }
 
 
-/* ==========================================
+/* =====================================================
    INICIAR
-   ========================================== */
+===================================================== */
 
 loadProducts();
 
