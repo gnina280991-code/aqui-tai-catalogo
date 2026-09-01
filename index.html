@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
 <title>Aquí tái | Catálogo</title>
 
@@ -11,13 +17,16 @@
   content="Catálogo de productos Aquí tái - Bolivia"
 >
 
-<!-- Supabase -->
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
 <style>
+
 *{
   box-sizing:border-box;
 }
+
 
 body{
   margin:0;
@@ -26,7 +35,10 @@ body{
   color:#171717;
 }
 
-/* HEADER */
+
+/* =====================================================
+   HEADER
+===================================================== */
 
 header{
   background:#fff;
@@ -36,324 +48,731 @@ header{
   z-index:10;
 }
 
+
 .top{
   max-width:1100px;
   margin:auto;
   padding:12px 16px;
+
   display:flex;
   align-items:center;
+
   gap:14px;
 }
+
 
 .logo{
   height:62px;
   width:62px;
+
   border-radius:50%;
+
   object-fit:cover;
+
   border:1px solid #eee;
 }
+
 
 .brand{
   font-size:25px;
   font-weight:800;
 }
 
+
 .sub{
   font-size:13px;
   color:#666;
 }
 
-/* CONTENEDOR */
+
+/* =====================================================
+   CONTENEDOR
+===================================================== */
 
 .wrap{
   max-width:1100px;
   margin:auto;
+
   padding:22px 16px;
 }
 
-/* HERO */
+
+/* =====================================================
+   HERO
+===================================================== */
 
 .hero{
   background:#fff;
+
   border-radius:20px;
+
   padding:22px;
+
   margin-bottom:20px;
 }
 
+
 .hero h1{
   margin:0 0 6px;
+
   font-size:30px;
 }
 
+
 .hero p{
   margin:0;
+
   color:#666;
+
   line-height:1.5;
 }
 
+
 .search{
   width:100%;
+
   padding:14px 16px;
+
   border:1px solid #ddd;
+
   border-radius:14px;
+
   font-size:16px;
+
   margin-top:18px;
+
   outline:none;
 }
+
 
 .search:focus{
   border-color:#ff9d00;
 }
 
-/* CONTADOR */
 
 .product-count{
   margin-top:16px;
+
   color:#666;
+
   font-size:15px;
 }
 
-/* GRID */
+
+/* =====================================================
+   GRID
+===================================================== */
 
 .grid{
   display:grid;
+
   grid-template-columns:
     repeat(auto-fill,minmax(210px,1fr));
+
   gap:16px;
 }
 
-/* CARD */
+
+/* =====================================================
+   CARD
+===================================================== */
 
 .card{
   background:#fff;
+
   border-radius:18px;
+
   overflow:hidden;
-  box-shadow:0 3px 15px #0000000c;
+
+  box-shadow:
+    0 3px 15px #0000000c;
 }
 
-.pic{
-  width:100%;
-  aspect-ratio:1/1;
-  object-fit:cover;
+
+/* =====================================================
+   GALERÍA
+===================================================== */
+
+.gallery{
   background:#fafafa;
-  display:block;
 }
+
+
+.main-image{
+  width:100%;
+
+  aspect-ratio:1/1;
+
+  object-fit:cover;
+
+  display:block;
+
+  cursor:pointer;
+
+  background:#fafafa;
+}
+
+
+.thumbnails{
+  display:flex;
+
+  gap:7px;
+
+  padding:8px;
+
+  overflow-x:auto;
+
+  background:#fff;
+}
+
+
+.thumbnails::-webkit-scrollbar{
+  height:5px;
+}
+
+
+.thumbnails::-webkit-scrollbar-thumb{
+  background:#ccc;
+
+  border-radius:10px;
+}
+
+
+.thumb{
+  width:58px;
+
+  height:58px;
+
+  flex:0 0 58px;
+
+  object-fit:cover;
+
+  border-radius:9px;
+
+  border:2px solid transparent;
+
+  cursor:pointer;
+
+  background:#eee;
+}
+
+
+.thumb.active{
+  border-color:#ff9d00;
+}
+
+
+.photo-count{
+  text-align:center;
+
+  font-size:12px;
+
+  color:#777;
+
+  padding-bottom:7px;
+}
+
+
+/* =====================================================
+   CUERPO PRODUCTO
+===================================================== */
 
 .body{
   padding:14px;
 }
 
+
 .cat{
   font-size:12px;
+
   color:#777;
 }
 
+
 .name{
   font-size:18px;
+
   font-weight:700;
+
   margin:5px 0;
 }
 
+
 .desc{
   font-size:13px;
+
   color:#666;
+
   line-height:1.4;
+
   min-height:54px;
 }
 
+
 .price{
   font-size:22px;
+
   font-weight:800;
+
   margin:12px 0 5px;
 }
 
+
 .stock{
   font-size:13px;
+
   color:#555;
+
   margin-bottom:12px;
 }
 
+
 .stock.out{
   color:#c00;
+
   font-weight:700;
 }
+
+
+/* =====================================================
+   BOTONES
+===================================================== */
 
 .btn{
   width:100%;
+
   border:0;
+
   border-radius:12px;
+
   padding:13px;
+
   background:#111;
+
   color:#fff;
+
   font-weight:700;
+
   font-size:15px;
+
   cursor:pointer;
 }
+
+
+.btn:active{
+  transform:scale(.98);
+}
+
 
 .btn:disabled{
   background:#aaa;
+
   cursor:not-allowed;
 }
 
-/* CARRITO */
+
+/* =====================================================
+   CARRITO
+===================================================== */
 
 .cart{
   position:fixed;
+
   right:18px;
+
   bottom:18px;
+
   border:0;
+
   border-radius:999px;
+
   padding:15px 20px;
+
   background:#ff9d00;
+
   color:#111;
+
   font-weight:800;
-  box-shadow:0 5px 20px #0003;
+
+  box-shadow:
+    0 5px 20px #0003;
+
   cursor:pointer;
+
   z-index:15;
+
+  font-size:16px;
 }
 
-/* PANEL */
+
+/* =====================================================
+   PANEL CARRITO
+===================================================== */
 
 .panel{
   position:fixed;
+
   inset:0;
+
   background:#0008;
+
   display:none;
+
   z-index:20;
 }
 
+
 .panel.open{
   display:flex;
+
   align-items:flex-end;
+
   justify-content:center;
 }
 
+
 .sheet{
   background:#fff;
+
   width:min(100%,560px);
+
   max-height:90vh;
+
   overflow:auto;
-  border-radius:22px 22px 0 0;
+
+  border-radius:
+    22px 22px 0 0;
+
   padding:20px;
 }
 
+
 .close{
   float:right;
+
   border:0;
+
   background:#eee;
+
   border-radius:50%;
+
   width:36px;
+
   height:36px;
+
   cursor:pointer;
+
   font-size:18px;
 }
 
+
 .row{
   display:flex;
+
   justify-content:space-between;
+
   gap:10px;
+
   padding:12px 0;
+
   border-bottom:1px solid #eee;
 }
 
+
 .row button{
   border:0;
+
   background:#eee;
+
   border-radius:10px;
+
   padding:8px 10px;
+
   cursor:pointer;
 }
+
 
 textarea,
 input[type=text]{
   width:100%;
+
   padding:12px;
+
   border:1px solid #ddd;
+
   border-radius:10px;
+
   margin:6px 0 12px;
+
   font:inherit;
 }
 
+
 textarea{
   min-height:90px;
+
   resize:vertical;
 }
 
-/* ESTADOS */
+
+/* =====================================================
+   MODAL IMAGEN
+===================================================== */
+
+.image-modal{
+  position:fixed;
+
+  inset:0;
+
+  background:#000d;
+
+  display:none;
+
+  align-items:center;
+
+  justify-content:center;
+
+  z-index:100;
+
+  padding:20px;
+}
+
+
+.image-modal.open{
+  display:flex;
+}
+
+
+.modal-image{
+  max-width:100%;
+
+  max-height:85vh;
+
+  object-fit:contain;
+
+  border-radius:12px;
+}
+
+
+.modal-close{
+  position:absolute;
+
+  top:18px;
+
+  right:18px;
+
+  width:44px;
+
+  height:44px;
+
+  border:0;
+
+  border-radius:50%;
+
+  background:#fff;
+
+  color:#111;
+
+  font-size:24px;
+
+  cursor:pointer;
+}
+
+
+/* =====================================================
+   FLECHAS MODAL
+===================================================== */
+
+.modal-prev,
+.modal-next{
+  position:absolute;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  width:48px;
+
+  height:48px;
+
+  border:0;
+
+  border-radius:50%;
+
+  background:#fff;
+
+  color:#111;
+
+  font-size:26px;
+
+  cursor:pointer;
+}
+
+
+.modal-prev{
+  left:15px;
+}
+
+
+.modal-next{
+  right:15px;
+}
+
+
+.modal-counter{
+  position:absolute;
+
+  bottom:20px;
+
+  left:50%;
+
+  transform:translateX(-50%);
+
+  background:#fff;
+
+  color:#111;
+
+  padding:7px 13px;
+
+  border-radius:20px;
+
+  font-size:13px;
+
+  font-weight:700;
+}
+
+
+/* =====================================================
+   ESTADOS
+===================================================== */
 
 .loading{
   background:#fff;
+
   border-radius:18px;
+
   padding:30px;
+
   text-align:center;
+
   color:#666;
 }
 
+
 .error{
   background:#fff;
+
   border-radius:18px;
+
   padding:25px;
+
   text-align:center;
+
   color:#b00020;
 }
 
-/* MOBILE */
+
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media(max-width:480px){
 
   .grid{
     grid-template-columns:
       repeat(2,minmax(0,1fr));
+
     gap:10px;
   }
+
 
   .card{
     border-radius:14px;
   }
 
+
   .body{
     padding:10px;
   }
+
 
   .name{
     font-size:15px;
   }
 
+
   .desc{
     font-size:12px;
+
     min-height:70px;
   }
+
 
   .price{
     font-size:18px;
   }
 
+
   .hero h1{
     font-size:24px;
   }
+
 
   .hero{
     padding:20px;
   }
 
+
   .brand{
     font-size:23px;
   }
 
+
   .logo{
     width:58px;
+
     height:58px;
   }
 
+
   .cart{
     right:12px;
+
     bottom:14px;
   }
+
+
+  .thumb{
+    width:50px;
+
+    height:50px;
+
+    flex-basis:50px;
+  }
+
+
+  .modal-prev,
+  .modal-next{
+    width:42px;
+
+    height:42px;
+
+    font-size:22px;
+  }
+
 }
+
 </style>
+
 </head>
 
+
 <body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
 <header>
 
@@ -367,6 +786,7 @@ textarea{
     >
 
     <div>
+
       <div class="brand">
         Aquí tái
       </div>
@@ -374,6 +794,7 @@ textarea{
       <div class="sub">
         Catálogo de productos · Bolivia
       </div>
+
     </div>
 
   </div>
@@ -381,7 +802,13 @@ textarea{
 </header>
 
 
+
+<!-- =====================================================
+     CONTENIDO
+===================================================== -->
+
 <main class="wrap">
+
 
   <section class="hero">
 
@@ -389,10 +816,12 @@ textarea{
       🛍️ Nuestro catálogo
     </h1>
 
+
     <p>
       Elige tus productos y envíanos tu pedido
       directamente por WhatsApp.
     </p>
+
 
     <input
       id="search"
@@ -401,6 +830,7 @@ textarea{
       placeholder="🔎 Buscar productos..."
       autocomplete="off"
     >
+
 
     <div
       id="productCount"
@@ -411,6 +841,9 @@ textarea{
 
   </section>
 
+
+
+  <!-- PRODUCTOS -->
 
   <section
     id="grid"
@@ -423,18 +856,30 @@ textarea{
 
   </section>
 
+
 </main>
 
+
+
+<!-- =====================================================
+     BOTÓN CARRITO
+===================================================== -->
 
 <button
   class="cart"
   onclick="openCart()"
 >
-  🛒 Carrito (<span id="count">0</span>)
+
+  🛒 Carrito
+  (<span id="count">0</span>)
+
 </button>
 
 
-<!-- PANEL DEL CARRITO -->
+
+<!-- =====================================================
+     PANEL CARRITO
+===================================================== -->
 
 <div
   id="panel"
@@ -444,6 +889,7 @@ textarea{
 
   <div class="sheet">
 
+
     <button
       class="close"
       onclick="closeCart()"
@@ -451,11 +897,14 @@ textarea{
       ✕
     </button>
 
+
     <h2>
       🛒 Tu pedido
     </h2>
 
+
     <div id="cartItems"></div>
+
 
     <div
       id="total"
@@ -465,13 +914,14 @@ textarea{
         margin:16px 0;
       "
     >
-      Total: Bs 0
+      Total: Bs 0.00
     </div>
 
 
     <label>
       Tu nombre
     </label>
+
 
     <input
       id="customer"
@@ -483,6 +933,7 @@ textarea{
     <label>
       Dirección o zona de entrega
     </label>
+
 
     <textarea
       id="address"
@@ -497,25 +948,82 @@ textarea{
       📲 Enviar pedido por WhatsApp
     </button>
 
+
   </div>
 
 </div>
+
+
+
+<!-- =====================================================
+     MODAL DE IMAGEN
+===================================================== -->
+
+<div
+  id="imageModal"
+  class="image-modal"
+  onclick="closeImageModal(event)"
+>
+
+
+  <button
+    class="modal-close"
+    onclick="closeImageModal()"
+  >
+    ✕
+  </button>
+
+
+  <button
+    id="modalPrev"
+    class="modal-prev"
+    onclick="changeModalImage(-1,event)"
+  >
+    ‹
+  </button>
+
+
+  <img
+    id="modalImage"
+    class="modal-image"
+    src=""
+    alt="Imagen del producto"
+  >
+
+
+  <button
+    id="modalNext"
+    class="modal-next"
+    onclick="changeModalImage(1,event)"
+  >
+    ›
+  </button>
+
+
+  <div
+    id="modalCounter"
+    class="modal-counter"
+  >
+  </div>
+
+
+</div>
+
 
 
 <script>
 
 /* =====================================================
    CONFIGURACIÓN SUPABASE
-   ===================================================== */
+===================================================== */
 
 const SUPABASE_URL =
   "https://ztsthkoejosgwkhmzfbd.supabase.co";
 
+
 const SUPABASE_KEY =
   "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
 
-
-/* Crear conexión */
 
 const supabaseClient =
   window.supabase.createClient(
@@ -524,57 +1032,245 @@ const supabaseClient =
   );
 
 
+
 /* =====================================================
    VARIABLES
-   ===================================================== */
+===================================================== */
 
 let products = [];
+
 let cart = [];
 
 
+/* Modal */
+
+let modalImages = [];
+
+let modalIndex = 0;
+
+
+
 /* =====================================================
-   ELEMENTOS HTML
-   ===================================================== */
+   ELEMENTOS
+===================================================== */
 
 const grid =
   document.getElementById("grid");
 
+
 const search =
   document.getElementById("search");
+
 
 const count =
   document.getElementById("count");
 
+
 const cartItems =
   document.getElementById("cartItems");
+
 
 const total =
   document.getElementById("total");
 
+
 const panel =
   document.getElementById("panel");
+
 
 const customer =
   document.getElementById("customer");
 
+
 const address =
   document.getElementById("address");
+
 
 const productCount =
   document.getElementById("productCount");
 
 
+const imageModal =
+  document.getElementById("imageModal");
+
+
+const modalImage =
+  document.getElementById("modalImage");
+
+
+const modalCounter =
+  document.getElementById("modalCounter");
+
+
+const modalPrev =
+  document.getElementById("modalPrev");
+
+
+const modalNext =
+  document.getElementById("modalNext");
+
+
+
 /* =====================================================
-   CARGAR PRODUCTOS DESDE SUPABASE
-   ===================================================== */
+   ESCAPAR HTML
+===================================================== */
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+
+    .replace(/&/g,"&amp;")
+
+    .replace(/</g,"&lt;")
+
+    .replace(/>/g,"&gt;")
+
+    .replace(/"/g,"&quot;")
+
+    .replace(/'/g,"&#039;");
+
+}
+
+
+
+/* =====================================================
+   OBTENER IMÁGENES DEL PRODUCTO
+===================================================== */
+
+function getProductImages(product){
+
+  let images = [];
+
+
+  /*
+    Imagen principal antigua
+  */
+
+  if(
+    product.image &&
+    typeof product.image === "string"
+  ){
+
+    images.push(
+      product.image
+    );
+
+  }
+
+
+  /*
+    Imágenes múltiples
+  */
+
+  if(product.images){
+
+    let extra = [];
+
+
+    /*
+      Si Supabase devuelve un array
+    */
+
+    if(Array.isArray(product.images)){
+
+      extra =
+        product.images;
+
+    }
+
+
+    /*
+      Si devuelve texto JSON
+    */
+
+    else if(
+      typeof product.images === "string"
+    ){
+
+      try{
+
+        const parsed =
+          JSON.parse(product.images);
+
+
+        if(Array.isArray(parsed)){
+
+          extra =
+            parsed;
+
+        }else{
+
+          extra =
+            product.images
+              .split(",")
+              .map(x => x.trim());
+
+        }
+
+      }catch(e){
+
+        extra =
+          product.images
+            .split(",")
+            .map(x => x.trim());
+
+      }
+
+    }
+
+
+    extra.forEach(url => {
+
+      if(
+        url &&
+        typeof url === "string" &&
+        !images.includes(url)
+      ){
+
+        images.push(url);
+
+      }
+
+    });
+
+  }
+
+
+  /*
+    Si no hay ninguna imagen
+  */
+
+  if(!images.length){
+
+    images.push(
+      "https://via.placeholder.com/600x600?text=Aqui+tai"
+    );
+
+  }
+
+
+  return images;
+
+}
+
+
+
+/* =====================================================
+   CARGAR PRODUCTOS
+===================================================== */
 
 async function loadProducts(){
 
   grid.innerHTML = `
+
     <div class="loading">
+
       ⏳ Cargando productos...
+
     </div>
+
   `;
+
 
   productCount.textContent =
     "Cargando productos...";
@@ -582,16 +1278,25 @@ async function loadProducts(){
 
   try{
 
-    const { data, error } =
+
+    const {
+      data,
+      error
+    } =
       await supabaseClient
+
         .from("products")
+
         .select(
-          "id,name,category,description,price,image,stock,active"
+          "id,name,category,description,price,image,images,stock,active"
         )
-        .eq("active", true)
-        .order("id", {
+
+        .eq("active",true)
+
+        .order("id",{
           ascending:false
         });
+
 
 
     if(error){
@@ -601,65 +1306,76 @@ async function loadProducts(){
         error
       );
 
+
       grid.innerHTML = `
+
         <div class="error">
+
           ❌ No se pudieron cargar los productos.
+
           <br><br>
-          Revisa la conexión con Supabase.
+
+          ${escapeHTML(error.message)}
+
         </div>
+
       `;
+
 
       productCount.textContent =
         "Error al cargar productos.";
 
+
       return;
+
     }
 
 
-    products = data || [];
+
+    products =
+      data || [];
+
 
     render(products);
 
+
   }catch(error){
+
 
     console.error(error);
 
+
     grid.innerHTML = `
+
       <div class="error">
+
         ❌ Ocurrió un error al cargar
         el catálogo.
+
       </div>
+
     `;
+
 
     productCount.textContent =
       "Error al cargar productos.";
+
   }
+
 }
 
-
-/* =====================================================
-   ESCAPAR TEXTO
-   ===================================================== */
-
-function escapeHTML(value){
-
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
 
 
 /* =====================================================
    MOSTRAR PRODUCTOS
-   ===================================================== */
+===================================================== */
 
 function render(list){
 
+
   productCount.textContent =
     list.length +
+
     (
       list.length === 1
       ? " producto disponible."
@@ -667,27 +1383,36 @@ function render(list){
     );
 
 
+
   if(!list.length){
 
     grid.innerHTML = `
+
       <div class="loading">
+
         🔎 No encontramos productos.
+
       </div>
+
     `;
 
     return;
+
   }
 
 
+
   grid.innerHTML =
+
     list.map(p => {
+
 
       const stock =
         Number(p.stock || 0);
 
-      const image =
-        p.image ||
-        "https://via.placeholder.com/600x600?text=Aqui+tai";
+
+      const images =
+        getProductImages(p);
 
 
       const disabled =
@@ -697,82 +1422,504 @@ function render(list){
 
 
       const stockHTML =
+
         stock > 0
+
         ? `
+
           <div class="stock">
-            📦 Disponible: ${stock}
+
+            📦 Disponible:
+            ${stock}
+
           </div>
+
         `
+
         : `
+
           <div class="stock out">
+
             ❌ Agotado
+
           </div>
+
         `;
+
+
+
+      /*
+        Miniaturas
+      */
+
+      const thumbnails =
+
+        images.length > 1
+
+        ? `
+
+          <div class="thumbnails">
+
+            ${
+              images.map((url,index) => `
+
+                <img
+
+                  class="thumb ${
+                    index === 0
+                    ? "active"
+                    : ""
+                  }"
+
+                  src="${escapeHTML(url)}"
+
+                  alt="${escapeHTML(p.name)}"
+
+                  loading="lazy"
+
+                  onclick="
+                    changeProductImage(
+                      this,
+                      ${Number(p.id)},
+                      ${index}
+                    );
+                    event.stopPropagation();
+                  "
+
+                  onerror="
+                    this.style.display='none'
+                  "
+
+                >
+
+              `).join("")
+            }
+
+          </div>
+
+
+          <div class="photo-count">
+
+            📷 ${images.length} fotos
+
+          </div>
+
+        `
+
+        : "";
+
 
 
       return `
 
-        <article class="card">
+        <article
+          class="card"
+          data-product-id="${Number(p.id)}"
+        >
 
-          <img
-            class="pic"
-            src="${escapeHTML(image)}"
-            alt="${escapeHTML(p.name)}"
-            loading="lazy"
-            onerror="
-              this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
-            "
-          >
+
+          <div class="gallery">
+
+
+            <img
+
+              id="main-image-${Number(p.id)}"
+
+              class="main-image"
+
+              src="${escapeHTML(images[0])}"
+
+              alt="${escapeHTML(p.name)}"
+
+              loading="lazy"
+
+              onclick="
+                openImageModal(
+                  ${Number(p.id)},
+                  0
+                )
+              "
+
+              onerror="
+                this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
+              "
+
+            >
+
+
+            ${thumbnails}
+
+
+          </div>
+
+
 
           <div class="body">
 
+
             <div class="cat">
-              ${escapeHTML(p.category || "Sin categoría")}
+
+              ${escapeHTML(
+                p.category ||
+                "Sin categoría"
+              )}
+
             </div>
+
+
 
             <div class="name">
-              ${escapeHTML(p.name)}
+
+              ${escapeHTML(
+                p.name ||
+                "Producto"
+              )}
+
             </div>
+
+
 
             <div class="desc">
-              ${escapeHTML(p.description || "")}
+
+              ${escapeHTML(
+                p.description ||
+                ""
+              )}
+
             </div>
 
+
+
             <div class="price">
-              Bs ${Number(p.price || 0).toFixed(2)}
+
+              Bs ${Number(
+                p.price || 0
+              ).toFixed(2)}
+
             </div>
+
+
 
             ${stockHTML}
 
+
+
             <button
+
               class="btn"
+
               ${disabled}
-              onclick="add(${Number(p.id)})"
+
+              onclick="
+                add(${Number(p.id)})
+              "
+
             >
+
               ${
                 stock > 0
                 ? "Agregar al carrito"
                 : "Agotado"
               }
+
             </button>
 
+
           </div>
+
 
         </article>
 
       `;
 
     }).join("");
+
 }
+
+
+
+/* =====================================================
+   CAMBIAR IMAGEN PRINCIPAL
+===================================================== */
+
+function changeProductImage(
+  thumb,
+  productId,
+  imageIndex
+){
+
+  const product =
+    products.find(
+      p =>
+        Number(p.id) ===
+        Number(productId)
+    );
+
+
+  if(!product){
+    return;
+  }
+
+
+  const images =
+    getProductImages(product);
+
+
+  const mainImage =
+    document.getElementById(
+      "main-image-" +
+      productId
+    );
+
+
+  if(!mainImage){
+    return;
+  }
+
+
+  mainImage.src =
+    images[imageIndex];
+
+
+  const thumbnails =
+    thumb
+      .parentElement
+      .querySelectorAll(".thumb");
+
+
+  thumbnails.forEach(
+    t =>
+      t.classList.remove("active")
+  );
+
+
+  thumb.classList.add("active");
+
+}
+
+
+
+/* =====================================================
+   ABRIR IMAGEN GRANDE
+===================================================== */
+
+function openImageModal(
+  productId,
+  index
+){
+
+  const product =
+    products.find(
+      p =>
+        Number(p.id) ===
+        Number(productId)
+    );
+
+
+  if(!product){
+    return;
+  }
+
+
+  modalImages =
+    getProductImages(product);
+
+
+  modalIndex =
+    index || 0;
+
+
+  showModalImage();
+
+
+  imageModal.classList.add(
+    "open"
+  );
+
+
+  document.body.style.overflow =
+    "hidden";
+
+}
+
+
+
+/* =====================================================
+   MOSTRAR IMAGEN DEL MODAL
+===================================================== */
+
+function showModalImage(){
+
+  if(!modalImages.length){
+    return;
+  }
+
+
+  modalImage.src =
+    modalImages[modalIndex];
+
+
+  modalCounter.textContent =
+
+    (modalIndex + 1) +
+    " / " +
+    modalImages.length;
+
+
+
+  if(modalImages.length <= 1){
+
+    modalPrev.style.display =
+      "none";
+
+    modalNext.style.display =
+      "none";
+
+  }else{
+
+    modalPrev.style.display =
+      "block";
+
+    modalNext.style.display =
+      "block";
+
+  }
+
+}
+
+
+
+/* =====================================================
+   CAMBIAR IMAGEN DEL MODAL
+===================================================== */
+
+function changeModalImage(
+  direction,
+  event
+){
+
+  if(event){
+    event.stopPropagation();
+  }
+
+
+  if(modalImages.length <= 1){
+    return;
+  }
+
+
+  modalIndex +=
+    direction;
+
+
+  if(modalIndex < 0){
+
+    modalIndex =
+      modalImages.length - 1;
+
+  }
+
+
+  if(
+    modalIndex >=
+    modalImages.length
+  ){
+
+    modalIndex = 0;
+
+  }
+
+
+  showModalImage();
+
+}
+
+
+
+/* =====================================================
+   CERRAR MODAL
+===================================================== */
+
+function closeImageModal(event){
+
+  if(
+    event &&
+    event.target !== imageModal
+  ){
+
+    return;
+
+  }
+
+
+  imageModal.classList.remove(
+    "open"
+  );
+
+
+  document.body.style.overflow =
+    "";
+
+}
+
+
+
+/* =====================================================
+   TECLADO
+===================================================== */
+
+document.addEventListener(
+  "keydown",
+  function(event){
+
+    if(
+      !imageModal.classList.contains(
+        "open"
+      )
+    ){
+
+      return;
+
+    }
+
+
+    if(event.key === "Escape"){
+
+      closeImageModal();
+
+    }
+
+
+    if(event.key === "ArrowLeft"){
+
+      changeModalImage(
+        -1
+      );
+
+    }
+
+
+    if(event.key === "ArrowRight"){
+
+      changeModalImage(
+        1
+      );
+
+    }
+
+  }
+);
+
 
 
 /* =====================================================
    BÚSQUEDA
-   ===================================================== */
+===================================================== */
 
 search.addEventListener(
   "input",
   function(){
+
 
     const q =
       search.value
@@ -780,47 +1927,70 @@ search.addEventListener(
         .toLowerCase();
 
 
+
     if(!q){
 
       render(products);
 
       return;
+
     }
 
 
+
     const filtered =
-      products.filter(p => {
-
-        const text =
-          [
-            p.name,
-            p.description,
-            p.category
-          ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
+      products.filter(
+        p => {
 
 
-        return text.includes(q);
+          const text =
 
-      });
+            [
+
+              p.name,
+
+              p.description,
+
+              p.category
+
+            ]
+
+            .filter(Boolean)
+
+            .join(" ")
+
+            .toLowerCase();
+
+
+
+          return text.includes(q);
+
+        }
+
+      );
+
 
 
     render(filtered);
+
   }
+
 );
+
 
 
 /* =====================================================
    AGREGAR AL CARRITO
-   ===================================================== */
+===================================================== */
 
 function add(id){
 
+
   const product =
     products.find(
-      p => Number(p.id) === Number(id)
+      p =>
+        Number(p.id) ===
+        Number(id)
     );
 
 
@@ -831,11 +2001,14 @@ function add(id){
     );
 
     return;
+
   }
+
 
 
   const stock =
     Number(product.stock || 0);
+
 
 
   if(stock <= 0){
@@ -845,55 +2018,75 @@ function add(id){
     );
 
     return;
+
   }
+
 
 
   const existing =
     cart.find(
-      x => Number(x.id) === Number(id)
+      x =>
+        Number(x.id) ===
+        Number(id)
     );
+
 
 
   if(existing){
 
-    if(existing.qty >= stock){
+
+    if(
+      existing.qty >=
+      stock
+    ){
 
       alert(
         "No puedes agregar más unidades de las disponibles."
       );
 
       return;
+
     }
 
 
     existing.qty++;
 
+
   }else{
 
+
     cart.push({
+
       ...product,
+
       qty:1
+
     });
 
   }
 
 
+
   updateCart();
 
   openCart();
+
 }
+
 
 
 /* =====================================================
    ACTUALIZAR CARRITO
-   ===================================================== */
+===================================================== */
 
 function updateCart(){
+
 
   const quantity =
     cart.reduce(
       (sum,item) =>
-        sum + Number(item.qty),
+        sum +
+        Number(item.qty),
       0
     );
 
@@ -902,114 +2095,192 @@ function updateCart(){
     quantity;
 
 
+
   if(!cart.length){
+
 
     cartItems.innerHTML =
       "<p>Tu carrito está vacío.</p>";
 
+
     total.textContent =
       "Total: Bs 0.00";
 
+
     return;
+
   }
 
 
+
   cartItems.innerHTML =
-    cart.map((item,index) => {
 
-      const subtotal =
-        Number(item.price || 0) *
-        Number(item.qty || 0);
+    cart.map(
+      (item,index) => {
 
 
-      return `
+        const subtotal =
 
-        <div class="row">
+          Number(
+            item.price || 0
+          ) *
 
-          <div>
+          Number(
+            item.qty || 0
+          );
 
-            <b>
-              ${escapeHTML(item.name)}
-            </b>
 
-            <br>
 
-            Bs ${Number(item.price || 0).toFixed(2)}
-            ×
-            ${item.qty}
+        return `
 
-            <br>
+          <div class="row">
 
-            <strong>
-              Subtotal: Bs ${subtotal.toFixed(2)}
-            </strong>
+
+            <div>
+
+              <b>
+
+                ${escapeHTML(
+                  item.name
+                )}
+
+              </b>
+
+
+              <br>
+
+
+              Bs ${Number(
+                item.price || 0
+              ).toFixed(2)}
+
+              ×
+
+              ${item.qty}
+
+
+              <br>
+
+
+              <strong>
+
+                Subtotal:
+                Bs ${subtotal.toFixed(2)}
+
+              </strong>
+
+            </div>
+
+
+
+            <button
+
+              onclick="
+                removeItem(${index})
+              "
+
+            >
+
+              🗑️
+
+            </button>
+
 
           </div>
 
-          <button
-            onclick="removeItem(${index})"
-          >
-            🗑️
-          </button>
+        `;
 
-        </div>
+      }
 
-      `;
+    ).join("");
 
-    }).join("");
 
 
   const grandTotal =
+
     cart.reduce(
       (sum,item) =>
+
         sum +
-        Number(item.price || 0) *
-        Number(item.qty || 0),
+
+        Number(
+          item.price || 0
+        ) *
+
+        Number(
+          item.qty || 0
+        ),
+
       0
     );
 
 
+
   total.textContent =
+
     "Total: Bs " +
+
     grandTotal.toFixed(2);
+
 }
+
 
 
 /* =====================================================
    ELIMINAR DEL CARRITO
-   ===================================================== */
+===================================================== */
 
 function removeItem(index){
 
-  cart.splice(index,1);
+  cart.splice(
+    index,
+    1
+  );
+
 
   updateCart();
+
 }
 
 
+
 /* =====================================================
-   ABRIR / CERRAR CARRITO
-   ===================================================== */
+   ABRIR CARRITO
+===================================================== */
 
 function openCart(){
 
-  panel.classList.add("open");
+  panel.classList.add(
+    "open"
+  );
+
 
   updateCart();
+
 }
 
-
-function closeCart(){
-
-  panel.classList.remove("open");
-}
 
 
 /* =====================================================
-   ENVIAR PEDIDO POR WHATSAPP
-   ===================================================== */
+   CERRAR CARRITO
+===================================================== */
+
+function closeCart(){
+
+  panel.classList.remove(
+    "open"
+  );
+
+}
+
+
+
+/* =====================================================
+   WHATSAPP
+===================================================== */
 
 function sendWhatsApp(){
+
 
   if(!cart.length){
 
@@ -1018,7 +2289,9 @@ function sendWhatsApp(){
     );
 
     return;
+
   }
+
 
 
   const name =
@@ -1026,87 +2299,133 @@ function sendWhatsApp(){
     "No indicado";
 
 
+
   const addr =
     address.value.trim() ||
     "No indicada";
 
 
+
   const grandTotal =
+
     cart.reduce(
       (sum,item) =>
+
         sum +
-        Number(item.price || 0) *
-        Number(item.qty || 0),
+
+        Number(
+          item.price || 0
+        ) *
+
+        Number(
+          item.qty || 0
+        ),
+
       0
     );
 
 
+
   let message =
+
     "🛍️ *NUEVO PEDIDO - AQUÍ TÁI*\n\n";
 
 
-  cart.forEach(item => {
 
-    const subtotal =
-      Number(item.price || 0) *
-      Number(item.qty || 0);
+  cart.forEach(
+    item => {
 
 
-    message +=
-      "• " +
-      item.name +
-      " × " +
-      item.qty +
-      " = Bs " +
-      subtotal.toFixed(2) +
-      "\n";
+      const subtotal =
 
-  });
+        Number(
+          item.price || 0
+        ) *
+
+        Number(
+          item.qty || 0
+        );
+
+
+
+      message +=
+
+        "• " +
+
+        item.name +
+
+        " × " +
+
+        item.qty +
+
+        " = Bs " +
+
+        subtotal.toFixed(2) +
+
+        "\n";
+
+    }
+
+  );
+
 
 
   message +=
+
     "\n💰 *Total: Bs " +
+
     grandTotal.toFixed(2) +
+
     "*";
 
 
+
   message +=
+
     "\n👤 Cliente: " +
+
     name;
 
 
+
   message +=
+
     "\n📍 Entrega: " +
+
     addr;
 
 
+
   const encodedMessage =
-    encodeURIComponent(message);
+    encodeURIComponent(
+      message
+    );
 
 
-  /*
-    Número de WhatsApp:
-    Bolivia +591
-    Número: 71440907
-  */
 
   const whatsappURL =
+
     "https://wa.me/59171440907?text=" +
+
     encodedMessage;
+
 
 
   window.location.href =
     whatsappURL;
+
 }
+
 
 
 /* =====================================================
    INICIAR
-   ===================================================== */
+===================================================== */
 
 loadProducts();
 
 </script>
 
 </body>
-</html>
+
+      </html>
