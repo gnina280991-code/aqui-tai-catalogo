@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 
 <meta charset="UTF-8">
@@ -17,22 +16,34 @@
   content="Catálogo de productos Aquí tái - Bolivia"
 >
 
-<!-- SUPABASE -->
+<!-- =====================================================
+     SUPABASE
+===================================================== -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <style>
 
+/* =====================================================
+   GENERAL
+===================================================== */
+
 *{
   box-sizing:border-box;
 }
-
 
 body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
   background:#f6f7f9;
   color:#171717;
+}
+
+button,
+input,
+textarea{
+  font-family:inherit;
 }
 
 
@@ -45,39 +56,30 @@ header{
   border-bottom:1px solid #eee;
   position:sticky;
   top:0;
-  z-index:10;
+  z-index:100;
 }
-
 
 .top{
   max-width:1100px;
   margin:auto;
   padding:12px 16px;
-
   display:flex;
   align-items:center;
-
   gap:14px;
 }
-
 
 .logo{
   height:62px;
   width:62px;
-
   border-radius:50%;
-
   object-fit:cover;
-
   border:1px solid #eee;
 }
-
 
 .brand{
   font-size:25px;
   font-weight:800;
 }
-
 
 .sub{
   font-size:13px;
@@ -92,8 +94,7 @@ header{
 .wrap{
   max-width:1100px;
   margin:auto;
-
-  padding:22px 16px;
+  padding:22px 16px 100px;
 }
 
 
@@ -103,58 +104,39 @@ header{
 
 .hero{
   background:#fff;
-
   border-radius:20px;
-
   padding:22px;
-
   margin-bottom:20px;
 }
 
-
 .hero h1{
   margin:0 0 6px;
-
   font-size:30px;
 }
 
-
 .hero p{
   margin:0;
-
   color:#666;
-
   line-height:1.5;
 }
 
-
 .search{
   width:100%;
-
   padding:14px 16px;
-
   border:1px solid #ddd;
-
   border-radius:14px;
-
   font-size:16px;
-
   margin-top:18px;
-
   outline:none;
 }
-
 
 .search:focus{
   border-color:#ff9d00;
 }
 
-
 .product-count{
   margin-top:16px;
-
   color:#666;
-
   font-size:15px;
 }
 
@@ -165,10 +147,8 @@ header{
 
 .grid{
   display:grid;
-
   grid-template-columns:
     repeat(auto-fill,minmax(210px,1fr));
-
   gap:16px;
 }
 
@@ -179,194 +159,209 @@ header{
 
 .card{
   background:#fff;
-
   border-radius:18px;
-
   overflow:hidden;
+  box-shadow:0 3px 15px #0000000c;
+  min-width:0;
+}
 
-  box-shadow:
-    0 3px 15px #0000000c;
+.body{
+  padding:14px;
+}
+
+.cat{
+  font-size:12px;
+  color:#777;
+}
+
+.name{
+  font-size:18px;
+  font-weight:700;
+  margin:5px 0;
+}
+
+.desc{
+  font-size:13px;
+  color:#666;
+  line-height:1.4;
+  min-height:54px;
+}
+
+.price{
+  font-size:22px;
+  font-weight:800;
+  margin:12px 0 5px;
+}
+
+.stock{
+  font-size:13px;
+  color:#555;
+  margin-bottom:12px;
+}
+
+.stock.out{
+  color:#c00;
+  font-weight:700;
 }
 
 
 /* =====================================================
-   GALERÍA
+   GALERÍA DEL PRODUCTO
 ===================================================== */
 
 .gallery{
+  width:100%;
   background:#fafafa;
 }
 
+
+/* IMAGEN PRINCIPAL */
+
+.main-image-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:1/1;
+  background:#fafafa;
+  overflow:hidden;
+  cursor:zoom-in;
+}
 
 .main-image{
   width:100%;
-
-  aspect-ratio:1/1;
-
+  height:100%;
   object-fit:cover;
-
   display:block;
+  transition:transform .25s ease;
+}
 
-  cursor:pointer;
-
-  background:#fafafa;
+.main-image-wrap:hover .main-image{
+  transform:scale(1.02);
 }
 
 
-.thumbnails{
+/* BOTONES DE GALERÍA */
+
+.gallery-arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:38px;
+  height:38px;
+  border:0;
+  border-radius:50%;
+  background:#ffffffdd;
+  box-shadow:0 2px 10px #0003;
+  font-size:22px;
+  font-weight:bold;
+  cursor:pointer;
   display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:3;
+}
 
-  gap:7px;
+.gallery-arrow.left{
+  left:10px;
+}
 
-  padding:8px;
+.gallery-arrow.right{
+  right:10px;
+}
 
-  overflow-x:auto;
-
+.gallery-arrow:hover{
   background:#fff;
 }
 
+
+/* CONTADOR SOBRE IMAGEN */
+
+.photo-counter{
+  position:absolute;
+  right:10px;
+  bottom:10px;
+  background:#000b;
+  color:#fff;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:700;
+  z-index:3;
+}
+
+
+/* MINIATURAS */
+
+.thumbnails{
+  display:flex;
+  gap:8px;
+  padding:8px 8px 4px;
+  overflow-x:auto;
+  scrollbar-width:thin;
+  background:#fff;
+}
 
 .thumbnails::-webkit-scrollbar{
   height:5px;
 }
 
-
 .thumbnails::-webkit-scrollbar-thumb{
   background:#ccc;
-
-  border-radius:10px;
+  border-radius:20px;
 }
-
 
 .thumb{
-  width:58px;
-
-  height:58px;
-
-  flex:0 0 58px;
-
-  object-fit:cover;
-
-  border-radius:9px;
-
-  border:2px solid transparent;
-
+  flex:0 0 72px;
+  width:72px;
+  height:72px;
+  padding:0;
+  border:3px solid transparent;
+  border-radius:12px;
+  overflow:hidden;
+  background:#f5f5f5;
   cursor:pointer;
-
-  background:#eee;
 }
 
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
 
 .thumb.active{
   border-color:#ff9d00;
 }
 
 
-.photo-count{
+/* TEXTO DE FOTOS */
+
+.photo-info{
   text-align:center;
-
+  padding:4px 8px 9px;
   font-size:12px;
-
   color:#777;
-
-  padding-bottom:7px;
+  background:#fff;
 }
 
 
 /* =====================================================
-   CUERPO PRODUCTO
-===================================================== */
-
-.body{
-  padding:14px;
-}
-
-
-.cat{
-  font-size:12px;
-
-  color:#777;
-}
-
-
-.name{
-  font-size:18px;
-
-  font-weight:700;
-
-  margin:5px 0;
-}
-
-
-.desc{
-  font-size:13px;
-
-  color:#666;
-
-  line-height:1.4;
-
-  min-height:54px;
-}
-
-
-.price{
-  font-size:22px;
-
-  font-weight:800;
-
-  margin:12px 0 5px;
-}
-
-
-.stock{
-  font-size:13px;
-
-  color:#555;
-
-  margin-bottom:12px;
-}
-
-
-.stock.out{
-  color:#c00;
-
-  font-weight:700;
-}
-
-
-/* =====================================================
-   BOTONES
+   BOTÓN AGREGAR
 ===================================================== */
 
 .btn{
   width:100%;
-
   border:0;
-
   border-radius:12px;
-
   padding:13px;
-
   background:#111;
-
   color:#fff;
-
   font-weight:700;
-
   font-size:15px;
-
   cursor:pointer;
 }
 
-
-.btn:active{
-  transform:scale(.98);
-}
-
-
 .btn:disabled{
   background:#aaa;
-
   cursor:not-allowed;
 }
 
@@ -377,30 +372,17 @@ header{
 
 .cart{
   position:fixed;
-
   right:18px;
-
   bottom:18px;
-
   border:0;
-
   border-radius:999px;
-
   padding:15px 20px;
-
   background:#ff9d00;
-
   color:#111;
-
   font-weight:800;
-
-  box-shadow:
-    0 5px 20px #0003;
-
+  box-shadow:0 5px 20px #0003;
   cursor:pointer;
-
-  z-index:15;
-
+  z-index:150;
   font-size:16px;
 }
 
@@ -411,234 +393,154 @@ header{
 
 .panel{
   position:fixed;
-
   inset:0;
-
   background:#0008;
-
   display:none;
-
-  z-index:20;
+  z-index:200;
 }
-
 
 .panel.open{
   display:flex;
-
   align-items:flex-end;
-
   justify-content:center;
 }
 
-
 .sheet{
   background:#fff;
-
   width:min(100%,560px);
-
   max-height:90vh;
-
   overflow:auto;
-
-  border-radius:
-    22px 22px 0 0;
-
+  border-radius:22px 22px 0 0;
   padding:20px;
 }
 
-
 .close{
   float:right;
-
   border:0;
-
   background:#eee;
-
   border-radius:50%;
-
   width:36px;
-
   height:36px;
-
   cursor:pointer;
-
   font-size:18px;
 }
 
-
 .row{
   display:flex;
-
   justify-content:space-between;
-
   gap:10px;
-
   padding:12px 0;
-
   border-bottom:1px solid #eee;
 }
 
-
 .row button{
   border:0;
-
   background:#eee;
-
   border-radius:10px;
-
   padding:8px 10px;
-
   cursor:pointer;
 }
-
 
 textarea,
 input[type=text]{
   width:100%;
-
   padding:12px;
-
   border:1px solid #ddd;
-
   border-radius:10px;
-
   margin:6px 0 12px;
-
   font:inherit;
 }
 
-
 textarea{
   min-height:90px;
-
   resize:vertical;
 }
 
 
 /* =====================================================
-   MODAL IMAGEN
+   VISOR DE IMAGEN GRANDE
 ===================================================== */
 
-.image-modal{
+.lightbox{
   position:fixed;
-
   inset:0;
-
-  background:#000d;
-
+  background:#000e;
   display:none;
-
   align-items:center;
-
   justify-content:center;
-
-  z-index:100;
-
+  z-index:500;
   padding:20px;
 }
 
-
-.image-modal.open{
+.lightbox.open{
   display:flex;
 }
 
+.lightbox-content{
+  position:relative;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
-.modal-image{
-  max-width:100%;
-
-  max-height:85vh;
-
+.lightbox-image{
+  max-width:92vw;
+  max-height:86vh;
   object-fit:contain;
-
-  border-radius:12px;
+  border-radius:8px;
+  user-select:none;
 }
 
-
-.modal-close{
+.lightbox-close{
   position:absolute;
-
-  top:18px;
-
-  right:18px;
-
+  top:10px;
+  right:10px;
   width:44px;
-
   height:44px;
-
   border:0;
-
   border-radius:50%;
-
-  background:#fff;
-
+  background:#ffffffdd;
   color:#111;
-
-  font-size:24px;
-
+  font-size:25px;
   cursor:pointer;
+  z-index:5;
 }
 
-
-/* =====================================================
-   FLECHAS MODAL
-===================================================== */
-
-.modal-prev,
-.modal-next{
+.lightbox-arrow{
   position:absolute;
-
   top:50%;
-
   transform:translateY(-50%);
-
-  width:48px;
-
-  height:48px;
-
+  width:50px;
+  height:50px;
   border:0;
-
   border-radius:50%;
-
-  background:#fff;
-
+  background:#ffffffdd;
   color:#111;
-
-  font-size:26px;
-
+  font-size:28px;
   cursor:pointer;
+  z-index:5;
 }
 
-
-.modal-prev{
-  left:15px;
+.lightbox-arrow.left{
+  left:5px;
 }
 
-
-.modal-next{
-  right:15px;
+.lightbox-arrow.right{
+  right:5px;
 }
 
-
-.modal-counter{
+.lightbox-counter{
   position:absolute;
-
-  bottom:20px;
-
+  bottom:18px;
   left:50%;
-
   transform:translateX(-50%);
-
-  background:#fff;
-
-  color:#111;
-
+  background:#000b;
+  color:#fff;
   padding:7px 13px;
-
-  border-radius:20px;
-
+  border-radius:999px;
   font-size:13px;
-
-  font-weight:700;
 }
 
 
@@ -648,26 +550,17 @@ textarea{
 
 .loading{
   background:#fff;
-
   border-radius:18px;
-
   padding:30px;
-
   text-align:center;
-
   color:#666;
 }
 
-
 .error{
   background:#fff;
-
   border-radius:18px;
-
   padding:25px;
-
   text-align:center;
-
   color:#b00020;
 }
 
@@ -681,85 +574,93 @@ textarea{
   .grid{
     grid-template-columns:
       repeat(2,minmax(0,1fr));
-
     gap:10px;
   }
-
 
   .card{
     border-radius:14px;
   }
 
-
   .body{
     padding:10px;
   }
-
 
   .name{
     font-size:15px;
   }
 
-
   .desc{
     font-size:12px;
-
     min-height:70px;
   }
-
 
   .price{
     font-size:18px;
   }
 
-
   .hero h1{
     font-size:24px;
   }
-
 
   .hero{
     padding:20px;
   }
 
-
   .brand{
     font-size:23px;
   }
 
-
   .logo{
     width:58px;
-
     height:58px;
   }
 
-
   .cart{
     right:12px;
-
     bottom:14px;
   }
 
-
   .thumb{
-    width:50px;
-
-    height:50px;
-
-    flex-basis:50px;
+    flex-basis:64px;
+    width:64px;
+    height:64px;
   }
 
+  .gallery-arrow{
+    width:34px;
+    height:34px;
+    font-size:19px;
+  }
 
-  .modal-prev,
-  .modal-next{
+  .lightbox{
+    padding:8px;
+  }
+
+  .lightbox-image{
+    max-width:96vw;
+    max-height:80vh;
+  }
+
+  .lightbox-arrow{
     width:42px;
-
     height:42px;
-
-    font-size:22px;
+    font-size:23px;
   }
 
+}
+
+
+/* =====================================================
+   UNA SOLA IMAGEN
+===================================================== */
+
+.gallery.single .thumbnails,
+.gallery.single .photo-info{
+  display:none;
+}
+
+.gallery.single .main-image-wrap{
+  cursor:zoom-in;
 }
 
 </style>
@@ -802,7 +703,6 @@ textarea{
 </header>
 
 
-
 <!-- =====================================================
      CONTENIDO
 ===================================================== -->
@@ -816,12 +716,10 @@ textarea{
       🛍️ Nuestro catálogo
     </h1>
 
-
     <p>
       Elige tus productos y envíanos tu pedido
       directamente por WhatsApp.
     </p>
-
 
     <input
       id="search"
@@ -830,7 +728,6 @@ textarea{
       placeholder="🔎 Buscar productos..."
       autocomplete="off"
     >
-
 
     <div
       id="productCount"
@@ -841,9 +738,6 @@ textarea{
 
   </section>
 
-
-
-  <!-- PRODUCTOS -->
 
   <section
     id="grid"
@@ -856,9 +750,7 @@ textarea{
 
   </section>
 
-
 </main>
-
 
 
 <!-- =====================================================
@@ -869,12 +761,8 @@ textarea{
   class="cart"
   onclick="openCart()"
 >
-
-  🛒 Carrito
-  (<span id="count">0</span>)
-
+  🛒 Carrito (<span id="count">0</span>)
 </button>
-
 
 
 <!-- =====================================================
@@ -889,7 +777,6 @@ textarea{
 
   <div class="sheet">
 
-
     <button
       class="close"
       onclick="closeCart()"
@@ -897,14 +784,11 @@ textarea{
       ✕
     </button>
 
-
     <h2>
       🛒 Tu pedido
     </h2>
 
-
     <div id="cartItems"></div>
-
 
     <div
       id="total"
@@ -922,7 +806,6 @@ textarea{
       Tu nombre
     </label>
 
-
     <input
       id="customer"
       type="text"
@@ -933,7 +816,6 @@ textarea{
     <label>
       Dirección o zona de entrega
     </label>
-
 
     <textarea
       id="address"
@@ -948,89 +830,95 @@ textarea{
       📲 Enviar pedido por WhatsApp
     </button>
 
-
   </div>
 
 </div>
-
 
 
 <!-- =====================================================
-     MODAL DE IMAGEN
+     VISOR PROFESIONAL DE IMÁGENES
 ===================================================== -->
 
 <div
-  id="imageModal"
-  class="image-modal"
-  onclick="closeImageModal(event)"
+  id="lightbox"
+  class="lightbox"
+  onclick="closeLightboxIfBackground(event)"
 >
 
+  <div class="lightbox-content">
 
-  <button
-    class="modal-close"
-    onclick="closeImageModal()"
-  >
-    ✕
-  </button>
-
-
-  <button
-    id="modalPrev"
-    class="modal-prev"
-    onclick="changeModalImage(-1,event)"
-  >
-    ‹
-  </button>
+    <button
+      class="lightbox-close"
+      onclick="closeLightbox()"
+      aria-label="Cerrar"
+    >
+      ✕
+    </button>
 
 
-  <img
-    id="modalImage"
-    class="modal-image"
-    src=""
-    alt="Imagen del producto"
-  >
+    <button
+      id="lightboxPrev"
+      class="lightbox-arrow left"
+      onclick="changeLightboxImage(-1)"
+      aria-label="Imagen anterior"
+    >
+      ‹
+    </button>
 
 
-  <button
-    id="modalNext"
-    class="modal-next"
-    onclick="changeModalImage(1,event)"
-  >
-    ›
-  </button>
+    <img
+      id="lightboxImage"
+      class="lightbox-image"
+      src=""
+      alt="Imagen del producto"
+    >
 
 
-  <div
-    id="modalCounter"
-    class="modal-counter"
-  >
+    <button
+      id="lightboxNext"
+      class="lightbox-arrow right"
+      onclick="changeLightboxImage(1)"
+      aria-label="Imagen siguiente"
+    >
+      ›
+    </button>
+
+
+    <div
+      id="lightboxCounter"
+      class="lightbox-counter"
+    >
+      1 / 1
+    </div>
+
   </div>
-
 
 </div>
 
 
-
 <script>
+
 
 /* =====================================================
    CONFIGURACIÓN SUPABASE
 ===================================================== */
 
 const SUPABASE_URL =
-  "https://ztsthkoejosgwkhmzfbd.supabase.co";
-
+  "https://ztsthkoejosgwkhmz.supabase.co";
 
 const SUPABASE_KEY =
   "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
 
+
+/* =====================================================
+   CONEXIÓN
+===================================================== */
 
 const supabaseClient =
   window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
   );
-
 
 
 /* =====================================================
@@ -1041,13 +929,11 @@ let products = [];
 
 let cart = [];
 
+let galleryStates = {};
 
-/* Modal */
+let currentLightboxImages = [];
 
-let modalImages = [];
-
-let modalIndex = 0;
-
+let currentLightboxIndex = 0;
 
 
 /* =====================================================
@@ -1057,58 +943,151 @@ let modalIndex = 0;
 const grid =
   document.getElementById("grid");
 
-
 const search =
   document.getElementById("search");
-
 
 const count =
   document.getElementById("count");
 
-
 const cartItems =
   document.getElementById("cartItems");
-
 
 const total =
   document.getElementById("total");
 
-
 const panel =
   document.getElementById("panel");
-
 
 const customer =
   document.getElementById("customer");
 
-
 const address =
   document.getElementById("address");
-
 
 const productCount =
   document.getElementById("productCount");
 
+const lightbox =
+  document.getElementById("lightbox");
 
-const imageModal =
-  document.getElementById("imageModal");
+const lightboxImage =
+  document.getElementById("lightboxImage");
+
+const lightboxCounter =
+  document.getElementById("lightboxCounter");
+
+const lightboxPrev =
+  document.getElementById("lightboxPrev");
+
+const lightboxNext =
+  document.getElementById("lightboxNext");
 
 
-const modalImage =
-  document.getElementById("modalImage");
+/* =====================================================
+   CONVERTIR IMÁGENES A ARRAY
+===================================================== */
+
+function getImages(value){
+
+  if(!value){
+    return [];
+  }
 
 
-const modalCounter =
-  document.getElementById("modalCounter");
+  /* ---------------------------------------------
+     Si Supabase devuelve un array directamente
+  --------------------------------------------- */
+
+  if(Array.isArray(value)){
+
+    return value
+      .map(x => String(x).trim())
+      .filter(Boolean);
+
+  }
 
 
-const modalPrev =
-  document.getElementById("modalPrev");
+  const text =
+    String(value).trim();
 
 
-const modalNext =
-  document.getElementById("modalNext");
+  if(!text){
+    return [];
+  }
 
+
+  /* ---------------------------------------------
+     Intentar JSON
+     
+     Ejemplo:
+     ["foto1.jpg","foto2.jpg","foto3.jpg"]
+  --------------------------------------------- */
+
+  if(
+    text.startsWith("[") &&
+    text.endsWith("]")
+  ){
+
+    try{
+
+      const parsed =
+        JSON.parse(text);
+
+
+      if(Array.isArray(parsed)){
+
+        return parsed
+          .map(x => String(x).trim())
+          .filter(Boolean);
+
+      }
+
+    }catch(e){
+
+      console.log(
+        "No se pudo interpretar JSON de imágenes."
+      );
+
+    }
+
+  }
+
+
+  /* ---------------------------------------------
+     Separadas por salto de línea
+  --------------------------------------------- */
+
+  if(text.includes("\n")){
+
+    return text
+      .split(/\r?\n/)
+      .map(x => x.trim())
+      .filter(Boolean);
+
+  }
+
+
+  /* ---------------------------------------------
+     Separadas por coma
+  --------------------------------------------- */
+
+  if(text.includes(",")){
+
+    return text
+      .split(",")
+      .map(x => x.trim())
+      .filter(Boolean);
+
+  }
+
+
+  /* ---------------------------------------------
+     Una sola imagen
+  --------------------------------------------- */
+
+  return [text];
+
+}
 
 
 /* =====================================================
@@ -1118,141 +1097,13 @@ const modalNext =
 function escapeHTML(value){
 
   return String(value ?? "")
-
     .replace(/&/g,"&amp;")
-
     .replace(/</g,"&lt;")
-
     .replace(/>/g,"&gt;")
-
     .replace(/"/g,"&quot;")
-
     .replace(/'/g,"&#039;");
 
 }
-
-
-
-/* =====================================================
-   OBTENER IMÁGENES DEL PRODUCTO
-===================================================== */
-
-function getProductImages(product){
-
-  let images = [];
-
-
-  /*
-    Imagen principal antigua
-  */
-
-  if(
-    product.image &&
-    typeof product.image === "string"
-  ){
-
-    images.push(
-      product.image
-    );
-
-  }
-
-
-  /*
-    Imágenes múltiples
-  */
-
-  if(product.images){
-
-    let extra = [];
-
-
-    /*
-      Si Supabase devuelve un array
-    */
-
-    if(Array.isArray(product.images)){
-
-      extra =
-        product.images;
-
-    }
-
-
-    /*
-      Si devuelve texto JSON
-    */
-
-    else if(
-      typeof product.images === "string"
-    ){
-
-      try{
-
-        const parsed =
-          JSON.parse(product.images);
-
-
-        if(Array.isArray(parsed)){
-
-          extra =
-            parsed;
-
-        }else{
-
-          extra =
-            product.images
-              .split(",")
-              .map(x => x.trim());
-
-        }
-
-      }catch(e){
-
-        extra =
-          product.images
-            .split(",")
-            .map(x => x.trim());
-
-      }
-
-    }
-
-
-    extra.forEach(url => {
-
-      if(
-        url &&
-        typeof url === "string" &&
-        !images.includes(url)
-      ){
-
-        images.push(url);
-
-      }
-
-    });
-
-  }
-
-
-  /*
-    Si no hay ninguna imagen
-  */
-
-  if(!images.length){
-
-    images.push(
-      "https://via.placeholder.com/600x600?text=Aqui+tai"
-    );
-
-  }
-
-
-  return images;
-
-}
-
 
 
 /* =====================================================
@@ -1262,15 +1113,10 @@ function getProductImages(product){
 async function loadProducts(){
 
   grid.innerHTML = `
-
     <div class="loading">
-
       ⏳ Cargando productos...
-
     </div>
-
   `;
-
 
   productCount.textContent =
     "Cargando productos...";
@@ -1278,25 +1124,16 @@ async function loadProducts(){
 
   try{
 
-
-    const {
-      data,
-      error
-    } =
+    const { data, error } =
       await supabaseClient
-
         .from("products")
-
         .select(
-          "id,name,category,description,price,image,images,stock,active"
+          "id,name,category,description,price,image,stock,active"
         )
-
-        .eq("active",true)
-
-        .order("id",{
+        .eq("active", true)
+        .order("id", {
           ascending:false
         });
-
 
 
     if(error){
@@ -1306,34 +1143,41 @@ async function loadProducts(){
         error
       );
 
-
       grid.innerHTML = `
-
         <div class="error">
-
           ❌ No se pudieron cargar los productos.
-
           <br><br>
-
-          ${escapeHTML(error.message)}
-
+          Revisa la conexión con Supabase.
         </div>
-
       `;
-
 
       productCount.textContent =
         "Error al cargar productos.";
-
 
       return;
 
     }
 
 
-
     products =
       data || [];
+
+
+    /*
+      Inicializar las galerías
+    */
+
+    products.forEach(product => {
+
+      const images =
+        getImages(product.image);
+
+      galleryStates[product.id] = {
+        images: images,
+        index:0
+      };
+
+    });
 
 
     render(products);
@@ -1341,21 +1185,14 @@ async function loadProducts(){
 
   }catch(error){
 
-
     console.error(error);
 
-
     grid.innerHTML = `
-
       <div class="error">
-
         ❌ Ocurrió un error al cargar
         el catálogo.
-
       </div>
-
     `;
-
 
     productCount.textContent =
       "Error al cargar productos.";
@@ -1365,17 +1202,212 @@ async function loadProducts(){
 }
 
 
+/* =====================================================
+   CREAR HTML DE GALERÍA
+===================================================== */
+
+function galleryHTML(product){
+
+  const images =
+    getImages(product.image);
+
+
+  const fallback =
+    "https://via.placeholder.com/600x600?text=Aqui+tai";
+
+
+  /*
+     Si no tiene imagen
+  */
+
+  if(!images.length){
+
+    images.push(fallback);
+
+  }
+
+
+  if(!galleryStates[product.id]){
+
+    galleryStates[product.id] = {
+      images:images,
+      index:0
+    };
+
+  }
+
+
+  const state =
+    galleryStates[product.id];
+
+
+  /*
+     Asegurar índice válido
+  */
+
+  if(
+    state.index < 0 ||
+    state.index >= images.length
+  ){
+
+    state.index = 0;
+
+  }
+
+
+  const mainImage =
+    images[state.index];
+
+
+  /*
+     Una sola imagen
+  */
+
+  if(images.length === 1){
+
+    return `
+
+      <div class="gallery single">
+
+        <div
+          class="main-image-wrap"
+          onclick="openLightbox(${Number(product.id)},0)"
+        >
+
+          <img
+            id="main-image-${Number(product.id)}"
+            class="main-image"
+            src="${escapeHTML(mainImage)}"
+            alt="${escapeHTML(product.name)}"
+            loading="lazy"
+            onerror="
+              this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
+            "
+          >
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /*
+     Varias imágenes
+  */
+
+  return `
+
+    <div
+      id="gallery-${Number(product.id)}"
+      class="gallery"
+    >
+
+      <div
+        class="main-image-wrap"
+        onclick="openLightbox(${Number(product.id)},${state.index})"
+      >
+
+        <img
+          id="main-image-${Number(product.id)}"
+          class="main-image"
+          src="${escapeHTML(mainImage)}"
+          alt="${escapeHTML(product.name)}"
+          loading="lazy"
+          onerror="
+            this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
+          "
+        >
+
+
+        <button
+          class="gallery-arrow left"
+          onclick="
+            event.stopPropagation();
+            changeGallery(${Number(product.id)},-1)
+          "
+          aria-label="Imagen anterior"
+        >
+          ‹
+        </button>
+
+
+        <button
+          class="gallery-arrow right"
+          onclick="
+            event.stopPropagation();
+            changeGallery(${Number(product.id)},1)
+          "
+          aria-label="Imagen siguiente"
+        >
+          ›
+        </button>
+
+
+        <div
+          id="counter-${Number(product.id)}"
+          class="photo-counter"
+        >
+          ${state.index + 1} / ${images.length}
+        </div>
+
+      </div>
+
+
+      <div
+        id="thumbs-${Number(product.id)}"
+        class="thumbnails"
+      >
+
+        ${images.map((image,index) => `
+
+          <button
+            class="thumb ${index === state.index ? "active" : ""}"
+            onclick="
+              event.stopPropagation();
+              selectGalleryImage(${Number(product.id)},${index})
+            "
+            aria-label="Ver imagen ${index + 1}"
+          >
+
+            <img
+              src="${escapeHTML(image)}"
+              alt="Miniatura ${index + 1}"
+              loading="lazy"
+              onerror="
+                this.src='https://via.placeholder.com/100x100?text=Foto'
+              "
+            >
+
+          </button>
+
+        `).join("")}
+
+      </div>
+
+
+      <div class="photo-info">
+        📷 ${images.length}
+        ${images.length === 1 ? "foto" : "fotos"}
+      </div>
+
+    </div>
+
+  `;
+
+}
+
 
 /* =====================================================
-   MOSTRAR PRODUCTOS
+   RENDER PRODUCTOS
 ===================================================== */
 
 function render(list){
 
-
   productCount.textContent =
     list.length +
-
     (
       list.length === 1
       ? " producto disponible."
@@ -1383,17 +1415,12 @@ function render(list){
     );
 
 
-
   if(!list.length){
 
     grid.innerHTML = `
-
       <div class="loading">
-
         🔎 No encontramos productos.
-
       </div>
-
     `;
 
     return;
@@ -1401,18 +1428,11 @@ function render(list){
   }
 
 
-
   grid.innerHTML =
-
     list.map(p => {
-
 
       const stock =
         Number(p.stock || 0);
-
-
-      const images =
-        getProductImages(p);
 
 
       const disabled =
@@ -1422,198 +1442,65 @@ function render(list){
 
 
       const stockHTML =
-
         stock > 0
 
         ? `
-
           <div class="stock">
-
-            📦 Disponible:
-            ${stock}
-
+            📦 Disponible: ${stock}
           </div>
-
         `
 
         : `
-
           <div class="stock out">
-
             ❌ Agotado
-
           </div>
-
         `;
-
-
-
-      /*
-        Miniaturas
-      */
-
-      const thumbnails =
-
-        images.length > 1
-
-        ? `
-
-          <div class="thumbnails">
-
-            ${
-              images.map((url,index) => `
-
-                <img
-
-                  class="thumb ${
-                    index === 0
-                    ? "active"
-                    : ""
-                  }"
-
-                  src="${escapeHTML(url)}"
-
-                  alt="${escapeHTML(p.name)}"
-
-                  loading="lazy"
-
-                  onclick="
-                    changeProductImage(
-                      this,
-                      ${Number(p.id)},
-                      ${index}
-                    );
-                    event.stopPropagation();
-                  "
-
-                  onerror="
-                    this.style.display='none'
-                  "
-
-                >
-
-              `).join("")
-            }
-
-          </div>
-
-
-          <div class="photo-count">
-
-            📷 ${images.length} fotos
-
-          </div>
-
-        `
-
-        : "";
-
 
 
       return `
 
-        <article
-          class="card"
-          data-product-id="${Number(p.id)}"
-        >
+        <article class="card">
 
 
-          <div class="gallery">
-
-
-            <img
-
-              id="main-image-${Number(p.id)}"
-
-              class="main-image"
-
-              src="${escapeHTML(images[0])}"
-
-              alt="${escapeHTML(p.name)}"
-
-              loading="lazy"
-
-              onclick="
-                openImageModal(
-                  ${Number(p.id)},
-                  0
-                )
-              "
-
-              onerror="
-                this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
-              "
-
-            >
-
-
-            ${thumbnails}
-
-
-          </div>
-
+          ${galleryHTML(p)}
 
 
           <div class="body">
 
-
             <div class="cat">
-
               ${escapeHTML(
                 p.category ||
                 "Sin categoría"
               )}
-
             </div>
-
 
 
             <div class="name">
-
-              ${escapeHTML(
-                p.name ||
-                "Producto"
-              )}
-
+              ${escapeHTML(p.name)}
             </div>
-
 
 
             <div class="desc">
-
               ${escapeHTML(
-                p.description ||
-                ""
+                p.description || ""
               )}
-
             </div>
-
 
 
             <div class="price">
-
               Bs ${Number(
                 p.price || 0
               ).toFixed(2)}
-
             </div>
-
 
 
             ${stockHTML}
 
 
-
             <button
-
               class="btn"
-
               ${disabled}
-
-              onclick="
-                add(${Number(p.id)})
-              "
-
+              onclick="add(${Number(p.id)})"
             >
 
               ${
@@ -1624,9 +1511,7 @@ function render(list){
 
             </button>
 
-
           </div>
-
 
         </article>
 
@@ -1637,104 +1522,183 @@ function render(list){
 }
 
 
-
 /* =====================================================
-   CAMBIAR IMAGEN PRINCIPAL
+   CAMBIAR IMAGEN DE GALERÍA
 ===================================================== */
 
-function changeProductImage(
-  thumb,
-  productId,
-  imageIndex
-){
+function changeGallery(id,direction){
 
-  const product =
-    products.find(
-      p =>
-        Number(p.id) ===
-        Number(productId)
-    );
+  const state =
+    galleryStates[id];
 
 
-  if(!product){
+  if(!state){
     return;
   }
 
 
-  const images =
-    getProductImages(product);
+  const total =
+    state.images.length;
 
 
-  const mainImage =
-    document.getElementById(
-      "main-image-" +
-      productId
-    );
-
-
-  if(!mainImage){
+  if(total <= 1){
     return;
   }
 
 
-  mainImage.src =
-    images[imageIndex];
+  state.index += direction;
 
 
-  const thumbnails =
-    thumb
-      .parentElement
-      .querySelectorAll(".thumb");
+  if(state.index < 0){
+
+    state.index =
+      total - 1;
+
+  }
 
 
-  thumbnails.forEach(
-    t =>
-      t.classList.remove("active")
-  );
+  if(state.index >= total){
+
+    state.index = 0;
+
+  }
 
 
-  thumb.classList.add("active");
+  updateGallery(id);
 
 }
 
 
-
 /* =====================================================
-   ABRIR IMAGEN GRANDE
+   SELECCIONAR MINIATURA
 ===================================================== */
 
-function openImageModal(
-  productId,
-  index
-){
+function selectGalleryImage(id,index){
 
-  const product =
-    products.find(
-      p =>
-        Number(p.id) ===
-        Number(productId)
-    );
+  const state =
+    galleryStates[id];
 
 
-  if(!product){
+  if(!state){
     return;
   }
 
 
-  modalImages =
-    getProductImages(product);
+  if(
+    index < 0 ||
+    index >= state.images.length
+  ){
+
+    return;
+
+  }
 
 
-  modalIndex =
-    index || 0;
+  state.index =
+    index;
 
 
-  showModalImage();
+  updateGallery(id);
+
+}
 
 
-  imageModal.classList.add(
-    "open"
+/* =====================================================
+   ACTUALIZAR GALERÍA
+===================================================== */
+
+function updateGallery(id){
+
+  const state =
+    galleryStates[id];
+
+
+  if(!state){
+    return;
+  }
+
+
+  const image =
+    state.images[state.index];
+
+
+  const mainImage =
+    document.getElementById(
+      "main-image-" + id
+    );
+
+
+  const counter =
+    document.getElementById(
+      "counter-" + id
+    );
+
+
+  const thumbs =
+    document.querySelectorAll(
+      "#thumbs-" + id + " .thumb"
+    );
+
+
+  if(mainImage){
+
+    mainImage.src =
+      image;
+
+  }
+
+
+  if(counter){
+
+    counter.textContent =
+      (state.index + 1) +
+      " / " +
+      state.images.length;
+
+  }
+
+
+  thumbs.forEach(
+    (thumb,index) => {
+
+      thumb.classList.toggle(
+        "active",
+        index === state.index
+      );
+
+    }
   );
+
+}
+
+
+/* =====================================================
+   ABRIR VISOR GRANDE
+===================================================== */
+
+function openLightbox(id,index){
+
+  const state =
+    galleryStates[id];
+
+
+  if(!state){
+    return;
+  }
+
+
+  currentLightboxImages =
+    state.images;
+
+
+  currentLightboxIndex =
+    index;
+
+
+  updateLightbox();
+
+
+  lightbox.classList.add("open");
 
 
   document.body.style.overflow =
@@ -1743,125 +1707,126 @@ function openImageModal(
 }
 
 
-
 /* =====================================================
-   MOSTRAR IMAGEN DEL MODAL
+   ACTUALIZAR VISOR
 ===================================================== */
 
-function showModalImage(){
+function updateLightbox(){
 
-  if(!modalImages.length){
+  if(!currentLightboxImages.length){
     return;
   }
 
 
-  modalImage.src =
-    modalImages[modalIndex];
+  lightboxImage.src =
+    currentLightboxImages[
+      currentLightboxIndex
+    ];
 
 
-  modalCounter.textContent =
-
-    (modalIndex + 1) +
+  lightboxCounter.textContent =
+    (currentLightboxIndex + 1) +
     " / " +
-    modalImages.length;
+    currentLightboxImages.length;
 
 
+  /*
+     Ocultar flechas si solamente hay
+     una fotografía
+  */
 
-  if(modalImages.length <= 1){
+  if(currentLightboxImages.length <= 1){
 
-    modalPrev.style.display =
+    lightboxPrev.style.display =
       "none";
 
-    modalNext.style.display =
+    lightboxNext.style.display =
       "none";
 
   }else{
 
-    modalPrev.style.display =
-      "block";
+    lightboxPrev.style.display =
+      "flex";
 
-    modalNext.style.display =
-      "block";
+    lightboxNext.style.display =
+      "flex";
 
   }
 
 }
 
 
-
 /* =====================================================
-   CAMBIAR IMAGEN DEL MODAL
+   CAMBIAR IMAGEN DEL VISOR
 ===================================================== */
 
-function changeModalImage(
-  direction,
-  event
-){
+function changeLightboxImage(direction){
 
-  if(event){
-    event.stopPropagation();
-  }
+  if(
+    currentLightboxImages.length <= 1
+  ){
 
-
-  if(modalImages.length <= 1){
     return;
+
   }
 
 
-  modalIndex +=
+  currentLightboxIndex +=
     direction;
 
 
-  if(modalIndex < 0){
+  if(currentLightboxIndex < 0){
 
-    modalIndex =
-      modalImages.length - 1;
+    currentLightboxIndex =
+      currentLightboxImages.length - 1;
 
   }
 
 
   if(
-    modalIndex >=
-    modalImages.length
+    currentLightboxIndex >=
+    currentLightboxImages.length
   ){
 
-    modalIndex = 0;
+    currentLightboxIndex = 0;
 
   }
 
 
-  showModalImage();
+  updateLightbox();
 
 }
 
 
-
 /* =====================================================
-   CERRAR MODAL
+   CERRAR VISOR
 ===================================================== */
 
-function closeImageModal(event){
+function closeLightbox(){
 
-  if(
-    event &&
-    event.target !== imageModal
-  ){
-
-    return;
-
-  }
-
-
-  imageModal.classList.remove(
-    "open"
-  );
-
+  lightbox.classList.remove("open");
 
   document.body.style.overflow =
     "";
 
 }
 
+
+/* =====================================================
+   CERRAR AL TOCAR FONDO
+===================================================== */
+
+function closeLightboxIfBackground(event){
+
+  if(
+    event.target === lightbox
+  ){
+
+    closeLightbox();
+
+  }
+
+}
 
 
 /* =====================================================
@@ -1873,9 +1838,7 @@ document.addEventListener(
   function(event){
 
     if(
-      !imageModal.classList.contains(
-        "open"
-      )
+      !lightbox.classList.contains("open")
     ){
 
       return;
@@ -1885,31 +1848,85 @@ document.addEventListener(
 
     if(event.key === "Escape"){
 
-      closeImageModal();
+      closeLightbox();
 
     }
 
 
     if(event.key === "ArrowLeft"){
 
-      changeModalImage(
-        -1
-      );
+      changeLightboxImage(-1);
 
     }
 
 
     if(event.key === "ArrowRight"){
 
-      changeModalImage(
-        1
-      );
+      changeLightboxImage(1);
 
     }
 
   }
 );
 
+
+/* =====================================================
+   SWIPE EN CELULAR
+===================================================== */
+
+let touchStartX = 0;
+
+let touchEndX = 0;
+
+
+lightbox.addEventListener(
+  "touchstart",
+  function(event){
+
+    touchStartX =
+      event.changedTouches[0].screenX;
+
+  },
+  {
+    passive:true
+  }
+);
+
+
+lightbox.addEventListener(
+  "touchend",
+  function(event){
+
+    touchEndX =
+      event.changedTouches[0].screenX;
+
+
+    const difference =
+      touchStartX - touchEndX;
+
+
+    if(Math.abs(difference) < 50){
+
+      return;
+
+    }
+
+
+    if(difference > 0){
+
+      changeLightboxImage(1);
+
+    }else{
+
+      changeLightboxImage(-1);
+
+    }
+
+  },
+  {
+    passive:true
+  }
+);
 
 
 /* =====================================================
@@ -1920,12 +1937,10 @@ search.addEventListener(
   "input",
   function(){
 
-
     const q =
       search.value
         .trim()
         .toLowerCase();
-
 
 
     if(!q){
@@ -1937,46 +1952,29 @@ search.addEventListener(
     }
 
 
-
     const filtered =
-      products.filter(
-        p => {
+      products.filter(p => {
+
+        const text =
+          [
+            p.name,
+            p.description,
+            p.category
+          ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
 
 
-          const text =
+        return text.includes(q);
 
-            [
-
-              p.name,
-
-              p.description,
-
-              p.category
-
-            ]
-
-            .filter(Boolean)
-
-            .join(" ")
-
-            .toLowerCase();
-
-
-
-          return text.includes(q);
-
-        }
-
-      );
-
+      });
 
 
     render(filtered);
 
   }
-
 );
-
 
 
 /* =====================================================
@@ -1984,7 +1982,6 @@ search.addEventListener(
 ===================================================== */
 
 function add(id){
-
 
   const product =
     products.find(
@@ -2005,10 +2002,8 @@ function add(id){
   }
 
 
-
   const stock =
     Number(product.stock || 0);
-
 
 
   if(stock <= 0){
@@ -2022,7 +2017,6 @@ function add(id){
   }
 
 
-
   const existing =
     cart.find(
       x =>
@@ -2031,14 +2025,9 @@ function add(id){
     );
 
 
-
   if(existing){
 
-
-    if(
-      existing.qty >=
-      stock
-    ){
+    if(existing.qty >= stock){
 
       alert(
         "No puedes agregar más unidades de las disponibles."
@@ -2051,20 +2040,14 @@ function add(id){
 
     existing.qty++;
 
-
   }else{
 
-
     cart.push({
-
       ...product,
-
       qty:1
-
     });
 
   }
-
 
 
   updateCart();
@@ -2074,19 +2057,16 @@ function add(id){
 }
 
 
-
 /* =====================================================
    ACTUALIZAR CARRITO
 ===================================================== */
 
 function updateCart(){
 
-
   const quantity =
     cart.reduce(
       (sum,item) =>
-        sum +
-        Number(item.qty),
+        sum + Number(item.qty),
       0
     );
 
@@ -2095,9 +2075,7 @@ function updateCart(){
     quantity;
 
 
-
   if(!cart.length){
-
 
     cartItems.innerHTML =
       "<p>Tu carrito está vacío.</p>";
@@ -2112,118 +2090,71 @@ function updateCart(){
   }
 
 
-
   cartItems.innerHTML =
+    cart.map((item,index) => {
 
-    cart.map(
-      (item,index) => {
-
-
-        const subtotal =
-
-          Number(
-            item.price || 0
-          ) *
-
-          Number(
-            item.qty || 0
-          );
+      const subtotal =
+        Number(item.price || 0) *
+        Number(item.qty || 0);
 
 
+      return `
 
-        return `
+        <div class="row">
 
-          <div class="row">
+          <div>
 
+            <b>
+              ${escapeHTML(item.name)}
+            </b>
 
-            <div>
+            <br>
 
-              <b>
+            Bs ${Number(
+              item.price || 0
+            ).toFixed(2)}
 
-                ${escapeHTML(
-                  item.name
-                )}
+            ×
+            ${item.qty}
 
-              </b>
+            <br>
 
-
-              <br>
-
-
-              Bs ${Number(
-                item.price || 0
-              ).toFixed(2)}
-
-              ×
-
-              ${item.qty}
-
-
-              <br>
-
-
-              <strong>
-
-                Subtotal:
-                Bs ${subtotal.toFixed(2)}
-
-              </strong>
-
-            </div>
-
-
-
-            <button
-
-              onclick="
-                removeItem(${index})
-              "
-
-            >
-
-              🗑️
-
-            </button>
-
+            <strong>
+              Subtotal:
+              Bs ${subtotal.toFixed(2)}
+            </strong>
 
           </div>
 
-        `;
 
-      }
+          <button
+            onclick="removeItem(${index})"
+          >
+            🗑️
+          </button>
 
-    ).join("");
+        </div>
 
+      `;
+
+    }).join("");
 
 
   const grandTotal =
-
     cart.reduce(
       (sum,item) =>
-
         sum +
-
-        Number(
-          item.price || 0
-        ) *
-
-        Number(
-          item.qty || 0
-        ),
-
+        Number(item.price || 0) *
+        Number(item.qty || 0),
       0
     );
 
 
-
   total.textContent =
-
     "Total: Bs " +
-
     grandTotal.toFixed(2);
 
 }
-
 
 
 /* =====================================================
@@ -2232,47 +2163,31 @@ function updateCart(){
 
 function removeItem(index){
 
-  cart.splice(
-    index,
-    1
-  );
-
+  cart.splice(index,1);
 
   updateCart();
 
 }
 
 
-
 /* =====================================================
-   ABRIR CARRITO
+   ABRIR / CERRAR CARRITO
 ===================================================== */
 
 function openCart(){
 
-  panel.classList.add(
-    "open"
-  );
-
+  panel.classList.add("open");
 
   updateCart();
 
 }
 
 
-
-/* =====================================================
-   CERRAR CARRITO
-===================================================== */
-
 function closeCart(){
 
-  panel.classList.remove(
-    "open"
-  );
+  panel.classList.remove("open");
 
 }
-
 
 
 /* =====================================================
@@ -2280,7 +2195,6 @@ function closeCart(){
 ===================================================== */
 
 function sendWhatsApp(){
-
 
   if(!cart.length){
 
@@ -2293,11 +2207,9 @@ function sendWhatsApp(){
   }
 
 
-
   const name =
     customer.value.trim() ||
     "No indicado";
-
 
 
   const addr =
@@ -2305,95 +2217,53 @@ function sendWhatsApp(){
     "No indicada";
 
 
-
   const grandTotal =
-
     cart.reduce(
       (sum,item) =>
-
         sum +
-
-        Number(
-          item.price || 0
-        ) *
-
-        Number(
-          item.qty || 0
-        ),
-
+        Number(item.price || 0) *
+        Number(item.qty || 0),
       0
     );
 
 
-
   let message =
-
     "🛍️ *NUEVO PEDIDO - AQUÍ TÁI*\n\n";
 
 
+  cart.forEach(item => {
 
-  cart.forEach(
-    item => {
-
-
-      const subtotal =
-
-        Number(
-          item.price || 0
-        ) *
-
-        Number(
-          item.qty || 0
-        );
+    const subtotal =
+      Number(item.price || 0) *
+      Number(item.qty || 0);
 
 
+    message +=
+      "• " +
+      item.name +
+      " × " +
+      item.qty +
+      " = Bs " +
+      subtotal.toFixed(2) +
+      "\n";
 
-      message +=
-
-        "• " +
-
-        item.name +
-
-        " × " +
-
-        item.qty +
-
-        " = Bs " +
-
-        subtotal.toFixed(2) +
-
-        "\n";
-
-    }
-
-  );
-
+  });
 
 
   message +=
-
     "\n💰 *Total: Bs " +
-
     grandTotal.toFixed(2) +
-
     "*";
 
 
-
   message +=
-
     "\n👤 Cliente: " +
-
     name;
 
 
-
   message +=
-
     "\n📍 Entrega: " +
-
     addr;
-
 
 
   const encodedMessage =
@@ -2402,20 +2272,15 @@ function sendWhatsApp(){
     );
 
 
-
   const whatsappURL =
-
     "https://wa.me/59171440907?text=" +
-
     encodedMessage;
-
 
 
   window.location.href =
     whatsappURL;
 
 }
-
 
 
 /* =====================================================
@@ -2427,5 +2292,4 @@ loadProducts();
 </script>
 
 </body>
-
-      </html>
+</html>
