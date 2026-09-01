@@ -904,7 +904,7 @@ textarea{
 ===================================================== */
 
 const SUPABASE_URL =
-  "https://ztsthkoejosgwkhmz.supabase.co";
+  "https://ztsthkoejosgwkhmzfbd.supabase.co";
 
 const SUPABASE_KEY =
   "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
@@ -926,13 +926,9 @@ const supabaseClient =
 ===================================================== */
 
 let products = [];
-
 let cart = [];
-
 let galleryStates = {};
-
 let currentLightboxImages = [];
-
 let currentLightboxIndex = 0;
 
 
@@ -940,153 +936,55 @@ let currentLightboxIndex = 0;
    ELEMENTOS
 ===================================================== */
 
-const grid =
-  document.getElementById("grid");
-
-const search =
-  document.getElementById("search");
-
-const count =
-  document.getElementById("count");
-
-const cartItems =
-  document.getElementById("cartItems");
-
-const total =
-  document.getElementById("total");
-
-const panel =
-  document.getElementById("panel");
-
-const customer =
-  document.getElementById("customer");
-
-const address =
-  document.getElementById("address");
-
-const productCount =
-  document.getElementById("productCount");
-
-const lightbox =
-  document.getElementById("lightbox");
-
-const lightboxImage =
-  document.getElementById("lightboxImage");
-
-const lightboxCounter =
-  document.getElementById("lightboxCounter");
-
-const lightboxPrev =
-  document.getElementById("lightboxPrev");
-
-const lightboxNext =
-  document.getElementById("lightboxNext");
+const grid = document.getElementById("grid");
+const search = document.getElementById("search");
+const count = document.getElementById("count");
+const cartItems = document.getElementById("cartItems");
+const total = document.getElementById("total");
+const panel = document.getElementById("panel");
+const customer = document.getElementById("customer");
+const address = document.getElementById("address");
+const productCount = document.getElementById("productCount");
+const lightbox = document.getElementById("lightbox");
+const lightboxImage = document.getElementById("lightboxImage");
+const lightboxCounter = document.getElementById("lightboxCounter");
+const lightboxPrev = document.getElementById("lightboxPrev");
+const lightboxNext = document.getElementById("lightboxNext");
 
 
 /* =====================================================
    CONVERTIR IMÁGENES A ARRAY
 ===================================================== */
 
-function getImages(value){
+function getImages(product){
+  let list = [];
 
-  if(!value){
-    return [];
-  }
-
-
-  /* ---------------------------------------------
-     Si Supabase devuelve un array directamente
-  --------------------------------------------- */
-
-  if(Array.isArray(value)){
-
-    return value
-      .map(x => String(x).trim())
-      .filter(Boolean);
-
-  }
-
-
-  const text =
-    String(value).trim();
-
-
-  if(!text){
-    return [];
-  }
-
-
-  /* ---------------------------------------------
-     Intentar JSON
-     
-     Ejemplo:
-     ["foto1.jpg","foto2.jpg","foto3.jpg"]
-  --------------------------------------------- */
-
-  if(
-    text.startsWith("[") &&
-    text.endsWith("]")
-  ){
-
-    try{
-
-      const parsed =
-        JSON.parse(text);
-
-
-      if(Array.isArray(parsed)){
-
-        return parsed
-          .map(x => String(x).trim())
-          .filter(Boolean);
-
+  if (product.images) {
+    if (Array.isArray(product.images)) {
+      list = product.images.map(x => String(x).trim()).filter(Boolean);
+    } else if (typeof product.images === 'string') {
+      try {
+        const parsed = JSON.parse(product.images);
+        if (Array.isArray(parsed)) {
+          list = parsed.map(x => String(x).trim()).filter(Boolean);
+        }
+      } catch(e) {
+        if (product.images.includes("\n")) {
+          list = product.images.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+        } else if (product.images.includes(",")) {
+          list = product.images.split(",").map(x => x.trim()).filter(Boolean);
+        } else if (product.images.trim()) {
+          list = [product.images.trim()];
+        }
       }
-
-    }catch(e){
-
-      console.log(
-        "No se pudo interpretar JSON de imágenes."
-      );
-
     }
-
   }
 
-
-  /* ---------------------------------------------
-     Separadas por salto de línea
-  --------------------------------------------- */
-
-  if(text.includes("\n")){
-
-    return text
-      .split(/\r?\n/)
-      .map(x => x.trim())
-      .filter(Boolean);
-
+  if (!list.length && product.image) {
+    list = [String(product.image).trim()];
   }
 
-
-  /* ---------------------------------------------
-     Separadas por coma
-  --------------------------------------------- */
-
-  if(text.includes(",")){
-
-    return text
-      .split(",")
-      .map(x => x.trim())
-      .filter(Boolean);
-
-  }
-
-
-  /* ---------------------------------------------
-     Una sola imagen
-  --------------------------------------------- */
-
-  return [text];
-
+  return list;
 }
 
 
@@ -1095,14 +993,12 @@ function getImages(value){
 ===================================================== */
 
 function escapeHTML(value){
-
   return String(value ?? "")
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
-
 }
 
 
@@ -1118,31 +1014,17 @@ async function loadProducts(){
     </div>
   `;
 
-  productCount.textContent =
-    "Cargando productos...";
-
+  productCount.textContent = "Cargando productos...";
 
   try{
-
-    const { data, error } =
-      await supabaseClient
-        .from("products")
-        .select(
-          "id,name,category,description,price,image,stock,active"
-        )
-        .eq("active", true)
-        .order("id", {
-          ascending:false
-        });
-
+    const { data, error } = await supabaseClient
+      .from("products")
+      .select("id, name, category, description, price, image, images, stock, active")
+      .eq("active", true)
+      .order("id", { ascending: false });
 
     if(error){
-
-      console.error(
-        "Error Supabase:",
-        error
-      );
-
+      console.error("Error Supabase:", error);
       grid.innerHTML = `
         <div class="error">
           ❌ No se pudieron cargar los productos.
@@ -1150,55 +1032,31 @@ async function loadProducts(){
           Revisa la conexión con Supabase.
         </div>
       `;
-
-      productCount.textContent =
-        "Error al cargar productos.";
-
+      productCount.textContent = "Error al cargar productos.";
       return;
-
     }
 
-
-    products =
-      data || [];
-
-
-    /*
-      Inicializar las galerías
-    */
+    products = data || [];
 
     products.forEach(product => {
-
-      const images =
-        getImages(product.image);
-
+      const images = getImages(product);
       galleryStates[product.id] = {
         images: images,
-        index:0
+        index: 0
       };
-
     });
-
 
     render(products);
 
-
-  }catch(error){
-
+  } catch(error){
     console.error(error);
-
     grid.innerHTML = `
       <div class="error">
-        ❌ Ocurrió un error al cargar
-        el catálogo.
+        ❌ Ocurrió un error al cargar el catálogo.
       </div>
     `;
-
-    productCount.textContent =
-      "Error al cargar productos.";
-
+    productCount.textContent = "Error al cargar productos.";
   }
-
 }
 
 
@@ -1207,196 +1065,96 @@ async function loadProducts(){
 ===================================================== */
 
 function galleryHTML(product){
-
-  const images =
-    getImages(product.image);
-
-
-  const fallback =
-    "https://via.placeholder.com/600x600?text=Aqui+tai";
-
-
-  /*
-     Si no tiene imagen
-  */
+  const images = getImages(product);
+  const fallback = "https://via.placeholder.com/600x600?text=Aqui+tai";
 
   if(!images.length){
-
     images.push(fallback);
-
   }
-
 
   if(!galleryStates[product.id]){
-
     galleryStates[product.id] = {
-      images:images,
-      index:0
+      images: images,
+      index: 0
     };
-
   }
 
+  const state = galleryStates[product.id];
 
-  const state =
-    galleryStates[product.id];
-
-
-  /*
-     Asegurar índice válido
-  */
-
-  if(
-    state.index < 0 ||
-    state.index >= images.length
-  ){
-
+  if(state.index < 0 || state.index >= images.length){
     state.index = 0;
-
   }
 
-
-  const mainImage =
-    images[state.index];
-
-
-  /*
-     Una sola imagen
-  */
+  const mainImage = images[state.index];
 
   if(images.length === 1){
-
     return `
-
       <div class="gallery single">
-
-        <div
-          class="main-image-wrap"
-          onclick="openLightbox(${Number(product.id)},0)"
-        >
-
+        <div class="main-image-wrap" onclick="openLightbox(${Number(product.id)},0)">
           <img
             id="main-image-${Number(product.id)}"
             class="main-image"
             src="${escapeHTML(mainImage)}"
             alt="${escapeHTML(product.name)}"
             loading="lazy"
-            onerror="
-              this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
-            "
+            onerror="this.src='https://via.placeholder.com/600x600?text=Sin+imagen'"
           >
-
         </div>
-
       </div>
-
     `;
-
   }
 
-
-  /*
-     Varias imágenes
-  */
-
   return `
-
-    <div
-      id="gallery-${Number(product.id)}"
-      class="gallery"
-    >
-
-      <div
-        class="main-image-wrap"
-        onclick="openLightbox(${Number(product.id)},${state.index})"
-      >
-
+    <div id="gallery-${Number(product.id)}" class="gallery">
+      <div class="main-image-wrap" onclick="openLightbox(${Number(product.id)},${state.index})">
         <img
           id="main-image-${Number(product.id)}"
           class="main-image"
           src="${escapeHTML(mainImage)}"
           alt="${escapeHTML(product.name)}"
           loading="lazy"
-          onerror="
-            this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
-          "
+          onerror="this.src='https://via.placeholder.com/600x600?text=Sin+imagen'"
         >
-
 
         <button
           class="gallery-arrow left"
-          onclick="
-            event.stopPropagation();
-            changeGallery(${Number(product.id)},-1)
-          "
+          onclick="event.stopPropagation(); changeGallery(${Number(product.id)}, -1)"
           aria-label="Imagen anterior"
-        >
-          ‹
-        </button>
-
+        >‹</button>
 
         <button
           class="gallery-arrow right"
-          onclick="
-            event.stopPropagation();
-            changeGallery(${Number(product.id)},1)
-          "
+          onclick="event.stopPropagation(); changeGallery(${Number(product.id)}, 1)"
           aria-label="Imagen siguiente"
-        >
-          ›
-        </button>
+        >›</button>
 
-
-        <div
-          id="counter-${Number(product.id)}"
-          class="photo-counter"
-        >
+        <div id="counter-${Number(product.id)}" class="photo-counter">
           ${state.index + 1} / ${images.length}
         </div>
-
       </div>
 
-
-      <div
-        id="thumbs-${Number(product.id)}"
-        class="thumbnails"
-      >
-
-        ${images.map((image,index) => `
-
+      <div id="thumbs-${Number(product.id)}" class="thumbnails">
+        ${images.map((image, index) => `
           <button
             class="thumb ${index === state.index ? "active" : ""}"
-            onclick="
-              event.stopPropagation();
-              selectGalleryImage(${Number(product.id)},${index})
-            "
+            onclick="event.stopPropagation(); selectGalleryImage(${Number(product.id)}, ${index})"
             aria-label="Ver imagen ${index + 1}"
           >
-
             <img
               src="${escapeHTML(image)}"
               alt="Miniatura ${index + 1}"
               loading="lazy"
-              onerror="
-                this.src='https://via.placeholder.com/100x100?text=Foto'
-              "
+              onerror="this.src='https://via.placeholder.com/100x100?text=Foto'"
             >
-
           </button>
-
         `).join("")}
-
       </div>
-
 
       <div class="photo-info">
-        📷 ${images.length}
-        ${images.length === 1 ? "foto" : "fotos"}
+        📷 ${images.length} ${images.length === 1 ? "foto" : "fotos"}
       </div>
-
     </div>
-
   `;
-
 }
 
 
@@ -1405,120 +1163,40 @@ function galleryHTML(product){
 ===================================================== */
 
 function render(list){
-
-  productCount.textContent =
-    list.length +
-    (
-      list.length === 1
-      ? " producto disponible."
-      : " productos disponibles."
-    );
-
+  productCount.textContent = list.length + (list.length === 1 ? " producto disponible." : " productos disponibles.");
 
   if(!list.length){
-
     grid.innerHTML = `
       <div class="loading">
         🔎 No encontramos productos.
       </div>
     `;
-
     return;
-
   }
 
+  grid.innerHTML = list.map(p => {
+    const stock = Number(p.stock || 0);
+    const disabled = stock <= 0 ? "disabled" : "";
+    const stockHTML = stock > 0
+      ? `<div class="stock">📦 Disponible: ${stock}</div>`
+      : `<div class="stock out">❌ Agotado</div>`;
 
-  grid.innerHTML =
-    list.map(p => {
-
-      const stock =
-        Number(p.stock || 0);
-
-
-      const disabled =
-        stock <= 0
-        ? "disabled"
-        : "";
-
-
-      const stockHTML =
-        stock > 0
-
-        ? `
-          <div class="stock">
-            📦 Disponible: ${stock}
-          </div>
-        `
-
-        : `
-          <div class="stock out">
-            ❌ Agotado
-          </div>
-        `;
-
-
-      return `
-
-        <article class="card">
-
-
-          ${galleryHTML(p)}
-
-
-          <div class="body">
-
-            <div class="cat">
-              ${escapeHTML(
-                p.category ||
-                "Sin categoría"
-              )}
-            </div>
-
-
-            <div class="name">
-              ${escapeHTML(p.name)}
-            </div>
-
-
-            <div class="desc">
-              ${escapeHTML(
-                p.description || ""
-              )}
-            </div>
-
-
-            <div class="price">
-              Bs ${Number(
-                p.price || 0
-              ).toFixed(2)}
-            </div>
-
-
-            ${stockHTML}
-
-
-            <button
-              class="btn"
-              ${disabled}
-              onclick="add(${Number(p.id)})"
-            >
-
-              ${
-                stock > 0
-                ? "Agregar al carrito"
-                : "Agotado"
-              }
-
-            </button>
-
-          </div>
-
-        </article>
-
-      `;
-
-    }).join("");
-
+    return `
+      <article class="card">
+        ${galleryHTML(p)}
+        <div class="body">
+          <div class="cat">${escapeHTML(p.category || "Sin categoría")}</div>
+          <div class="name">${escapeHTML(p.name)}</div>
+          <div class="desc">${escapeHTML(p.description || "")}</div>
+          <div class="price">Bs ${Number(p.price || 0).toFixed(2)}</div>
+          ${stockHTML}
+          <button class="btn" ${disabled} onclick="add(${Number(p.id)})">
+            ${stock > 0 ? "Agregar al carrito" : "Agotado"}
+          </button>
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
 
@@ -1526,46 +1204,18 @@ function render(list){
    CAMBIAR IMAGEN DE GALERÍA
 ===================================================== */
 
-function changeGallery(id,direction){
+function changeGallery(id, direction){
+  const state = galleryStates[id];
+  if(!state) return;
 
-  const state =
-    galleryStates[id];
-
-
-  if(!state){
-    return;
-  }
-
-
-  const total =
-    state.images.length;
-
-
-  if(total <= 1){
-    return;
-  }
-
+  const total = state.images.length;
+  if(total <= 1) return;
 
   state.index += direction;
-
-
-  if(state.index < 0){
-
-    state.index =
-      total - 1;
-
-  }
-
-
-  if(state.index >= total){
-
-    state.index = 0;
-
-  }
-
+  if(state.index < 0) state.index = total - 1;
+  if(state.index >= total) state.index = 0;
 
   updateGallery(id);
-
 }
 
 
@@ -1573,33 +1223,13 @@ function changeGallery(id,direction){
    SELECCIONAR MINIATURA
 ===================================================== */
 
-function selectGalleryImage(id,index){
+function selectGalleryImage(id, index){
+  const state = galleryStates[id];
+  if(!state) return;
+  if(index < 0 || index >= state.images.length) return;
 
-  const state =
-    galleryStates[id];
-
-
-  if(!state){
-    return;
-  }
-
-
-  if(
-    index < 0 ||
-    index >= state.images.length
-  ){
-
-    return;
-
-  }
-
-
-  state.index =
-    index;
-
-
+  state.index = index;
   updateGallery(id);
-
 }
 
 
@@ -1608,67 +1238,20 @@ function selectGalleryImage(id,index){
 ===================================================== */
 
 function updateGallery(id){
+  const state = galleryStates[id];
+  if(!state) return;
 
-  const state =
-    galleryStates[id];
+  const image = state.images[state.index];
+  const mainImage = document.getElementById("main-image-" + id);
+  const counter = document.getElementById("counter-" + id);
+  const thumbs = document.querySelectorAll("#thumbs-" + id + " .thumb");
 
+  if(mainImage) mainImage.src = image;
+  if(counter) counter.textContent = (state.index + 1) + " / " + state.images.length;
 
-  if(!state){
-    return;
-  }
-
-
-  const image =
-    state.images[state.index];
-
-
-  const mainImage =
-    document.getElementById(
-      "main-image-" + id
-    );
-
-
-  const counter =
-    document.getElementById(
-      "counter-" + id
-    );
-
-
-  const thumbs =
-    document.querySelectorAll(
-      "#thumbs-" + id + " .thumb"
-    );
-
-
-  if(mainImage){
-
-    mainImage.src =
-      image;
-
-  }
-
-
-  if(counter){
-
-    counter.textContent =
-      (state.index + 1) +
-      " / " +
-      state.images.length;
-
-  }
-
-
-  thumbs.forEach(
-    (thumb,index) => {
-
-      thumb.classList.toggle(
-        "active",
-        index === state.index
-      );
-
-    }
-  );
-
+  thumbs.forEach((thumb, index) => {
+    thumb.classList.toggle("active", index === state.index);
+  });
 }
 
 
@@ -1676,34 +1259,16 @@ function updateGallery(id){
    ABRIR VISOR GRANDE
 ===================================================== */
 
-function openLightbox(id,index){
+function openLightbox(id, index){
+  const state = galleryStates[id];
+  if(!state) return;
 
-  const state =
-    galleryStates[id];
-
-
-  if(!state){
-    return;
-  }
-
-
-  currentLightboxImages =
-    state.images;
-
-
-  currentLightboxIndex =
-    index;
-
+  currentLightboxImages = state.images;
+  currentLightboxIndex = index;
 
   updateLightbox();
-
-
   lightbox.classList.add("open");
-
-
-  document.body.style.overflow =
-    "hidden";
-
+  document.body.style.overflow = "hidden";
 }
 
 
@@ -1712,47 +1277,18 @@ function openLightbox(id,index){
 ===================================================== */
 
 function updateLightbox(){
+  if(!currentLightboxImages.length) return;
 
-  if(!currentLightboxImages.length){
-    return;
-  }
-
-
-  lightboxImage.src =
-    currentLightboxImages[
-      currentLightboxIndex
-    ];
-
-
-  lightboxCounter.textContent =
-    (currentLightboxIndex + 1) +
-    " / " +
-    currentLightboxImages.length;
-
-
-  /*
-     Ocultar flechas si solamente hay
-     una fotografía
-  */
+  lightboxImage.src = currentLightboxImages[currentLightboxIndex];
+  lightboxCounter.textContent = (currentLightboxIndex + 1) + " / " + currentLightboxImages.length;
 
   if(currentLightboxImages.length <= 1){
-
-    lightboxPrev.style.display =
-      "none";
-
-    lightboxNext.style.display =
-      "none";
-
-  }else{
-
-    lightboxPrev.style.display =
-      "flex";
-
-    lightboxNext.style.display =
-      "flex";
-
+    lightboxPrev.style.display = "none";
+    lightboxNext.style.display = "none";
+  } else {
+    lightboxPrev.style.display = "flex";
+    lightboxNext.style.display = "flex";
   }
-
 }
 
 
@@ -1761,40 +1297,13 @@ function updateLightbox(){
 ===================================================== */
 
 function changeLightboxImage(direction){
+  if(currentLightboxImages.length <= 1) return;
 
-  if(
-    currentLightboxImages.length <= 1
-  ){
-
-    return;
-
-  }
-
-
-  currentLightboxIndex +=
-    direction;
-
-
-  if(currentLightboxIndex < 0){
-
-    currentLightboxIndex =
-      currentLightboxImages.length - 1;
-
-  }
-
-
-  if(
-    currentLightboxIndex >=
-    currentLightboxImages.length
-  ){
-
-    currentLightboxIndex = 0;
-
-  }
-
+  currentLightboxIndex += direction;
+  if(currentLightboxIndex < 0) currentLightboxIndex = currentLightboxImages.length - 1;
+  if(currentLightboxIndex >= currentLightboxImages.length) currentLightboxIndex = 0;
 
   updateLightbox();
-
 }
 
 
@@ -1803,29 +1312,12 @@ function changeLightboxImage(direction){
 ===================================================== */
 
 function closeLightbox(){
-
   lightbox.classList.remove("open");
-
-  document.body.style.overflow =
-    "";
-
+  document.body.style.overflow = "";
 }
 
-
-/* =====================================================
-   CERRAR AL TOCAR FONDO
-===================================================== */
-
 function closeLightboxIfBackground(event){
-
-  if(
-    event.target === lightbox
-  ){
-
-    closeLightbox();
-
-  }
-
+  if(event.target === lightbox) closeLightbox();
 }
 
 
@@ -1833,41 +1325,12 @@ function closeLightboxIfBackground(event){
    TECLADO
 ===================================================== */
 
-document.addEventListener(
-  "keydown",
-  function(event){
-
-    if(
-      !lightbox.classList.contains("open")
-    ){
-
-      return;
-
-    }
-
-
-    if(event.key === "Escape"){
-
-      closeLightbox();
-
-    }
-
-
-    if(event.key === "ArrowLeft"){
-
-      changeLightboxImage(-1);
-
-    }
-
-
-    if(event.key === "ArrowRight"){
-
-      changeLightboxImage(1);
-
-    }
-
-  }
-);
+document.addEventListener("keydown", function(event){
+  if(!lightbox.classList.contains("open")) return;
+  if(event.key === "Escape") closeLightbox();
+  if(event.key === "ArrowLeft") changeLightboxImage(-1);
+  if(event.key === "ArrowRight") changeLightboxImage(1);
+});
 
 
 /* =====================================================
@@ -1875,106 +1338,39 @@ document.addEventListener(
 ===================================================== */
 
 let touchStartX = 0;
-
 let touchEndX = 0;
 
+lightbox.addEventListener("touchstart", function(event){
+  touchStartX = event.changedTouches[0].screenX;
+}, { passive: true });
 
-lightbox.addEventListener(
-  "touchstart",
-  function(event){
-
-    touchStartX =
-      event.changedTouches[0].screenX;
-
-  },
-  {
-    passive:true
-  }
-);
-
-
-lightbox.addEventListener(
-  "touchend",
-  function(event){
-
-    touchEndX =
-      event.changedTouches[0].screenX;
-
-
-    const difference =
-      touchStartX - touchEndX;
-
-
-    if(Math.abs(difference) < 50){
-
-      return;
-
-    }
-
-
-    if(difference > 0){
-
-      changeLightboxImage(1);
-
-    }else{
-
-      changeLightboxImage(-1);
-
-    }
-
-  },
-  {
-    passive:true
-  }
-);
+lightbox.addEventListener("touchend", function(event){
+  touchEndX = event.changedTouches[0].screenX;
+  const difference = touchStartX - touchEndX;
+  if(Math.abs(difference) < 50) return;
+  if(difference > 0) changeLightboxImage(1);
+  else changeLightboxImage(-1);
+}, { passive: true });
 
 
 /* =====================================================
    BÚSQUEDA
 ===================================================== */
 
-search.addEventListener(
-  "input",
-  function(){
-
-    const q =
-      search.value
-        .trim()
-        .toLowerCase();
-
-
-    if(!q){
-
-      render(products);
-
-      return;
-
-    }
-
-
-    const filtered =
-      products.filter(p => {
-
-        const text =
-          [
-            p.name,
-            p.description,
-            p.category
-          ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-
-
-        return text.includes(q);
-
-      });
-
-
-    render(filtered);
-
+search.addEventListener("input", function(){
+  const q = search.value.trim().toLowerCase();
+  if(!q){
+    render(products);
+    return;
   }
-);
+
+  const filtered = products.filter(p => {
+    const text = [p.name, p.description, p.category].filter(Boolean).join(" ").toLowerCase();
+    return text.includes(q);
+  });
+
+  render(filtered);
+});
 
 
 /* =====================================================
@@ -1982,78 +1378,32 @@ search.addEventListener(
 ===================================================== */
 
 function add(id){
-
-  const product =
-    products.find(
-      p =>
-        Number(p.id) ===
-        Number(id)
-    );
-
-
+  const product = products.find(p => Number(p.id) === Number(id));
   if(!product){
-
-    alert(
-      "Producto no encontrado."
-    );
-
+    alert("Producto no encontrado.");
     return;
-
   }
 
-
-  const stock =
-    Number(product.stock || 0);
-
-
+  const stock = Number(product.stock || 0);
   if(stock <= 0){
-
-    alert(
-      "Este producto está agotado."
-    );
-
+    alert("Este producto está agotado.");
     return;
-
   }
 
-
-  const existing =
-    cart.find(
-      x =>
-        Number(x.id) ===
-        Number(id)
-    );
-
+  const existing = cart.find(x => Number(x.id) === Number(id));
 
   if(existing){
-
     if(existing.qty >= stock){
-
-      alert(
-        "No puedes agregar más unidades de las disponibles."
-      );
-
+      alert("No puedes agregar más unidades de las disponibles.");
       return;
-
     }
-
-
     existing.qty++;
-
-  }else{
-
-    cart.push({
-      ...product,
-      qty:1
-    });
-
+  } else {
+    cart.push({ ...product, qty: 1 });
   }
 
-
   updateCart();
-
   openCart();
-
 }
 
 
@@ -2062,98 +1412,31 @@ function add(id){
 ===================================================== */
 
 function updateCart(){
-
-  const quantity =
-    cart.reduce(
-      (sum,item) =>
-        sum + Number(item.qty),
-      0
-    );
-
-
-  count.textContent =
-    quantity;
-
+  const quantity = cart.reduce((sum, item) => sum + Number(item.qty), 0);
+  count.textContent = quantity;
 
   if(!cart.length){
-
-    cartItems.innerHTML =
-      "<p>Tu carrito está vacío.</p>";
-
-
-    total.textContent =
-      "Total: Bs 0.00";
-
-
+    cartItems.innerHTML = "<p>Tu carrito está vacío.</p>";
+    total.textContent = "Total: Bs 0.00";
     return;
-
   }
 
-
-  cartItems.innerHTML =
-    cart.map((item,index) => {
-
-      const subtotal =
-        Number(item.price || 0) *
-        Number(item.qty || 0);
-
-
-      return `
-
-        <div class="row">
-
-          <div>
-
-            <b>
-              ${escapeHTML(item.name)}
-            </b>
-
-            <br>
-
-            Bs ${Number(
-              item.price || 0
-            ).toFixed(2)}
-
-            ×
-            ${item.qty}
-
-            <br>
-
-            <strong>
-              Subtotal:
-              Bs ${subtotal.toFixed(2)}
-            </strong>
-
-          </div>
-
-
-          <button
-            onclick="removeItem(${index})"
-          >
-            🗑️
-          </button>
-
+  cartItems.innerHTML = cart.map((item, index) => {
+    const subtotal = Number(item.price || 0) * Number(item.qty || 0);
+    return `
+      <div class="row">
+        <div>
+          <b>${escapeHTML(item.name)}</b><br>
+          Bs ${Number(item.price || 0).toFixed(2)} × ${item.qty}<br>
+          <strong>Subtotal: Bs ${subtotal.toFixed(2)}</strong>
         </div>
+        <button onclick="removeItem(${index})">🗑️</button>
+      </div>
+    `;
+  }).join("");
 
-      `;
-
-    }).join("");
-
-
-  const grandTotal =
-    cart.reduce(
-      (sum,item) =>
-        sum +
-        Number(item.price || 0) *
-        Number(item.qty || 0),
-      0
-    );
-
-
-  total.textContent =
-    "Total: Bs " +
-    grandTotal.toFixed(2);
-
+  const grandTotal = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
+  total.textContent = "Total: Bs " + grandTotal.toFixed(2);
 }
 
 
@@ -2162,11 +1445,8 @@ function updateCart(){
 ===================================================== */
 
 function removeItem(index){
-
-  cart.splice(index,1);
-
+  cart.splice(index, 1);
   updateCart();
-
 }
 
 
@@ -2175,18 +1455,12 @@ function removeItem(index){
 ===================================================== */
 
 function openCart(){
-
   panel.classList.add("open");
-
   updateCart();
-
 }
 
-
 function closeCart(){
-
   panel.classList.remove("open");
-
 }
 
 
@@ -2195,91 +1469,30 @@ function closeCart(){
 ===================================================== */
 
 function sendWhatsApp(){
-
   if(!cart.length){
-
-    alert(
-      "Agrega al menos un producto."
-    );
-
+    alert("Agrega al menos un producto.");
     return;
-
   }
 
+  const name = customer.value.trim() || "No indicado";
+  const addr = address.value.trim() || "No indicada";
+  const grandTotal = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
 
-  const name =
-    customer.value.trim() ||
-    "No indicado";
-
-
-  const addr =
-    address.value.trim() ||
-    "No indicada";
-
-
-  const grandTotal =
-    cart.reduce(
-      (sum,item) =>
-        sum +
-        Number(item.price || 0) *
-        Number(item.qty || 0),
-      0
-    );
-
-
-  let message =
-    "🛍️ *NUEVO PEDIDO - AQUÍ TÁI*\n\n";
-
+  let message = "🛍️ *NUEVO PEDIDO - AQUÍ TÁI*\n\n";
 
   cart.forEach(item => {
-
-    const subtotal =
-      Number(item.price || 0) *
-      Number(item.qty || 0);
-
-
-    message +=
-      "• " +
-      item.name +
-      " × " +
-      item.qty +
-      " = Bs " +
-      subtotal.toFixed(2) +
-      "\n";
-
+    const subtotal = Number(item.price || 0) * Number(item.qty || 0);
+    message += "• " + item.name + " × " + item.qty + " = Bs " + subtotal.toFixed(2) + "\n";
   });
 
+  message += "\n💰 *Total: Bs " + grandTotal.toFixed(2) + "*";
+  message += "\n👤 Cliente: " + name;
+  message += "\n📍 Entrega: " + addr;
 
-  message +=
-    "\n💰 *Total: Bs " +
-    grandTotal.toFixed(2) +
-    "*";
+  const encodedMessage = encodeURIComponent(message);
+  const whatsappURL = "https://wa.me/59171440907?text=" + encodedMessage;
 
-
-  message +=
-    "\n👤 Cliente: " +
-    name;
-
-
-  message +=
-    "\n📍 Entrega: " +
-    addr;
-
-
-  const encodedMessage =
-    encodeURIComponent(
-      message
-    );
-
-
-  const whatsappURL =
-    "https://wa.me/59171440907?text=" +
-    encodedMessage;
-
-
-  window.location.href =
-    whatsappURL;
-
+  window.location.href = whatsappURL;
 }
 
 
