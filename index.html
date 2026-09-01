@@ -6,7 +6,7 @@
 
 <meta
   name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  content="width=device-width, initial-scale=1.0"
 >
 
 <title>Aquí tái | Catálogo</title>
@@ -16,7 +16,12 @@
   content="Catálogo de productos Aquí tái - Bolivia"
 >
 
+<!-- =====================================================
+     SUPABASE
+===================================================== -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <style>
 
@@ -28,14 +33,10 @@
   box-sizing:border-box;
 }
 
-html{
-  scroll-behavior:smooth;
-}
-
 body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
-  background:#f4f5f7;
+  background:#f6f7f9;
   color:#171717;
 }
 
@@ -45,10 +46,6 @@ textarea{
   font-family:inherit;
 }
 
-button{
-  -webkit-tap-highlight-color:transparent;
-}
-
 
 /* =====================================================
    HEADER
@@ -56,7 +53,7 @@ button{
 
 header{
   background:#fff;
-  border-bottom:1px solid #e8e8e8;
+  border-bottom:1px solid #eee;
   position:sticky;
   top:0;
   z-index:100;
@@ -65,32 +62,28 @@ header{
 .top{
   max-width:1100px;
   margin:auto;
-  min-height:100px;
-  padding:14px 22px;
+  padding:12px 16px;
   display:flex;
   align-items:center;
-  gap:18px;
+  gap:14px;
 }
 
 .logo{
-  width:78px;
-  height:78px;
+  height:62px;
+  width:62px;
   border-radius:50%;
   object-fit:cover;
-  border:1px solid #e5e5e5;
-  background:#fff;
+  border:1px solid #eee;
 }
 
 .brand{
-  font-size:32px;
+  font-size:25px;
   font-weight:800;
-  line-height:1.1;
 }
 
 .sub{
-  margin-top:5px;
-  font-size:18px;
-  color:#777;
+  font-size:13px;
+  color:#666;
 }
 
 
@@ -99,10 +92,9 @@ header{
 ===================================================== */
 
 .wrap{
-  width:100%;
   max-width:1100px;
   margin:auto;
-  padding:28px 22px 110px;
+  padding:22px 16px 100px;
 }
 
 
@@ -112,104 +104,123 @@ header{
 
 .hero{
   background:#fff;
-  border-radius:28px;
-  padding:30px;
-  margin-bottom:24px;
-  box-shadow:0 3px 18px rgba(0,0,0,.04);
-}
-
-.hero-title{
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.hero-icon{
-  font-size:42px;
+  border-radius:20px;
+  padding:22px;
+  margin-bottom:20px;
 }
 
 .hero h1{
-  margin:0;
-  font-size:38px;
-  line-height:1.15;
+  margin:0 0 6px;
+  font-size:30px;
 }
 
 .hero p{
-  margin:12px 0 0;
+  margin:0;
   color:#666;
-  font-size:21px;
   line-height:1.5;
 }
 
 .search{
   width:100%;
-  height:64px;
-  padding:0 20px;
+  padding:14px 16px;
   border:1px solid #ddd;
-  border-radius:18px;
-  font-size:20px;
-  margin-top:24px;
+  border-radius:14px;
+  font-size:16px;
+  margin-top:18px;
   outline:none;
-  background:#fff;
 }
 
 .search:focus{
   border-color:#ff9d00;
-  box-shadow:0 0 0 3px rgba(255,157,0,.12);
 }
 
 .product-count{
   margin-top:16px;
-  color:#777;
+  color:#666;
   font-size:15px;
 }
 
 
 /* =====================================================
-   PRODUCT GRID
+   GRID
 ===================================================== */
 
 .grid{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
+  display:grid;
+  grid-template-columns:
+    repeat(auto-fill,minmax(210px,1fr));
+  gap:16px;
 }
 
 
 /* =====================================================
-   PRODUCT CARD
+   CARD
 ===================================================== */
 
 .card{
-  width:100%;
   background:#fff;
-  border-radius:22px;
+  border-radius:18px;
   overflow:hidden;
-  box-shadow:0 3px 18px rgba(0,0,0,.06);
+  box-shadow:0 3px 15px #0000000c;
+  min-width:0;
+}
 
-  display:grid;
-  grid-template-columns:175px 1fr;
-  min-height:185px;
+.body{
+  padding:14px;
+}
+
+.cat{
+  font-size:12px;
+  color:#777;
+}
+
+.name{
+  font-size:18px;
+  font-weight:700;
+  margin:5px 0;
+}
+
+.desc{
+  font-size:13px;
+  color:#666;
+  line-height:1.4;
+  min-height:54px;
+}
+
+.price{
+  font-size:22px;
+  font-weight:800;
+  margin:12px 0 5px;
+}
+
+.stock{
+  font-size:13px;
+  color:#555;
+  margin-bottom:12px;
+}
+
+.stock.out{
+  color:#c00;
+  font-weight:700;
 }
 
 
 /* =====================================================
-   GALERÍA
+   GALERÍA DEL PRODUCTO
 ===================================================== */
 
 .gallery{
   width:100%;
-  height:100%;
-  min-height:185px;
   background:#fafafa;
-  position:relative;
 }
+
+
+/* IMAGEN PRINCIPAL */
 
 .main-image-wrap{
   position:relative;
   width:100%;
-  height:100%;
-  min-height:185px;
+  aspect-ratio:1/1;
   background:#fafafa;
   overflow:hidden;
   cursor:zoom-in;
@@ -218,152 +229,118 @@ header{
 .main-image{
   width:100%;
   height:100%;
-  object-fit:contain;
+  object-fit:cover;
   display:block;
-  background:#fafafa;
-  transition:transform .2s ease;
+  transition:transform .25s ease;
 }
 
 .main-image-wrap:hover .main-image{
-  transform:scale(1.03);
+  transform:scale(1.02);
 }
 
 
-/* =====================================================
-   FLECHAS GALERÍA
-===================================================== */
+/* BOTONES DE GALERÍA */
 
 .gallery-arrow{
   position:absolute;
   top:50%;
   transform:translateY(-50%);
-
-  width:34px;
-  height:34px;
-
+  width:38px;
+  height:38px;
   border:0;
   border-radius:50%;
-
-  background:rgba(255,255,255,.94);
-  box-shadow:0 2px 10px rgba(0,0,0,.18);
-
+  background:#ffffffdd;
+  box-shadow:0 2px 10px #0003;
   font-size:22px;
   font-weight:bold;
-
   cursor:pointer;
-
   display:flex;
   align-items:center;
   justify-content:center;
-
   z-index:3;
 }
 
 .gallery-arrow.left{
-  left:8px;
+  left:10px;
 }
 
 .gallery-arrow.right{
-  right:8px;
+  right:10px;
+}
+
+.gallery-arrow:hover{
+  background:#fff;
 }
 
 
-/* =====================================================
-   CONTADOR
-===================================================== */
+/* CONTADOR SOBRE IMAGEN */
 
 .photo-counter{
   position:absolute;
-  left:8px;
-  bottom:8px;
-
-  background:rgba(0,0,0,.72);
+  right:10px;
+  bottom:10px;
+  background:#000b;
   color:#fff;
-
   border-radius:999px;
-
-  padding:5px 9px;
-
-  font-size:11px;
+  padding:6px 10px;
+  font-size:12px;
   font-weight:700;
-
-  z-index:4;
+  z-index:3;
 }
 
 
-/* =====================================================
-   MINIATURAS
-===================================================== */
+/* MINIATURAS */
 
-.thumbnails,
-.photo-info{
-  display:none;
+.thumbnails{
+  display:flex;
+  gap:8px;
+  padding:8px 8px 4px;
+  overflow-x:auto;
+  scrollbar-width:thin;
+  background:#fff;
 }
 
-
-/* =====================================================
-   CUERPO CARD
-===================================================== */
-
-.body{
-  min-width:0;
-  padding:18px 20px;
-
-  display:grid;
-  grid-template-columns:1fr auto;
-  grid-template-rows:auto auto auto 1fr auto;
-
-  column-gap:20px;
+.thumbnails::-webkit-scrollbar{
+  height:5px;
 }
 
-.cat{
-  grid-column:1;
-  font-size:13px;
-  color:#777;
-  margin-bottom:3px;
+.thumbnails::-webkit-scrollbar-thumb{
+  background:#ccc;
+  border-radius:20px;
 }
 
-.name{
-  grid-column:1;
-  font-size:20px;
-  font-weight:800;
-  margin:0 0 5px;
-}
-
-.desc{
-  grid-column:1;
-  font-size:14px;
-  color:#666;
-  line-height:1.4;
-
-  max-width:700px;
-
-  display:-webkit-box;
-  -webkit-line-clamp:3;
-  -webkit-box-orient:vertical;
+.thumb{
+  flex:0 0 72px;
+  width:72px;
+  height:72px;
+  padding:0;
+  border:3px solid transparent;
+  border-radius:12px;
   overflow:hidden;
+  background:#f5f5f5;
+  cursor:pointer;
 }
 
-.price{
-  grid-column:1;
-  align-self:end;
-
-  font-size:21px;
-  font-weight:800;
-
-  margin-top:10px;
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
-.stock{
-  grid-column:1;
-  font-size:13px;
-  color:#666;
-  margin-top:3px;
+.thumb.active{
+  border-color:#ff9d00;
 }
 
-.stock.out{
-  color:#c00020;
-  font-weight:700;
+
+/* TEXTO DE FOTOS */
+
+.photo-info{
+  text-align:center;
+  padding:4px 8px 9px;
+  font-size:12px;
+  color:#777;
+  background:#fff;
 }
 
 
@@ -372,119 +349,41 @@ header{
 ===================================================== */
 
 .btn{
-  grid-column:2;
-  grid-row:4 / 6;
-
-  align-self:end;
-
-  min-width:160px;
-
+  width:100%;
   border:0;
   border-radius:12px;
-
-  padding:12px 18px;
-
-  background:#ff9d00;
-  color:#111;
-
-  font-weight:800;
-  font-size:14px;
-
+  padding:13px;
+  background:#111;
+  color:#fff;
+  font-weight:700;
+  font-size:15px;
   cursor:pointer;
-
-  transition:.15s ease;
-}
-
-.btn:hover{
-  background:#f28f00;
-  transform:translateY(-1px);
 }
 
 .btn:disabled{
-  background:#ddd;
-  color:#888;
+  background:#aaa;
   cursor:not-allowed;
-  transform:none;
 }
 
 
 /* =====================================================
-   ESTADOS
-===================================================== */
-
-.loading,
-.error{
-  background:#fff;
-  border-radius:22px;
-  padding:35px 25px;
-  text-align:center;
-  box-shadow:0 3px 18px rgba(0,0,0,.04);
-}
-
-.loading{
-  color:#666;
-  font-size:17px;
-}
-
-.error{
-  color:#9e1232;
-}
-
-.error-icon{
-  font-size:50px;
-  margin-bottom:10px;
-}
-
-.error-title{
-  font-size:22px;
-  font-weight:800;
-  margin-bottom:12px;
-}
-
-.error-message{
-  color:#8e2941;
-  font-size:15px;
-  line-height:1.5;
-  margin-bottom:20px;
-}
-
-.retry{
-  border:0;
-  border-radius:12px;
-  padding:13px 24px;
-  background:#ff9d00;
-  color:#111;
-  font-weight:800;
-  cursor:pointer;
-  font-size:15px;
-}
-
-
-/* =====================================================
-   CARRITO FLOTANTE
+   CARRITO
 ===================================================== */
 
 .cart{
   position:fixed;
-  right:22px;
-  bottom:20px;
-
+  right:18px;
+  bottom:18px;
   border:0;
   border-radius:999px;
-
-  padding:16px 25px;
-
+  padding:15px 20px;
   background:#ff9d00;
   color:#111;
-
   font-weight:800;
-  font-size:18px;
-
-  box-shadow:0 7px 25px rgba(0,0,0,.22);
-
+  box-shadow:0 5px 20px #0003;
   cursor:pointer;
-
   z-index:150;
+  font-size:16px;
 }
 
 
@@ -495,12 +394,9 @@ header{
 .panel{
   position:fixed;
   inset:0;
-
-  background:rgba(0,0,0,.55);
-
+  background:#0008;
   display:none;
-
-  z-index:300;
+  z-index:200;
 }
 
 .panel.open{
@@ -511,75 +407,48 @@ header{
 
 .sheet{
   background:#fff;
-
   width:min(100%,560px);
   max-height:90vh;
-
   overflow:auto;
-
-  border-radius:24px 24px 0 0;
-
-  padding:22px;
-}
-
-.sheet h2{
-  margin:0 0 20px;
+  border-radius:22px 22px 0 0;
+  padding:20px;
 }
 
 .close{
   float:right;
-
   border:0;
   background:#eee;
-
   border-radius:50%;
-
-  width:38px;
-  height:38px;
-
+  width:36px;
+  height:36px;
   cursor:pointer;
-
   font-size:18px;
 }
 
 .row{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-
   gap:10px;
-
-  padding:13px 0;
-
+  padding:12px 0;
   border-bottom:1px solid #eee;
 }
 
 .row button{
   border:0;
   background:#eee;
-
   border-radius:10px;
-
-  padding:9px 12px;
-
+  padding:8px 10px;
   cursor:pointer;
 }
 
 textarea,
 input[type=text]{
   width:100%;
-
-  padding:13px;
-
+  padding:12px;
   border:1px solid #ddd;
-
-  border-radius:11px;
-
-  margin:6px 0 13px;
-
+  border-radius:10px;
+  margin:6px 0 12px;
   font:inherit;
-
-  outline:none;
 }
 
 textarea{
@@ -587,46 +456,20 @@ textarea{
   resize:vertical;
 }
 
-textarea:focus,
-input[type=text]:focus{
-  border-color:#ff9d00;
-}
-
-.send{
-  width:100%;
-
-  border:0;
-  border-radius:13px;
-
-  padding:14px;
-
-  background:#111;
-  color:#fff;
-
-  font-weight:800;
-  font-size:15px;
-
-  cursor:pointer;
-}
-
 
 /* =====================================================
-   LIGHTBOX
+   VISOR DE IMAGEN GRANDE
 ===================================================== */
 
 .lightbox{
   position:fixed;
   inset:0;
-
-  background:rgba(0,0,0,.92);
-
+  background:#000e;
   display:none;
   align-items:center;
   justify-content:center;
-
   z-index:500;
-
-  padding:15px;
+  padding:20px;
 }
 
 .lightbox.open{
@@ -635,75 +478,49 @@ input[type=text]:focus{
 
 .lightbox-content{
   position:relative;
-
   width:100%;
   height:100%;
-
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
 .lightbox-image{
-  max-width:94vw;
-  max-height:88vh;
-
+  max-width:92vw;
+  max-height:86vh;
   object-fit:contain;
-
   border-radius:8px;
-
   user-select:none;
 }
 
 .lightbox-close{
   position:absolute;
-
-  top:5px;
-  right:5px;
-
+  top:10px;
+  right:10px;
   width:44px;
   height:44px;
-
   border:0;
   border-radius:50%;
-
-  background:#fff;
-
+  background:#ffffffdd;
   color:#111;
-
   font-size:25px;
-
   cursor:pointer;
-
   z-index:5;
 }
 
 .lightbox-arrow{
   position:absolute;
-
   top:50%;
-
   transform:translateY(-50%);
-
-  width:48px;
-  height:48px;
-
+  width:50px;
+  height:50px;
   border:0;
   border-radius:50%;
-
-  background:rgba(255,255,255,.92);
-
+  background:#ffffffdd;
   color:#111;
-
-  font-size:30px;
-
+  font-size:28px;
   cursor:pointer;
-
   z-index:5;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
 }
 
 .lightbox-arrow.left{
@@ -716,21 +533,35 @@ input[type=text]:focus{
 
 .lightbox-counter{
   position:absolute;
-
   bottom:18px;
   left:50%;
-
   transform:translateX(-50%);
-
-  background:rgba(0,0,0,.75);
-
+  background:#000b;
   color:#fff;
-
   padding:7px 13px;
-
   border-radius:999px;
-
   font-size:13px;
+}
+
+
+/* =====================================================
+   ESTADOS
+===================================================== */
+
+.loading{
+  background:#fff;
+  border-radius:18px;
+  padding:30px;
+  text-align:center;
+  color:#666;
+}
+
+.error{
+  background:#fff;
+  border-radius:18px;
+  padding:25px;
+  text-align:center;
+  color:#b00020;
 }
 
 
@@ -738,180 +569,20 @@ input[type=text]:focus{
    MOBILE
 ===================================================== */
 
-@media(max-width:700px){
+@media(max-width:480px){
 
-  .top{
-    min-height:90px;
-    padding:10px 18px;
-    gap:14px;
-  }
-
-  .logo{
-    width:70px;
-    height:70px;
-  }
-
-  .brand{
-    font-size:29px;
-  }
-
-  .sub{
-    font-size:16px;
-  }
-
-  .wrap{
-    padding:20px 18px 100px;
-  }
-
-  .hero{
-    padding:25px 20px;
-    border-radius:24px;
-  }
-
-  .hero-title{
-    align-items:flex-start;
-  }
-
-  .hero-icon{
-    font-size:38px;
-  }
-
-  .hero h1{
-    font-size:32px;
-  }
-
-  .hero p{
-    font-size:19px;
-    line-height:1.45;
-  }
-
-  .search{
-    height:62px;
-    font-size:19px;
-    border-radius:17px;
+  .grid{
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+    gap:10px;
   }
 
   .card{
-    grid-template-columns:150px 1fr;
-    min-height:165px;
-    border-radius:18px;
-  }
-
-  .gallery,
-  .main-image-wrap{
-    min-height:165px;
+    border-radius:14px;
   }
 
   .body{
-    padding:14px;
-    display:block;
-  }
-
-  .cat{
-    font-size:11px;
-  }
-
-  .name{
-    font-size:16px;
-    line-height:1.2;
-  }
-
-  .desc{
-    font-size:12px;
-    line-height:1.35;
-
-    -webkit-line-clamp:3;
-
-    min-height:auto;
-  }
-
-  .price{
-    font-size:18px;
-    margin-top:10px;
-  }
-
-  .stock{
-    font-size:12px;
-    margin-bottom:10px;
-  }
-
-  .btn{
-    width:100%;
-    min-width:0;
-    padding:10px 8px;
-    font-size:13px;
-  }
-
-  .cart{
-    right:12px;
-    bottom:14px;
-    padding:15px 22px;
-    font-size:17px;
-  }
-
-}
-
-
-/* =====================================================
-   CELULAR PEQUEÑO
-===================================================== */
-
-@media(max-width:430px){
-
-  .top{
-    padding:9px 15px;
-  }
-
-  .logo{
-    width:62px;
-    height:62px;
-  }
-
-  .brand{
-    font-size:25px;
-  }
-
-  .sub{
-    font-size:14px;
-  }
-
-  .wrap{
-    padding:16px 12px 100px;
-  }
-
-  .hero{
-    padding:22px 17px;
-  }
-
-  .hero-icon{
-    font-size:32px;
-  }
-
-  .hero h1{
-    font-size:27px;
-  }
-
-  .hero p{
-    font-size:17px;
-  }
-
-  .search{
-    height:58px;
-    font-size:17px;
-  }
-
-  .card{
-    grid-template-columns:130px 1fr;
-    min-height:155px;
-  }
-
-  .gallery,
-  .main-image-wrap{
-    min-height:155px;
-  }
-
-  .body{
-    padding:12px;
+    padding:10px;
   }
 
   .name{
@@ -919,19 +590,61 @@ input[type=text]:focus{
   }
 
   .desc{
-    font-size:11px;
+    font-size:12px;
+    min-height:70px;
   }
 
   .price{
-    font-size:17px;
+    font-size:18px;
   }
 
-  .stock{
-    font-size:11px;
+  .hero h1{
+    font-size:24px;
   }
 
-  .btn{
-    font-size:12px;
+  .hero{
+    padding:20px;
+  }
+
+  .brand{
+    font-size:23px;
+  }
+
+  .logo{
+    width:58px;
+    height:58px;
+  }
+
+  .cart{
+    right:12px;
+    bottom:14px;
+  }
+
+  .thumb{
+    flex-basis:64px;
+    width:64px;
+    height:64px;
+  }
+
+  .gallery-arrow{
+    width:34px;
+    height:34px;
+    font-size:19px;
+  }
+
+  .lightbox{
+    padding:8px;
+  }
+
+  .lightbox-image{
+    max-width:96vw;
+    max-height:80vh;
+  }
+
+  .lightbox-arrow{
+    width:42px;
+    height:42px;
+    font-size:23px;
   }
 
 }
@@ -941,13 +654,19 @@ input[type=text]:focus{
    UNA SOLA IMAGEN
 ===================================================== */
 
-.gallery.single .photo-counter{
+.gallery.single .thumbnails,
+.gallery.single .photo-info{
   display:none;
+}
+
+.gallery.single .main-image-wrap{
+  cursor:zoom-in;
 }
 
 </style>
 
 </head>
+
 
 <body>
 
@@ -993,24 +712,14 @@ input[type=text]:focus{
 
   <section class="hero">
 
-    <div class="hero-title">
-
-      <div class="hero-icon">
-        🛍️
-      </div>
-
-      <h1>
-        Nuestro catálogo
-      </h1>
-
-    </div>
-
+    <h1>
+      🛍️ Nuestro catálogo
+    </h1>
 
     <p>
       Elige tus productos y envíanos tu pedido
       directamente por WhatsApp.
     </p>
-
 
     <input
       id="search"
@@ -1020,12 +729,11 @@ input[type=text]:focus{
       autocomplete="off"
     >
 
-
     <div
       id="productCount"
       class="product-count"
     >
-      Cargando catálogo...
+      Cargando productos...
     </div>
 
   </section>
@@ -1037,7 +745,7 @@ input[type=text]:focus{
   >
 
     <div class="loading">
-      ⏳ Cargando productos...
+      ⏳ Cargando catálogo...
     </div>
 
   </section>
@@ -1046,7 +754,7 @@ input[type=text]:focus{
 
 
 <!-- =====================================================
-     CARRITO
+     BOTÓN CARRITO
 ===================================================== -->
 
 <button
@@ -1076,21 +784,18 @@ input[type=text]:focus{
       ✕
     </button>
 
-
     <h2>
       🛒 Tu pedido
     </h2>
 
-
     <div id="cartItems"></div>
-
 
     <div
       id="total"
       style="
         font-size:20px;
         font-weight:800;
-        margin:18px 0;
+        margin:16px 0;
       "
     >
       Total: Bs 0.00
@@ -1119,7 +824,7 @@ input[type=text]:focus{
 
 
     <button
-      class="send"
+      class="btn"
       onclick="sendWhatsApp()"
     >
       📲 Enviar pedido por WhatsApp
@@ -1131,7 +836,7 @@ input[type=text]:focus{
 
 
 <!-- =====================================================
-     VISOR DE IMÁGENES
+     VISOR PROFESIONAL DE IMÁGENES
 ===================================================== -->
 
 <div
@@ -1142,10 +847,10 @@ input[type=text]:focus{
 
   <div class="lightbox-content">
 
-
     <button
       class="lightbox-close"
       onclick="closeLightbox()"
+      aria-label="Cerrar"
     >
       ✕
     </button>
@@ -1154,10 +859,8 @@ input[type=text]:focus{
     <button
       id="lightboxPrev"
       class="lightbox-arrow left"
-      onclick="
-        event.stopPropagation();
-        changeLightboxImage(-1)
-      "
+      onclick="changeLightboxImage(-1)"
+      aria-label="Imagen anterior"
     >
       ‹
     </button>
@@ -1174,10 +877,8 @@ input[type=text]:focus{
     <button
       id="lightboxNext"
       class="lightbox-arrow right"
-      onclick="
-        event.stopPropagation();
-        changeLightboxImage(1)
-      "
+      onclick="changeLightboxImage(1)"
+      aria-label="Imagen siguiente"
     >
       ›
     </button>
@@ -1197,6 +898,7 @@ input[type=text]:focus{
 
 <script>
 
+
 /* =====================================================
    CONFIGURACIÓN SUPABASE
 ===================================================== */
@@ -1209,34 +911,14 @@ const SUPABASE_KEY =
 
 
 /* =====================================================
-   CLIENTE SUPABASE
+   CONEXIÓN
 ===================================================== */
 
-let supabaseClient = null;
-
-try{
-
-  if(
-    window.supabase &&
-    typeof window.supabase.createClient === "function"
-  ){
-
-    supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
-
-  }
-
-}catch(error){
-
-  console.error(
-    "No se pudo iniciar Supabase:",
-    error
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
   );
-
-}
 
 
 /* =====================================================
@@ -1302,7 +984,7 @@ const lightboxNext =
 
 
 /* =====================================================
-   CONVERTIR IMÁGENES EN ARRAY
+   CONVERTIR IMÁGENES A ARRAY
 ===================================================== */
 
 function getImages(value){
@@ -1311,6 +993,10 @@ function getImages(value){
     return [];
   }
 
+
+  /* ---------------------------------------------
+     Si Supabase devuelve un array directamente
+  --------------------------------------------- */
 
   if(Array.isArray(value)){
 
@@ -1330,7 +1016,12 @@ function getImages(value){
   }
 
 
-  /* JSON */
+  /* ---------------------------------------------
+     Intentar JSON
+     
+     Ejemplo:
+     ["foto1.jpg","foto2.jpg","foto3.jpg"]
+  --------------------------------------------- */
 
   if(
     text.startsWith("[") &&
@@ -1342,6 +1033,7 @@ function getImages(value){
       const parsed =
         JSON.parse(text);
 
+
       if(Array.isArray(parsed)){
 
         return parsed
@@ -1350,9 +1042,9 @@ function getImages(value){
 
       }
 
-    }catch(error){
+    }catch(e){
 
-      console.warn(
+      console.log(
         "No se pudo interpretar JSON de imágenes."
       );
 
@@ -1361,7 +1053,9 @@ function getImages(value){
   }
 
 
-  /* Saltos de línea */
+  /* ---------------------------------------------
+     Separadas por salto de línea
+  --------------------------------------------- */
 
   if(text.includes("\n")){
 
@@ -1373,7 +1067,9 @@ function getImages(value){
   }
 
 
-  /* Comas */
+  /* ---------------------------------------------
+     Separadas por coma
+  --------------------------------------------- */
 
   if(text.includes(",")){
 
@@ -1384,6 +1080,10 @@ function getImages(value){
 
   }
 
+
+  /* ---------------------------------------------
+     Una sola imagen
+  --------------------------------------------- */
 
   return [text];
 
@@ -1419,21 +1119,12 @@ async function loadProducts(){
   `;
 
   productCount.textContent =
-    "Conectando con el catálogo...";
+    "Cargando productos...";
 
 
   try{
 
-    if(!supabaseClient){
-
-      throw new Error(
-        "No se pudo iniciar la conexión con Supabase."
-      );
-
-    }
-
-
-    const result =
+    const { data, error } =
       await supabaseClient
         .from("products")
         .select(
@@ -1445,21 +1136,23 @@ async function loadProducts(){
         });
 
 
-    const data =
-      result.data;
-
-    const error =
-      result.error;
-
-
     if(error){
 
       console.error(
-        "SUPABASE ERROR:",
+        "Error Supabase:",
         error
       );
 
-      showConnectionError(error);
+      grid.innerHTML = `
+        <div class="error">
+          ❌ No se pudieron cargar los productos.
+          <br><br>
+          Revisa la conexión con Supabase.
+        </div>
+      `;
+
+      productCount.textContent =
+        "Error al cargar productos.";
 
       return;
 
@@ -1467,23 +1160,21 @@ async function loadProducts(){
 
 
     products =
-      Array.isArray(data)
-      ? data
-      : [];
+      data || [];
 
 
-    galleryStates = {};
-
+    /*
+      Inicializar las galerías
+    */
 
     products.forEach(product => {
 
+      const images =
+        getImages(product.image);
+
       galleryStates[product.id] = {
-
-        images:
-          getImages(product.image),
-
+        images: images,
         index:0
-
       };
 
     });
@@ -1494,12 +1185,17 @@ async function loadProducts(){
 
   }catch(error){
 
-    console.error(
-      "ERROR DE CONEXIÓN:",
-      error
-    );
+    console.error(error);
 
-    showConnectionError(error);
+    grid.innerHTML = `
+      <div class="error">
+        ❌ Ocurrió un error al cargar
+        el catálogo.
+      </div>
+    `;
+
+    productCount.textContent =
+      "Error al cargar productos.";
 
   }
 
@@ -1507,115 +1203,26 @@ async function loadProducts(){
 
 
 /* =====================================================
-   ERROR DE CONEXIÓN
-===================================================== */
-
-function showConnectionError(error){
-
-  let message =
-    "No se pudo conectar con Supabase.";
-
-
-  if(error){
-
-    if(error.message){
-
-      message =
-        error.message;
-
-    }else{
-
-      message =
-        String(error);
-
-    }
-
-  }
-
-
-  /*
-     Mensajes más fáciles de entender
-  */
-
-  if(
-    message.toLowerCase().includes(
-      "failed to fetch"
-    )
-  ){
-
-    message =
-      "El navegador no pudo comunicarse con Supabase. Verifica que la URL y la clave pública sean correctas y que el proyecto de Supabase esté disponible.";
-
-  }
-
-
-  if(
-    message.toLowerCase().includes(
-      "permission"
-    ) ||
-    message.toLowerCase().includes(
-      "row-level"
-    ) ||
-    message.toLowerCase().includes(
-      "rls"
-    )
-  ){
-
-    message =
-      "Supabase rechazó la lectura de la tabla products. Debes permitir SELECT para usuarios públicos en la tabla products.";
-
-  }
-
-
-  productCount.textContent =
-    "No se pudo cargar el catálogo.";
-
-
-  grid.innerHTML = `
-
-    <div class="error">
-
-      <div class="error-icon">
-        ❌
-      </div>
-
-      <div class="error-title">
-        No se pudo cargar el catálogo
-      </div>
-
-      <div class="error-message">
-        ${escapeHTML(message)}
-      </div>
-
-      <button
-        class="retry"
-        onclick="loadProducts()"
-      >
-        🔄 Reintentar
-      </button>
-
-    </div>
-
-  `;
-
-}
-
-
-/* =====================================================
-   GALERÍA HTML
+   CREAR HTML DE GALERÍA
 ===================================================== */
 
 function galleryHTML(product){
 
-  let images =
+  const images =
     getImages(product.image);
 
 
+  const fallback =
+    "https://via.placeholder.com/600x600?text=Aqui+tai";
+
+
+  /*
+     Si no tiene imagen
+  */
+
   if(!images.length){
 
-    images = [
-      "https://via.placeholder.com/600x600?text=Aqui+tai"
-    ];
+    images.push(fallback);
 
   }
 
@@ -1623,11 +1230,8 @@ function galleryHTML(product){
   if(!galleryStates[product.id]){
 
     galleryStates[product.id] = {
-
       images:images,
-
       index:0
-
     };
 
   }
@@ -1637,9 +1241,9 @@ function galleryHTML(product){
     galleryStates[product.id];
 
 
-  state.images =
-    images;
-
+  /*
+     Asegurar índice válido
+  */
 
   if(
     state.index < 0 ||
@@ -1655,7 +1259,9 @@ function galleryHTML(product){
     images[state.index];
 
 
-  /* UNA FOTO */
+  /*
+     Una sola imagen
+  */
 
   if(images.length === 1){
 
@@ -1665,12 +1271,7 @@ function galleryHTML(product){
 
         <div
           class="main-image-wrap"
-          onclick="
-            openLightbox(
-              ${Number(product.id)},
-              0
-            )
-          "
+          onclick="openLightbox(${Number(product.id)},0)"
         >
 
           <img
@@ -1680,8 +1281,7 @@ function galleryHTML(product){
             alt="${escapeHTML(product.name)}"
             loading="lazy"
             onerror="
-              this.onerror=null;
-              this.src='https://via.placeholder.com/600x600?text=Sin+imagen';
+              this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
             "
           >
 
@@ -1694,7 +1294,9 @@ function galleryHTML(product){
   }
 
 
-  /* VARIAS FOTOS */
+  /*
+     Varias imágenes
+  */
 
   return `
 
@@ -1705,12 +1307,7 @@ function galleryHTML(product){
 
       <div
         class="main-image-wrap"
-        onclick="
-          openLightbox(
-            ${Number(product.id)},
-            ${state.index}
-          )
-        "
+        onclick="openLightbox(${Number(product.id)},${state.index})"
       >
 
         <img
@@ -1720,8 +1317,7 @@ function galleryHTML(product){
           alt="${escapeHTML(product.name)}"
           loading="lazy"
           onerror="
-            this.onerror=null;
-            this.src='https://via.placeholder.com/600x600?text=Sin+imagen';
+            this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
           "
         >
 
@@ -1730,10 +1326,7 @@ function galleryHTML(product){
           class="gallery-arrow left"
           onclick="
             event.stopPropagation();
-            changeGallery(
-              ${Number(product.id)},
-              -1
-            )
+            changeGallery(${Number(product.id)},-1)
           "
           aria-label="Imagen anterior"
         >
@@ -1745,10 +1338,7 @@ function galleryHTML(product){
           class="gallery-arrow right"
           onclick="
             event.stopPropagation();
-            changeGallery(
-              ${Number(product.id)},
-              1
-            )
+            changeGallery(${Number(product.id)},1)
           "
           aria-label="Imagen siguiente"
         >
@@ -1765,6 +1355,44 @@ function galleryHTML(product){
 
       </div>
 
+
+      <div
+        id="thumbs-${Number(product.id)}"
+        class="thumbnails"
+      >
+
+        ${images.map((image,index) => `
+
+          <button
+            class="thumb ${index === state.index ? "active" : ""}"
+            onclick="
+              event.stopPropagation();
+              selectGalleryImage(${Number(product.id)},${index})
+            "
+            aria-label="Ver imagen ${index + 1}"
+          >
+
+            <img
+              src="${escapeHTML(image)}"
+              alt="Miniatura ${index + 1}"
+              loading="lazy"
+              onerror="
+                this.src='https://via.placeholder.com/100x100?text=Foto'
+              "
+            >
+
+          </button>
+
+        `).join("")}
+
+      </div>
+
+
+      <div class="photo-info">
+        📷 ${images.length}
+        ${images.length === 1 ? "foto" : "fotos"}
+      </div>
+
     </div>
 
   `;
@@ -1773,7 +1401,7 @@ function galleryHTML(product){
 
 
 /* =====================================================
-   RENDER
+   RENDER PRODUCTOS
 ===================================================== */
 
 function render(list){
@@ -1790,11 +1418,9 @@ function render(list){
   if(!list.length){
 
     grid.innerHTML = `
-
       <div class="loading">
         🔎 No encontramos productos.
       </div>
-
     `;
 
     return;
@@ -1803,10 +1429,10 @@ function render(list){
 
 
   grid.innerHTML =
-    list.map(product => {
+    list.map(p => {
 
       const stock =
-        Number(product.stock || 0);
+        Number(p.stock || 0);
 
 
       const disabled =
@@ -1820,7 +1446,7 @@ function render(list){
 
         ? `
           <div class="stock">
-            📦 Stock: ${stock}
+            📦 Disponible: ${stock}
           </div>
         `
 
@@ -1835,38 +1461,35 @@ function render(list){
 
         <article class="card">
 
-          ${galleryHTML(product)}
+
+          ${galleryHTML(p)}
 
 
           <div class="body">
 
             <div class="cat">
               ${escapeHTML(
-                product.category ||
+                p.category ||
                 "Sin categoría"
               )}
             </div>
 
 
             <div class="name">
-              ${escapeHTML(
-                product.name ||
-                "Producto"
-              )}
+              ${escapeHTML(p.name)}
             </div>
 
 
             <div class="desc">
               ${escapeHTML(
-                product.description ||
-                ""
+                p.description || ""
               )}
             </div>
 
 
             <div class="price">
               Bs ${Number(
-                product.price || 0
+                p.price || 0
               ).toFixed(2)}
             </div>
 
@@ -1877,14 +1500,12 @@ function render(list){
             <button
               class="btn"
               ${disabled}
-              onclick="
-                add(${Number(product.id)})
-              "
+              onclick="add(${Number(p.id)})"
             >
 
               ${
                 stock > 0
-                ? "🛒 Agregar al carrito"
+                ? "Agregar al carrito"
                 : "Agotado"
               }
 
@@ -1902,7 +1523,7 @@ function render(list){
 
 
 /* =====================================================
-   GALERÍA
+   CAMBIAR IMAGEN DE GALERÍA
 ===================================================== */
 
 function changeGallery(id,direction){
@@ -1948,6 +1569,10 @@ function changeGallery(id,direction){
 }
 
 
+/* =====================================================
+   SELECCIONAR MINIATURA
+===================================================== */
+
 function selectGalleryImage(id,index){
 
   const state =
@@ -1978,6 +1603,10 @@ function selectGalleryImage(id,index){
 }
 
 
+/* =====================================================
+   ACTUALIZAR GALERÍA
+===================================================== */
+
 function updateGallery(id){
 
   const state =
@@ -2005,6 +1634,12 @@ function updateGallery(id){
     );
 
 
+  const thumbs =
+    document.querySelectorAll(
+      "#thumbs-" + id + " .thumb"
+    );
+
+
   if(mainImage){
 
     mainImage.src =
@@ -2022,11 +1657,23 @@ function updateGallery(id){
 
   }
 
+
+  thumbs.forEach(
+    (thumb,index) => {
+
+      thumb.classList.toggle(
+        "active",
+        index === state.index
+      );
+
+    }
+  );
+
 }
 
 
 /* =====================================================
-   LIGHTBOX
+   ABRIR VISOR GRANDE
 ===================================================== */
 
 function openLightbox(id,index){
@@ -2053,20 +1700,21 @@ function openLightbox(id,index){
 
   lightbox.classList.add("open");
 
+
   document.body.style.overflow =
     "hidden";
 
 }
 
 
+/* =====================================================
+   ACTUALIZAR VISOR
+===================================================== */
+
 function updateLightbox(){
 
-  if(
-    !currentLightboxImages.length
-  ){
-
+  if(!currentLightboxImages.length){
     return;
-
   }
 
 
@@ -2082,9 +1730,12 @@ function updateLightbox(){
     currentLightboxImages.length;
 
 
-  if(
-    currentLightboxImages.length <= 1
-  ){
+  /*
+     Ocultar flechas si solamente hay
+     una fotografía
+  */
+
+  if(currentLightboxImages.length <= 1){
 
     lightboxPrev.style.display =
       "none";
@@ -2104,6 +1755,10 @@ function updateLightbox(){
 
 }
 
+
+/* =====================================================
+   CAMBIAR IMAGEN DEL VISOR
+===================================================== */
 
 function changeLightboxImage(direction){
 
@@ -2143,6 +1798,10 @@ function changeLightboxImage(direction){
 }
 
 
+/* =====================================================
+   CERRAR VISOR
+===================================================== */
+
 function closeLightbox(){
 
   lightbox.classList.remove("open");
@@ -2152,6 +1811,10 @@ function closeLightbox(){
 
 }
 
+
+/* =====================================================
+   CERRAR AL TOCAR FONDO
+===================================================== */
 
 function closeLightboxIfBackground(event){
 
@@ -2208,10 +1871,13 @@ document.addEventListener(
 
 
 /* =====================================================
-   SWIPE CELULAR
+   SWIPE EN CELULAR
 ===================================================== */
 
 let touchStartX = 0;
+
+let touchEndX = 0;
+
 
 lightbox.addEventListener(
   "touchstart",
@@ -2231,7 +1897,7 @@ lightbox.addEventListener(
   "touchend",
   function(event){
 
-    const touchEndX =
+    touchEndX =
       event.changedTouches[0].screenX;
 
 
@@ -2287,13 +1953,13 @@ search.addEventListener(
 
 
     const filtered =
-      products.filter(product => {
+      products.filter(p => {
 
         const text =
           [
-            product.name,
-            product.description,
-            product.category
+            p.name,
+            p.description,
+            p.category
           ]
           .filter(Boolean)
           .join(" ")
@@ -2312,7 +1978,7 @@ search.addEventListener(
 
 
 /* =====================================================
-   CARRITO
+   AGREGAR AL CARRITO
 ===================================================== */
 
 function add(id){
@@ -2353,17 +2019,15 @@ function add(id){
 
   const existing =
     cart.find(
-      item =>
-        Number(item.id) ===
+      x =>
+        Number(x.id) ===
         Number(id)
     );
 
 
   if(existing){
 
-    if(
-      existing.qty >= stock
-    ){
+    if(existing.qty >= stock){
 
       alert(
         "No puedes agregar más unidades de las disponibles."
@@ -2379,11 +2043,8 @@ function add(id){
   }else{
 
     cart.push({
-
       ...product,
-
       qty:1
-
     });
 
   }
@@ -2395,6 +2056,10 @@ function add(id){
 
 }
 
+
+/* =====================================================
+   ACTUALIZAR CARRITO
+===================================================== */
 
 function updateCart(){
 
@@ -2440,9 +2105,7 @@ function updateCart(){
           <div>
 
             <b>
-              ${escapeHTML(
-                item.name
-              )}
+              ${escapeHTML(item.name)}
             </b>
 
             <br>
@@ -2451,7 +2114,8 @@ function updateCart(){
               item.price || 0
             ).toFixed(2)}
 
-            × ${item.qty}
+            ×
+            ${item.qty}
 
             <br>
 
@@ -2464,9 +2128,7 @@ function updateCart(){
 
 
           <button
-            onclick="
-              removeItem(${index})
-            "
+            onclick="removeItem(${index})"
           >
             🗑️
           </button>
@@ -2495,6 +2157,10 @@ function updateCart(){
 }
 
 
+/* =====================================================
+   ELIMINAR DEL CARRITO
+===================================================== */
+
 function removeItem(index){
 
   cart.splice(index,1);
@@ -2503,6 +2169,10 @@ function removeItem(index){
 
 }
 
+
+/* =====================================================
+   ABRIR / CERRAR CARRITO
+===================================================== */
 
 function openCart(){
 
@@ -2597,7 +2267,9 @@ function sendWhatsApp(){
 
 
   const encodedMessage =
-    encodeURIComponent(message);
+    encodeURIComponent(
+      message
+    );
 
 
   const whatsappURL =
