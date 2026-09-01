@@ -6,7 +6,7 @@
 
 <meta
   name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
 >
 
 <title>Aquí tái | Catálogo</title>
@@ -16,12 +16,7 @@
   content="Catálogo de productos Aquí tái - Bolivia"
 >
 
-<!-- =====================================================
-     SUPABASE
-===================================================== -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 
 <style>
 
@@ -40,8 +35,8 @@ html{
 body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
-  background:#f5f6f8;
-  color:#151515;
+  background:#f4f5f7;
+  color:#171717;
 }
 
 button,
@@ -52,10 +47,6 @@ textarea{
 
 button{
   -webkit-tap-highlight-color:transparent;
-}
-
-img{
-  max-width:100%;
 }
 
 
@@ -72,18 +63,18 @@ header{
 }
 
 .top{
-  width:100%;
   max-width:1100px;
   margin:auto;
+  min-height:100px;
   padding:14px 22px;
   display:flex;
   align-items:center;
-  gap:16px;
+  gap:18px;
 }
 
 .logo{
-  width:88px;
-  height:88px;
+  width:78px;
+  height:78px;
   border-radius:50%;
   object-fit:cover;
   border:1px solid #e5e5e5;
@@ -91,15 +82,15 @@ header{
 }
 
 .brand{
-  font-size:34px;
+  font-size:32px;
   font-weight:800;
-  line-height:1.05;
+  line-height:1.1;
 }
 
 .sub{
-  margin-top:8px;
-  font-size:19px;
-  color:#666;
+  margin-top:5px;
+  font-size:18px;
+  color:#777;
 }
 
 
@@ -111,7 +102,7 @@ header{
   width:100%;
   max-width:1100px;
   margin:auto;
-  padding:26px 20px 110px;
+  padding:28px 22px 110px;
 }
 
 
@@ -122,71 +113,83 @@ header{
 .hero{
   background:#fff;
   border-radius:28px;
-  padding:34px;
-  margin-bottom:26px;
-  box-shadow:0 2px 10px #00000005;
+  padding:30px;
+  margin-bottom:24px;
+  box-shadow:0 3px 18px rgba(0,0,0,.04);
+}
+
+.hero-title{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.hero-icon{
+  font-size:42px;
 }
 
 .hero h1{
-  margin:0 0 10px;
-  font-size:42px;
+  margin:0;
+  font-size:38px;
   line-height:1.15;
 }
 
 .hero p{
-  margin:0;
+  margin:12px 0 0;
   color:#666;
+  font-size:21px;
   line-height:1.5;
-  font-size:25px;
 }
 
 .search{
-  display:block;
   width:100%;
-  height:70px;
-  padding:0 22px;
-  margin-top:28px;
+  height:64px;
+  padding:0 20px;
   border:1px solid #ddd;
-  border-radius:20px;
-  background:#fff;
-  font-size:22px;
+  border-radius:18px;
+  font-size:20px;
+  margin-top:24px;
   outline:none;
+  background:#fff;
 }
 
 .search:focus{
   border-color:#ff9d00;
-  box-shadow:0 0 0 3px #ff9d0020;
+  box-shadow:0 0 0 3px rgba(255,157,0,.12);
 }
 
 .product-count{
-  margin-top:20px;
-  color:#666;
-  font-size:18px;
+  margin-top:16px;
+  color:#777;
+  font-size:15px;
 }
 
 
 /* =====================================================
-   GRID
+   PRODUCT GRID
 ===================================================== */
 
 .grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:18px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
 }
 
 
 /* =====================================================
-   CARD
+   PRODUCT CARD
 ===================================================== */
 
 .card{
   width:100%;
   background:#fff;
-  border-radius:24px;
+  border-radius:22px;
   overflow:hidden;
-  box-shadow:0 3px 15px #0000000b;
-  min-width:0;
+  box-shadow:0 3px 18px rgba(0,0,0,.06);
+
+  display:grid;
+  grid-template-columns:175px 1fr;
+  min-height:185px;
 }
 
 
@@ -196,19 +199,18 @@ header{
 
 .gallery{
   width:100%;
-  background:#fff;
+  height:100%;
+  min-height:185px;
+  background:#fafafa;
+  position:relative;
 }
-
-
-/* =====================================================
-   IMAGEN PRINCIPAL
-===================================================== */
 
 .main-image-wrap{
   position:relative;
   width:100%;
-  height:280px;
-  background:#f8f8f8;
+  height:100%;
+  min-height:185px;
+  background:#fafafa;
   overflow:hidden;
   cursor:zoom-in;
 }
@@ -216,68 +218,76 @@ header{
 .main-image{
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit:contain;
   display:block;
-  transition:transform .25s ease;
+  background:#fafafa;
+  transition:transform .2s ease;
 }
 
-.main-image-wrap:active .main-image{
-  transform:scale(1.02);
+.main-image-wrap:hover .main-image{
+  transform:scale(1.03);
 }
 
 
 /* =====================================================
-   FLECHAS
+   FLECHAS GALERÍA
 ===================================================== */
 
 .gallery-arrow{
   position:absolute;
   top:50%;
   transform:translateY(-50%);
-  width:44px;
-  height:44px;
+
+  width:34px;
+  height:34px;
+
   border:0;
   border-radius:50%;
-  background:#ffffffdf;
-  color:#111;
-  box-shadow:0 2px 10px #0003;
-  font-size:28px;
+
+  background:rgba(255,255,255,.94);
+  box-shadow:0 2px 10px rgba(0,0,0,.18);
+
+  font-size:22px;
   font-weight:bold;
+
   cursor:pointer;
+
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:5;
+
+  z-index:3;
 }
 
 .gallery-arrow.left{
-  left:12px;
+  left:8px;
 }
 
 .gallery-arrow.right{
-  right:12px;
-}
-
-.gallery-arrow:active{
-  transform:translateY(-50%) scale(.94);
+  right:8px;
 }
 
 
 /* =====================================================
-   CONTADOR DE FOTOS
+   CONTADOR
 ===================================================== */
 
 .photo-counter{
   position:absolute;
-  left:12px;
-  bottom:12px;
-  background:#000b;
+  left:8px;
+  bottom:8px;
+
+  background:rgba(0,0,0,.72);
   color:#fff;
+
   border-radius:999px;
-  padding:7px 12px;
-  font-size:14px;
+
+  padding:5px 9px;
+
+  font-size:11px;
   font-weight:700;
-  z-index:6;
+
+  z-index:4;
 }
 
 
@@ -285,100 +295,70 @@ header{
    MINIATURAS
 ===================================================== */
 
-.thumbnails{
-  display:flex;
-  gap:8px;
-  padding:9px 10px 5px;
-  overflow-x:auto;
-  background:#fff;
-  scrollbar-width:thin;
-}
-
-.thumbnails::-webkit-scrollbar{
-  height:5px;
-}
-
-.thumbnails::-webkit-scrollbar-thumb{
-  background:#ccc;
-  border-radius:20px;
-}
-
-.thumb{
-  flex:0 0 62px;
-  width:62px;
-  height:62px;
-  padding:0;
-  border:3px solid transparent;
-  border-radius:11px;
-  overflow:hidden;
-  background:#f5f5f5;
-  cursor:pointer;
-}
-
-.thumb img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-
-.thumb.active{
-  border-color:#ff9d00;
-}
-
-
-/* =====================================================
-   INFORMACIÓN DE FOTOS
-===================================================== */
-
+.thumbnails,
 .photo-info{
-  text-align:center;
-  padding:3px 8px 9px;
-  font-size:12px;
-  color:#777;
-  background:#fff;
+  display:none;
 }
 
 
 /* =====================================================
-   CUERPO DE TARJETA
+   CUERPO CARD
 ===================================================== */
 
 .body{
-  padding:20px 22px 22px;
+  min-width:0;
+  padding:18px 20px;
+
+  display:grid;
+  grid-template-columns:1fr auto;
+  grid-template-rows:auto auto auto 1fr auto;
+
+  column-gap:20px;
 }
 
 .cat{
-  font-size:14px;
+  grid-column:1;
+  font-size:13px;
   color:#777;
-  margin-bottom:5px;
+  margin-bottom:3px;
 }
 
 .name{
-  font-size:23px;
+  grid-column:1;
+  font-size:20px;
   font-weight:800;
-  line-height:1.2;
-  margin-bottom:7px;
+  margin:0 0 5px;
 }
 
 .desc{
-  font-size:16px;
+  grid-column:1;
+  font-size:14px;
   color:#666;
-  line-height:1.45;
-  min-height:0;
+  line-height:1.4;
+
+  max-width:700px;
+
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 
 .price{
-  font-size:25px;
+  grid-column:1;
+  align-self:end;
+
+  font-size:21px;
   font-weight:800;
-  margin-top:17px;
-  margin-bottom:5px;
+
+  margin-top:10px;
 }
 
 .stock{
-  font-size:15px;
-  color:#555;
-  margin-bottom:16px;
+  grid-column:1;
+  font-size:13px;
+  color:#666;
+  margin-top:3px;
 }
 
 .stock.out{
@@ -388,29 +368,95 @@ header{
 
 
 /* =====================================================
-   BOTÓN
+   BOTÓN AGREGAR
 ===================================================== */
 
 .btn{
-  width:100%;
-  min-height:50px;
+  grid-column:2;
+  grid-row:4 / 6;
+
+  align-self:end;
+
+  min-width:160px;
+
   border:0;
-  border-radius:13px;
-  padding:13px 16px;
-  background:#111;
-  color:#fff;
-  font-weight:700;
-  font-size:16px;
+  border-radius:12px;
+
+  padding:12px 18px;
+
+  background:#ff9d00;
+  color:#111;
+
+  font-weight:800;
+  font-size:14px;
+
   cursor:pointer;
+
+  transition:.15s ease;
 }
 
-.btn:active{
-  transform:scale(.98);
+.btn:hover{
+  background:#f28f00;
+  transform:translateY(-1px);
 }
 
 .btn:disabled{
-  background:#aaa;
+  background:#ddd;
+  color:#888;
   cursor:not-allowed;
+  transform:none;
+}
+
+
+/* =====================================================
+   ESTADOS
+===================================================== */
+
+.loading,
+.error{
+  background:#fff;
+  border-radius:22px;
+  padding:35px 25px;
+  text-align:center;
+  box-shadow:0 3px 18px rgba(0,0,0,.04);
+}
+
+.loading{
+  color:#666;
+  font-size:17px;
+}
+
+.error{
+  color:#9e1232;
+}
+
+.error-icon{
+  font-size:50px;
+  margin-bottom:10px;
+}
+
+.error-title{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:12px;
+}
+
+.error-message{
+  color:#8e2941;
+  font-size:15px;
+  line-height:1.5;
+  margin-bottom:20px;
+}
+
+.retry{
+  border:0;
+  border-radius:12px;
+  padding:13px 24px;
+  background:#ff9d00;
+  color:#111;
+  font-weight:800;
+  cursor:pointer;
+  font-size:15px;
 }
 
 
@@ -420,35 +466,40 @@ header{
 
 .cart{
   position:fixed;
-  right:20px;
+  right:22px;
   bottom:20px;
+
   border:0;
   border-radius:999px;
-  min-height:60px;
+
   padding:16px 25px;
+
   background:#ff9d00;
   color:#111;
-  font-weight:800;
-  box-shadow:0 6px 24px #0004;
-  cursor:pointer;
-  z-index:150;
-  font-size:20px;
-}
 
-.cart:active{
-  transform:scale(.96);
+  font-weight:800;
+  font-size:18px;
+
+  box-shadow:0 7px 25px rgba(0,0,0,.22);
+
+  cursor:pointer;
+
+  z-index:150;
 }
 
 
 /* =====================================================
-   PANEL DEL CARRITO
+   PANEL CARRITO
 ===================================================== */
 
 .panel{
   position:fixed;
   inset:0;
-  background:#0009;
+
+  background:rgba(0,0,0,.55);
+
   display:none;
+
   z-index:300;
 }
 
@@ -460,62 +511,79 @@ header{
 
 .sheet{
   background:#fff;
-  width:min(100%,620px);
-  max-height:92vh;
+
+  width:min(100%,560px);
+  max-height:90vh;
+
   overflow:auto;
-  border-radius:26px 26px 0 0;
-  padding:24px;
+
+  border-radius:24px 24px 0 0;
+
+  padding:22px;
+}
+
+.sheet h2{
+  margin:0 0 20px;
 }
 
 .close{
   float:right;
+
   border:0;
   background:#eee;
-  border-radius:50%;
-  width:42px;
-  height:42px;
-  cursor:pointer;
-  font-size:20px;
-}
 
-.sheet h2{
-  margin-top:4px;
-  font-size:27px;
+  border-radius:50%;
+
+  width:38px;
+  height:38px;
+
+  cursor:pointer;
+
+  font-size:18px;
 }
 
 .row{
   display:flex;
   justify-content:space-between;
-  gap:12px;
-  padding:15px 0;
+  align-items:center;
+
+  gap:10px;
+
+  padding:13px 0;
+
   border-bottom:1px solid #eee;
 }
 
 .row button{
-  flex:0 0 auto;
-  align-self:center;
   border:0;
-  background:#fee;
-  color:#b00020;
+  background:#eee;
+
   border-radius:10px;
-  padding:10px 12px;
+
+  padding:9px 12px;
+
   cursor:pointer;
 }
 
 textarea,
 input[type=text]{
   width:100%;
-  padding:14px;
+
+  padding:13px;
+
   border:1px solid #ddd;
-  border-radius:12px;
-  margin:7px 0 14px;
+
+  border-radius:11px;
+
+  margin:6px 0 13px;
+
   font:inherit;
-  font-size:16px;
+
   outline:none;
 }
 
 textarea{
-  min-height:95px;
+  min-height:90px;
   resize:vertical;
 }
 
@@ -524,20 +592,41 @@ input[type=text]:focus{
   border-color:#ff9d00;
 }
 
+.send{
+  width:100%;
+
+  border:0;
+  border-radius:13px;
+
+  padding:14px;
+
+  background:#111;
+  color:#fff;
+
+  font-weight:800;
+  font-size:15px;
+
+  cursor:pointer;
+}
+
 
 /* =====================================================
-   VISOR
+   LIGHTBOX
 ===================================================== */
 
 .lightbox{
   position:fixed;
   inset:0;
-  background:#000e;
+
+  background:rgba(0,0,0,.92);
+
   display:none;
   align-items:center;
   justify-content:center;
+
   z-index:500;
-  padding:16px;
+
+  padding:15px;
 }
 
 .lightbox.open{
@@ -546,8 +635,10 @@ input[type=text]:focus{
 
 .lightbox-content{
   position:relative;
+
   width:100%;
   height:100%;
+
   display:flex;
   align-items:center;
   justify-content:center;
@@ -555,40 +646,64 @@ input[type=text]:focus{
 
 .lightbox-image{
   max-width:94vw;
-  max-height:84vh;
+  max-height:88vh;
+
   object-fit:contain;
-  border-radius:10px;
+
+  border-radius:8px;
+
   user-select:none;
 }
 
 .lightbox-close{
   position:absolute;
-  top:8px;
-  right:8px;
-  width:46px;
-  height:46px;
+
+  top:5px;
+  right:5px;
+
+  width:44px;
+  height:44px;
+
   border:0;
   border-radius:50%;
+
   background:#fff;
+
   color:#111;
+
   font-size:25px;
+
   cursor:pointer;
+
   z-index:5;
 }
 
 .lightbox-arrow{
   position:absolute;
+
   top:50%;
+
   transform:translateY(-50%);
+
   width:48px;
   height:48px;
+
   border:0;
   border-radius:50%;
-  background:#ffffffdd;
+
+  background:rgba(255,255,255,.92);
+
   color:#111;
+
   font-size:30px;
+
   cursor:pointer;
+
   z-index:5;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .lightbox-arrow.left{
@@ -601,176 +716,64 @@ input[type=text]:focus{
 
 .lightbox-counter{
   position:absolute;
-  bottom:16px;
+
+  bottom:18px;
   left:50%;
+
   transform:translateX(-50%);
-  background:#000b;
+
+  background:rgba(0,0,0,.75);
+
   color:#fff;
-  padding:8px 14px;
+
+  padding:7px 13px;
+
   border-radius:999px;
-  font-size:14px;
+
+  font-size:13px;
 }
 
 
 /* =====================================================
-   ESTADOS
+   MOBILE
 ===================================================== */
 
-.loading{
-  background:#fff;
-  border-radius:24px;
-  padding:40px 25px;
-  text-align:center;
-  color:#666;
-  font-size:18px;
-}
-
-.error{
-  background:#fff;
-  border-radius:24px;
-  padding:38px 25px;
-  text-align:center;
-  color:#a00020;
-  font-size:17px;
-  line-height:1.55;
-}
-
-.error-title{
-  font-size:22px;
-  font-weight:800;
-  margin-bottom:12px;
-}
-
-.error-detail{
-  margin-top:15px;
-  padding:14px;
-  background:#fff3f5;
-  border-radius:12px;
-  color:#8b001c;
-  font-size:14px;
-  word-break:break-word;
-}
-
-.retry{
-  margin-top:18px;
-  border:0;
-  background:#ff9d00;
-  color:#111;
-  font-weight:800;
-  border-radius:12px;
-  padding:13px 22px;
-  cursor:pointer;
-}
-
-
-/* =====================================================
-   UNA SOLA IMAGEN
-===================================================== */
-
-.gallery.single .main-image-wrap{
-  cursor:zoom-in;
-}
-
-.gallery.single .main-image-wrap{
-  height:280px;
-}
-
-.gallery.single .thumbnails,
-.gallery.single .photo-info{
-  display:none;
-}
-
-
-/* =====================================================
-   TABLET / PC
-===================================================== */
-
-@media(min-width:700px){
-
-  .grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-}
-
-
-/* =====================================================
-   PANTALLA GRANDE
-===================================================== */
-
-@media(min-width:1000px){
-
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .card{
-    display:grid;
-    grid-template-columns:280px 1fr;
-    min-height:280px;
-  }
-
-  .gallery{
-    height:100%;
-  }
-
-  .main-image-wrap,
-  .gallery.single .main-image-wrap{
-    height:280px;
-  }
-
-  .body{
-    padding:25px 28px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-  }
-
-  .desc{
-    max-width:700px;
-  }
-
-  .body .btn{
-    width:auto;
-    align-self:flex-start;
-    min-width:210px;
-  }
-
-}
-
-
-/* =====================================================
-   CELULAR
-===================================================== */
-
-@media(max-width:699px){
+@media(max-width:700px){
 
   .top{
+    min-height:90px;
     padding:10px 18px;
-    gap:12px;
+    gap:14px;
   }
 
   .logo{
-    width:74px;
-    height:74px;
+    width:70px;
+    height:70px;
   }
 
   .brand{
-    font-size:28px;
+    font-size:29px;
   }
 
   .sub{
-    margin-top:5px;
-    font-size:15px;
+    font-size:16px;
   }
 
   .wrap{
-    padding:20px 14px 105px;
+    padding:20px 18px 100px;
   }
 
   .hero{
     padding:25px 20px;
-    border-radius:25px;
+    border-radius:24px;
+  }
+
+  .hero-title{
+    align-items:flex-start;
+  }
+
+  .hero-icon{
+    font-size:38px;
   }
 
   .hero h1{
@@ -778,66 +781,72 @@ input[type=text]:focus{
   }
 
   .hero p{
-    font-size:20px;
+    font-size:19px;
+    line-height:1.45;
   }
 
   .search{
     height:62px;
     font-size:19px;
-    margin-top:23px;
-  }
-
-  .product-count{
-    font-size:15px;
+    border-radius:17px;
   }
 
   .card{
-    border-radius:20px;
+    grid-template-columns:150px 1fr;
+    min-height:165px;
+    border-radius:18px;
   }
 
-  .main-image-wrap,
-  .gallery.single .main-image-wrap{
-    height:240px;
+  .gallery,
+  .main-image-wrap{
+    min-height:165px;
   }
 
   .body{
-    padding:17px;
+    padding:14px;
+    display:block;
   }
 
   .cat{
-    font-size:12px;
+    font-size:11px;
   }
 
   .name{
-    font-size:19px;
+    font-size:16px;
+    line-height:1.2;
   }
 
   .desc{
-    font-size:14px;
+    font-size:12px;
+    line-height:1.35;
+
+    -webkit-line-clamp:3;
+
+    min-height:auto;
   }
 
   .price{
-    font-size:22px;
+    font-size:18px;
+    margin-top:10px;
   }
 
   .stock{
-    font-size:14px;
+    font-size:12px;
+    margin-bottom:10px;
   }
 
   .btn{
-    min-height:48px;
+    width:100%;
+    min-width:0;
+    padding:10px 8px;
+    font-size:13px;
   }
 
   .cart{
     right:12px;
     bottom:14px;
-    font-size:18px;
-    min-height:58px;
     padding:15px 22px;
-  }
-
-  .sheet{
-    padding:20px;
+    font-size:17px;
   }
 
 }
@@ -847,11 +856,15 @@ input[type=text]:focus{
    CELULAR PEQUEÑO
 ===================================================== */
 
-@media(max-width:380px){
+@media(max-width:430px){
+
+  .top{
+    padding:9px 15px;
+  }
 
   .logo{
-    width:65px;
-    height:65px;
+    width:62px;
+    height:62px;
   }
 
   .brand{
@@ -859,42 +872,82 @@ input[type=text]:focus{
   }
 
   .sub{
-    font-size:13px;
+    font-size:14px;
+  }
+
+  .wrap{
+    padding:16px 12px 100px;
+  }
+
+  .hero{
+    padding:22px 17px;
+  }
+
+  .hero-icon{
+    font-size:32px;
   }
 
   .hero h1{
-    font-size:28px;
+    font-size:27px;
   }
 
   .hero p{
-    font-size:18px;
+    font-size:17px;
   }
 
-  .main-image-wrap,
-  .gallery.single .main-image-wrap{
-    height:220px;
+  .search{
+    height:58px;
+    font-size:17px;
+  }
+
+  .card{
+    grid-template-columns:130px 1fr;
+    min-height:155px;
+  }
+
+  .gallery,
+  .main-image-wrap{
+    min-height:155px;
+  }
+
+  .body{
+    padding:12px;
+  }
+
+  .name{
+    font-size:15px;
+  }
+
+  .desc{
+    font-size:11px;
+  }
+
+  .price{
+    font-size:17px;
+  }
+
+  .stock{
+    font-size:11px;
+  }
+
+  .btn{
+    font-size:12px;
   }
 
 }
 
 
 /* =====================================================
-   REDUCIR ANIMACIONES
+   UNA SOLA IMAGEN
 ===================================================== */
 
-@media(prefers-reduced-motion:reduce){
-
-  *{
-    scroll-behavior:auto !important;
-    transition:none !important;
-  }
-
+.gallery.single .photo-counter{
+  display:none;
 }
 
 </style>
 
 </head>
-
 
 <body>
 
@@ -940,29 +993,39 @@ input[type=text]:focus{
 
   <section class="hero">
 
-    <h1>
-      🛍️ Nuestro catálogo
-    </h1>
+    <div class="hero-title">
+
+      <div class="hero-icon">
+        🛍️
+      </div>
+
+      <h1>
+        Nuestro catálogo
+      </h1>
+
+    </div>
+
 
     <p>
       Elige tus productos y envíanos tu pedido
       directamente por WhatsApp.
     </p>
 
+
     <input
       id="search"
       class="search"
-      type="search"
+      type="text"
       placeholder="🔎 Buscar productos..."
       autocomplete="off"
-      aria-label="Buscar productos"
     >
+
 
     <div
       id="productCount"
       class="product-count"
     >
-      Cargando productos...
+      Cargando catálogo...
     </div>
 
   </section>
@@ -974,7 +1037,7 @@ input[type=text]:focus{
   >
 
     <div class="loading">
-      ⏳ Cargando catálogo...
+      ⏳ Cargando productos...
     </div>
 
   </section>
@@ -987,10 +1050,8 @@ input[type=text]:focus{
 ===================================================== -->
 
 <button
-  id="cartButton"
   class="cart"
   onclick="openCart()"
-  type="button"
 >
   🛒 Carrito (<span id="count">0</span>)
 </button>
@@ -1011,22 +1072,23 @@ input[type=text]:focus{
     <button
       class="close"
       onclick="closeCart()"
-      type="button"
-      aria-label="Cerrar carrito"
     >
       ✕
     </button>
+
 
     <h2>
       🛒 Tu pedido
     </h2>
 
+
     <div id="cartItems"></div>
+
 
     <div
       id="total"
       style="
-        font-size:21px;
+        font-size:20px;
         font-weight:800;
         margin:18px 0;
       "
@@ -1035,7 +1097,7 @@ input[type=text]:focus{
     </div>
 
 
-    <label for="customer">
+    <label>
       Tu nombre
     </label>
 
@@ -1046,7 +1108,7 @@ input[type=text]:focus{
     >
 
 
-    <label for="address">
+    <label>
       Dirección o zona de entrega
     </label>
 
@@ -1057,9 +1119,8 @@ input[type=text]:focus{
 
 
     <button
-      class="btn"
+      class="send"
       onclick="sendWhatsApp()"
-      type="button"
     >
       📲 Enviar pedido por WhatsApp
     </button>
@@ -1070,7 +1131,7 @@ input[type=text]:focus{
 
 
 <!-- =====================================================
-     VISOR DE IMAGEN
+     VISOR DE IMÁGENES
 ===================================================== -->
 
 <div
@@ -1081,11 +1142,10 @@ input[type=text]:focus{
 
   <div class="lightbox-content">
 
+
     <button
       class="lightbox-close"
       onclick="closeLightbox()"
-      type="button"
-      aria-label="Cerrar imagen"
     >
       ✕
     </button>
@@ -1094,9 +1154,10 @@ input[type=text]:focus{
     <button
       id="lightboxPrev"
       class="lightbox-arrow left"
-      onclick="event.stopPropagation();changeLightboxImage(-1)"
-      type="button"
-      aria-label="Imagen anterior"
+      onclick="
+        event.stopPropagation();
+        changeLightboxImage(-1)
+      "
     >
       ‹
     </button>
@@ -1113,9 +1174,10 @@ input[type=text]:focus{
     <button
       id="lightboxNext"
       class="lightbox-arrow right"
-      onclick="event.stopPropagation();changeLightboxImage(1)"
-      type="button"
-      aria-label="Imagen siguiente"
+      onclick="
+        event.stopPropagation();
+        changeLightboxImage(1)
+      "
     >
       ›
     </button>
@@ -1147,7 +1209,7 @@ const SUPABASE_KEY =
 
 
 /* =====================================================
-   CREAR CLIENTE SUPABASE
+   CLIENTE SUPABASE
 ===================================================== */
 
 let supabaseClient = null;
@@ -1162,19 +1224,7 @@ try{
     supabaseClient =
       window.supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_KEY,
-        {
-          auth:{
-            persistSession:false,
-            autoRefreshToken:false,
-            detectSessionInUrl:false
-          },
-          global:{
-            headers:{
-              "x-client-info":"aqui-tai-catalogo"
-            }
-          }
-        }
+        SUPABASE_KEY
       );
 
   }
@@ -1182,7 +1232,7 @@ try{
 }catch(error){
 
   console.error(
-    "No se pudo inicializar Supabase:",
+    "No se pudo iniciar Supabase:",
     error
   );
 
@@ -1202,8 +1252,6 @@ let galleryStates = {};
 let currentLightboxImages = [];
 
 let currentLightboxIndex = 0;
-
-let loadingRequest = false;
 
 
 /* =====================================================
@@ -1254,23 +1302,7 @@ const lightboxNext =
 
 
 /* =====================================================
-   ESCAPAR HTML
-===================================================== */
-
-function escapeHTML(value){
-
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-/* =====================================================
-   IMÁGENES
+   CONVERTIR IMÁGENES EN ARRAY
 ===================================================== */
 
 function getImages(value){
@@ -1320,8 +1352,8 @@ function getImages(value){
 
     }catch(error){
 
-      console.log(
-        "La columna image no contiene JSON válido."
+      console.warn(
+        "No se pudo interpretar JSON de imágenes."
       );
 
     }
@@ -1359,115 +1391,17 @@ function getImages(value){
 
 
 /* =====================================================
-   NORMALIZAR PRODUCTO
+   ESCAPAR HTML
 ===================================================== */
 
-function normalizeProduct(product){
+function escapeHTML(value){
 
-  return {
-
-    id:product.id,
-
-    name:
-      product.name ||
-      "Producto sin nombre",
-
-    category:
-      product.category ||
-      "Sin categoría",
-
-    description:
-      product.description ||
-      "",
-
-    price:
-      Number(product.price || 0),
-
-    image:
-      product.image ||
-      "",
-
-    stock:
-      Number(product.stock || 0),
-
-    active:
-      product.active === true
-
-  };
-
-}
-
-
-/* =====================================================
-   MENSAJE DE ERROR
-===================================================== */
-
-function showCatalogError(error){
-
-  console.error(
-    "Error completo al cargar productos:",
-    error
-  );
-
-
-  let detail =
-    "No se pudo establecer comunicación con Supabase.";
-
-
-  if(error){
-
-    if(error.message){
-
-      detail =
-        error.message;
-
-    }else if(error.error_description){
-
-      detail =
-        error.error_description;
-
-    }else if(typeof error === "string"){
-
-      detail =
-        error;
-
-    }
-
-  }
-
-
-  productCount.textContent =
-    "No se pudo cargar el catálogo.";
-
-
-  grid.innerHTML = `
-
-    <div class="error">
-
-      <div class="error-title">
-        ❌ No se pudo cargar el catálogo
-      </div>
-
-      <div>
-        Estamos intentando conectar con
-        nuestra base de datos.
-      </div>
-
-      <div class="error-detail">
-        ${escapeHTML(detail)}
-      </div>
-
-      <button
-        class="retry"
-        onclick="loadProducts()"
-        type="button"
-      >
-        🔄 Reintentar
-      </button>
-
-    </div>
-
-  `;
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 
 }
 
@@ -1478,25 +1412,14 @@ function showCatalogError(error){
 
 async function loadProducts(){
 
-  if(loadingRequest){
-    return;
-  }
-
-
-  loadingRequest = true;
-
-
   grid.innerHTML = `
-
     <div class="loading">
-      ⏳ Cargando catálogo...
+      ⏳ Cargando productos...
     </div>
-
   `;
 
-
   productCount.textContent =
-    "Cargando productos...";
+    "Conectando con el catálogo...";
 
 
   try{
@@ -1504,18 +1427,11 @@ async function loadProducts(){
     if(!supabaseClient){
 
       throw new Error(
-        "La biblioteca de Supabase no pudo inicializarse."
+        "No se pudo iniciar la conexión con Supabase."
       );
 
     }
 
-
-    /*
-      IMPORTANTE:
-
-      El cliente solamente solicita las columnas
-      necesarias para mostrar el catálogo.
-    */
 
     const result =
       await supabaseClient
@@ -1523,8 +1439,8 @@ async function loadProducts(){
         .select(
           "id,name,category,description,price,image,stock,active"
         )
-        .eq("active",true)
-        .order("id",{
+        .eq("active", true)
+        .order("id", {
           ascending:false
         });
 
@@ -1538,20 +1454,23 @@ async function loadProducts(){
 
     if(error){
 
-      throw error;
+      console.error(
+        "SUPABASE ERROR:",
+        error
+      );
+
+      showConnectionError(error);
+
+      return;
 
     }
 
 
     products =
       Array.isArray(data)
-      ? data.map(normalizeProduct)
+      ? data
       : [];
 
-
-    /*
-      Reiniciar estados de galerías
-    */
 
     galleryStates = {};
 
@@ -1575,13 +1494,109 @@ async function loadProducts(){
 
   }catch(error){
 
-    showCatalogError(error);
+    console.error(
+      "ERROR DE CONEXIÓN:",
+      error
+    );
 
-  }finally{
-
-    loadingRequest = false;
+    showConnectionError(error);
 
   }
+
+}
+
+
+/* =====================================================
+   ERROR DE CONEXIÓN
+===================================================== */
+
+function showConnectionError(error){
+
+  let message =
+    "No se pudo conectar con Supabase.";
+
+
+  if(error){
+
+    if(error.message){
+
+      message =
+        error.message;
+
+    }else{
+
+      message =
+        String(error);
+
+    }
+
+  }
+
+
+  /*
+     Mensajes más fáciles de entender
+  */
+
+  if(
+    message.toLowerCase().includes(
+      "failed to fetch"
+    )
+  ){
+
+    message =
+      "El navegador no pudo comunicarse con Supabase. Verifica que la URL y la clave pública sean correctas y que el proyecto de Supabase esté disponible.";
+
+  }
+
+
+  if(
+    message.toLowerCase().includes(
+      "permission"
+    ) ||
+    message.toLowerCase().includes(
+      "row-level"
+    ) ||
+    message.toLowerCase().includes(
+      "rls"
+    )
+  ){
+
+    message =
+      "Supabase rechazó la lectura de la tabla products. Debes permitir SELECT para usuarios públicos en la tabla products.";
+
+  }
+
+
+  productCount.textContent =
+    "No se pudo cargar el catálogo.";
+
+
+  grid.innerHTML = `
+
+    <div class="error">
+
+      <div class="error-icon">
+        ❌
+      </div>
+
+      <div class="error-title">
+        No se pudo cargar el catálogo
+      </div>
+
+      <div class="error-message">
+        ${escapeHTML(message)}
+      </div>
+
+      <button
+        class="retry"
+        onclick="loadProducts()"
+      >
+        🔄 Reintentar
+      </button>
+
+    </div>
+
+  `;
 
 }
 
@@ -1596,14 +1611,11 @@ function galleryHTML(product){
     getImages(product.image);
 
 
-  const fallback =
-    "https://via.placeholder.com/800x600?text=Aqui+tai";
-
-
   if(!images.length){
 
-    images =
-      [fallback];
+    images = [
+      "https://via.placeholder.com/600x600?text=Aqui+tai"
+    ];
 
   }
 
@@ -1643,9 +1655,7 @@ function galleryHTML(product){
     images[state.index];
 
 
-  /* ===================================================
-     UNA SOLA FOTO
-  =================================================== */
+  /* UNA FOTO */
 
   if(images.length === 1){
 
@@ -1655,7 +1665,12 @@ function galleryHTML(product){
 
         <div
           class="main-image-wrap"
-          onclick="openLightbox(${Number(product.id)},0)"
+          onclick="
+            openLightbox(
+              ${Number(product.id)},
+              0
+            )
+          "
         >
 
           <img
@@ -1666,7 +1681,7 @@ function galleryHTML(product){
             loading="lazy"
             onerror="
               this.onerror=null;
-              this.src='https://via.placeholder.com/800x600?text=Sin+imagen';
+              this.src='https://via.placeholder.com/600x600?text=Sin+imagen';
             "
           >
 
@@ -1679,9 +1694,7 @@ function galleryHTML(product){
   }
 
 
-  /* ===================================================
-     VARIAS FOTOS
-  =================================================== */
+  /* VARIAS FOTOS */
 
   return `
 
@@ -1692,7 +1705,12 @@ function galleryHTML(product){
 
       <div
         class="main-image-wrap"
-        onclick="openLightbox(${Number(product.id)},${state.index})"
+        onclick="
+          openLightbox(
+            ${Number(product.id)},
+            ${state.index}
+          )
+        "
       >
 
         <img
@@ -1703,7 +1721,7 @@ function galleryHTML(product){
           loading="lazy"
           onerror="
             this.onerror=null;
-            this.src='https://via.placeholder.com/800x600?text=Sin+imagen';
+            this.src='https://via.placeholder.com/600x600?text=Sin+imagen';
           "
         >
 
@@ -1712,9 +1730,11 @@ function galleryHTML(product){
           class="gallery-arrow left"
           onclick="
             event.stopPropagation();
-            changeGallery(${Number(product.id)},-1);
+            changeGallery(
+              ${Number(product.id)},
+              -1
+            )
           "
-          type="button"
           aria-label="Imagen anterior"
         >
           ‹
@@ -1725,9 +1745,11 @@ function galleryHTML(product){
           class="gallery-arrow right"
           onclick="
             event.stopPropagation();
-            changeGallery(${Number(product.id)},1);
+            changeGallery(
+              ${Number(product.id)},
+              1
+            )
           "
-          type="button"
           aria-label="Imagen siguiente"
         >
           ›
@@ -1741,53 +1763,6 @@ function galleryHTML(product){
           ${state.index + 1} / ${images.length}
         </div>
 
-      </div>
-
-
-      <div
-        id="thumbs-${Number(product.id)}"
-        class="thumbnails"
-      >
-
-        ${images.map((image,index) => `
-
-          <button
-            class="thumb ${
-              index === state.index
-              ? "active"
-              : ""
-            }"
-            onclick="
-              event.stopPropagation();
-              selectGalleryImage(
-                ${Number(product.id)},
-                ${index}
-              );
-            "
-            type="button"
-            aria-label="Ver imagen ${index + 1}"
-          >
-
-            <img
-              src="${escapeHTML(image)}"
-              alt="Foto ${index + 1}"
-              loading="lazy"
-              onerror="
-                this.onerror=null;
-                this.src='https://via.placeholder.com/100x100?text=Foto';
-              "
-            >
-
-          </button>
-
-        `).join("")}
-
-      </div>
-
-
-      <div class="photo-info">
-        📷 ${images.length}
-        ${images.length === 1 ? "foto" : "fotos"}
       </div>
 
     </div>
@@ -1817,13 +1792,7 @@ function render(list){
     grid.innerHTML = `
 
       <div class="loading">
-
         🔎 No encontramos productos.
-
-        <br><br>
-
-        Prueba con otro nombre o categoría.
-
       </div>
 
     `;
@@ -1851,7 +1820,7 @@ function render(list){
 
         ? `
           <div class="stock">
-            📦 Disponible: ${stock}
+            📦 Stock: ${stock}
           </div>
         `
 
@@ -1872,24 +1841,27 @@ function render(list){
           <div class="body">
 
             <div class="cat">
-              ${escapeHTML(product.category)}
+              ${escapeHTML(
+                product.category ||
+                "Sin categoría"
+              )}
             </div>
 
 
             <div class="name">
-              ${escapeHTML(product.name)}
+              ${escapeHTML(
+                product.name ||
+                "Producto"
+              )}
             </div>
 
 
-            ${
-              product.description
-              ? `
-                <div class="desc">
-                  ${escapeHTML(product.description)}
-                </div>
-              `
-              : ""
-            }
+            <div class="desc">
+              ${escapeHTML(
+                product.description ||
+                ""
+              )}
+            </div>
 
 
             <div class="price">
@@ -1905,13 +1877,14 @@ function render(list){
             <button
               class="btn"
               ${disabled}
-              onclick="add(${Number(product.id)})"
-              type="button"
+              onclick="
+                add(${Number(product.id)})
+              "
             >
 
               ${
                 stock > 0
-                ? "Agregar al carrito"
+                ? "🛒 Agregar al carrito"
                 : "Agotado"
               }
 
@@ -1929,7 +1902,7 @@ function render(list){
 
 
 /* =====================================================
-   CAMBIAR GALERÍA
+   GALERÍA
 ===================================================== */
 
 function changeGallery(id,direction){
@@ -1975,10 +1948,6 @@ function changeGallery(id,direction){
 }
 
 
-/* =====================================================
-   SELECCIONAR FOTO
-===================================================== */
-
 function selectGalleryImage(id,index){
 
   const state =
@@ -2009,10 +1978,6 @@ function selectGalleryImage(id,index){
 }
 
 
-/* =====================================================
-   ACTUALIZAR GALERÍA
-===================================================== */
-
 function updateGallery(id){
 
   const state =
@@ -2040,14 +2005,6 @@ function updateGallery(id){
     );
 
 
-  const thumbs =
-    document.querySelectorAll(
-      "#thumbs-" +
-      id +
-      " .thumb"
-    );
-
-
   if(mainImage){
 
     mainImage.src =
@@ -2065,51 +2022,11 @@ function updateGallery(id){
 
   }
 
-
-  thumbs.forEach(
-    (thumb,index) => {
-
-      thumb.classList.toggle(
-        "active",
-        index === state.index
-      );
-
-    }
-  );
-
-
-  /*
-    Actualizar onclick de la imagen
-    para abrir el visor en la foto actual.
-  */
-
-  if(mainImage){
-
-    const wrapper =
-      mainImage.parentElement;
-
-
-    if(wrapper){
-
-      wrapper.onclick =
-        function(){
-
-          openLightbox(
-            id,
-            state.index
-          );
-
-        };
-
-    }
-
-  }
-
 }
 
 
 /* =====================================================
-   VISOR
+   LIGHTBOX
 ===================================================== */
 
 function openLightbox(id,index){
@@ -2127,19 +2044,8 @@ function openLightbox(id,index){
     state.images;
 
 
-  if(!currentLightboxImages.length){
-    return;
-  }
-
-
   currentLightboxIndex =
-    Math.max(
-      0,
-      Math.min(
-        Number(index) || 0,
-        currentLightboxImages.length - 1
-      )
-    );
+    index;
 
 
   updateLightbox();
@@ -2155,8 +2061,12 @@ function openLightbox(id,index){
 
 function updateLightbox(){
 
-  if(!currentLightboxImages.length){
+  if(
+    !currentLightboxImages.length
+  ){
+
     return;
+
   }
 
 
@@ -2245,7 +2155,9 @@ function closeLightbox(){
 
 function closeLightboxIfBackground(event){
 
-  if(event.target === lightbox){
+  if(
+    event.target === lightbox
+  ){
 
     closeLightbox();
 
@@ -2296,27 +2208,17 @@ document.addEventListener(
 
 
 /* =====================================================
-   SWIPE
+   SWIPE CELULAR
 ===================================================== */
 
 let touchStartX = 0;
-
-let touchEndX = 0;
-
 
 lightbox.addEventListener(
   "touchstart",
   function(event){
 
-    if(
-      event.changedTouches &&
-      event.changedTouches.length
-    ){
-
-      touchStartX =
-        event.changedTouches[0].screenX;
-
-    }
+    touchStartX =
+      event.changedTouches[0].screenX;
 
   },
   {
@@ -2329,17 +2231,7 @@ lightbox.addEventListener(
   "touchend",
   function(event){
 
-    if(
-      !event.changedTouches ||
-      !event.changedTouches.length
-    ){
-
-      return;
-
-    }
-
-
-    touchEndX =
+    const touchEndX =
       event.changedTouches[0].screenX;
 
 
@@ -2461,8 +2353,8 @@ function add(id){
 
   const existing =
     cart.find(
-      x =>
-        Number(x.id) ===
+      item =>
+        Number(item.id) ===
         Number(id)
     );
 
@@ -2470,8 +2362,7 @@ function add(id){
   if(existing){
 
     if(
-      Number(existing.qty) >=
-      stock
+      existing.qty >= stock
     ){
 
       alert(
@@ -2510,8 +2401,7 @@ function updateCart(){
   const quantity =
     cart.reduce(
       (sum,item) =>
-        sum +
-        Number(item.qty || 0),
+        sum + Number(item.qty),
       0
     );
 
@@ -2522,13 +2412,8 @@ function updateCart(){
 
   if(!cart.length){
 
-    cartItems.innerHTML = `
-
-      <p>
-        Tu carrito está vacío.
-      </p>
-
-    `;
+    cartItems.innerHTML =
+      "<p>Tu carrito está vacío.</p>";
 
 
     total.textContent =
@@ -2555,7 +2440,9 @@ function updateCart(){
           <div>
 
             <b>
-              ${escapeHTML(item.name)}
+              ${escapeHTML(
+                item.name
+              )}
             </b>
 
             <br>
@@ -2564,8 +2451,7 @@ function updateCart(){
               item.price || 0
             ).toFixed(2)}
 
-            ×
-            ${item.qty}
+            × ${item.qty}
 
             <br>
 
@@ -2578,9 +2464,9 @@ function updateCart(){
 
 
           <button
-            onclick="removeItem(${index})"
-            type="button"
-            aria-label="Eliminar producto"
+            onclick="
+              removeItem(${index})
+            "
           >
             🗑️
           </button>
@@ -2610,16 +2496,6 @@ function updateCart(){
 
 
 function removeItem(index){
-
-  if(
-    index < 0 ||
-    index >= cart.length
-  ){
-
-    return;
-
-  }
-
 
   cart.splice(index,1);
 
@@ -2721,14 +2597,8 @@ function sendWhatsApp(){
 
 
   const encodedMessage =
-    encodeURIComponent(
-      message
-    );
+    encodeURIComponent(message);
 
-
-  /*
-    Número de WhatsApp de la tienda.
-  */
 
   const whatsappURL =
     "https://wa.me/59171440907?text=" +
@@ -2742,38 +2612,10 @@ function sendWhatsApp(){
 
 
 /* =====================================================
-   CERRAR CARRITO CON ESCAPE
+   INICIAR
 ===================================================== */
 
-document.addEventListener(
-  "keydown",
-  function(event){
-
-    if(
-      event.key === "Escape" &&
-      panel.classList.contains("open")
-    ){
-
-      closeCart();
-
-    }
-
-  }
-);
-
-
-/* =====================================================
-   INICIAR CATÁLOGO
-===================================================== */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  function(){
-
-    loadProducts();
-
-  }
-);
+loadProducts();
 
 </script>
 
