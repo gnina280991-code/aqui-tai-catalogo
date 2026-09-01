@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aquí tái | Tienda en Línea</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   
   <style>
     /* VARIABLES DE TEMA (MODO NOCTURNO POR DEFECTO) */
@@ -230,6 +230,18 @@
     .btn-add-card:active {
       background: var(--accent-color) !important;
       color: #0f172a !important;
+    }
+
+    .btn-load-more {
+      grid-column: 1 / -1;
+      margin: 16px auto;
+      padding: 12px 24px;
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
     /* BOTONES FLOTANTES */
@@ -532,47 +544,40 @@
 
   <header>
     <div class="top-bar">
-      <img class="logo" src="logo.png" alt="Logo" onerror="this.style.display='none'">
+      <img class="logo" src="logo.png" alt="Logo" loading="lazy" decoding="async" onerror="this.style.display='none'">
       <div class="brand-wrap">
         <div class="brand">Aquí tái</div>
         <div class="sub">Catálogo Oficial · Bolivia</div>
       </div>
       
-      <!-- BOTÓN CAMBIO TEMA -->
       <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
     </div>
 
-    <!-- BUSCADOR -->
     <div class="search-box">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" class="search-input" placeholder="Buscar producto..." oninput="filterProducts()">
     </div>
 
-    <!-- CATEGORÍAS -->
     <div class="categories-bar" id="categoriesBar">
       <button class="cat-btn active" onclick="selectCategory('all', this)">Todos</button>
     </div>
   </header>
 
-  <!-- GRID DE PRODUCTOS -->
   <main class="grid" id="catalogGrid">
     <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">⏳ Cargando catálogo...</div>
   </main>
 
-  <!-- BOTÓN FLOTANTE WHATSAPP -->
   <a href="#" id="wsDirectLink" class="ws-float-btn" target="_blank" title="Consultar por WhatsApp">
     <svg viewBox="0 0 32 32">
       <path d="M16 2a13 13 0 0 0-11 20L3 29l7.2-1.9A13 13 0 1 0 16 2zm0 23.8a10.8 10.8 0 0 1-5.5-1.5l-.4-.2-4.1 1.1 1.1-4-.3-.4a10.8 10.8 0 1 1 9.2 5zm6-8.1c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a9 9 0 0 1-2.6-1.6 9.8 9.8 0 0 1-1.8-2.2c-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6a.6.6 0 0 0 0-.6c-.1-.2-.7-1.7-.9-2.3s-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7 6.4 6.4 0 0 0 1.3 3.4 14.7 14.7 0 0 0 5.6 5c2.3 1 2.8.8 3.3.8a2.8 2.8 0 0 0 1.9-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.2-.4-.3-.7-.5z"/>
     </svg>
   </a>
 
-  <!-- BOTÓN FLOTANTE DEL CARRITO -->
   <button class="cart-float-btn" onclick="openCartModal()">
     🛒 Ver Carrito
     <span class="cart-badge" id="cartCount">0</span>
   </button>
 
-  <!-- MODAL DE PRODUCTO (FICHA) -->
   <div id="viewModal" class="modal" onclick="if(event.target===this)closeModal('viewModal')">
     <div class="modal-content">
       <div class="modal-header">
@@ -605,7 +610,6 @@
     </div>
   </div>
 
-  <!-- MODAL DEL CARRITO -->
   <div id="cartModal" class="modal" onclick="if(event.target===this)closeModal('cartModal')">
     <div class="modal-content">
       <div class="modal-header">
@@ -626,11 +630,10 @@
     </div>
   </div>
 
-  <!-- VISOR LIGHTBOX (CARRUSEL A PANTALLA COMPLETA) -->
   <div id="lightboxModal" class="lightbox-modal" onclick="if(event.target===this)closeLightbox()">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     <button class="lightbox-btn prev" onclick="changeLightboxImg(-1)">◀</button>
-    <img id="lightboxImg" class="lightbox-img" src="" alt="Vista Completa">
+    <img id="lightboxImg" class="lightbox-img" src="" alt="Vista Completa" loading="eager" decoding="async">
     <button class="lightbox-btn next" onclick="changeLightboxImg(1)">▶</button>
     <div id="lightboxCounter" class="lightbox-counter">1 / 1</div>
   </div>
@@ -639,23 +642,24 @@
     const SUPABASE_URL = "https://ztsthkoejosgwkhmzfbd.supabase.co";
     const SUPABASE_KEY = "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
     const PHONE_NUMBER = "59171440907";
+    const PAGE_SIZE = 20;
 
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let supabaseClient = null;
     let products = [];
     let cart = [];
     let currentCategory = 'all';
     let currentSelectedProduct = null;
     let activeGalleryImages = [];
     let activeImageIndex = 0;
+    let currentPage = 0;
+    let hasMoreProducts = true;
 
     const lightboxModal = document.getElementById("lightboxModal");
     const lightboxImg = document.getElementById("lightboxImg");
     const lightboxCounter = document.getElementById("lightboxCounter");
 
-    // CONFIGURACIÓN DEL ENLACE DIRECTO DE WHATSAPP
     document.getElementById("wsDirectLink").href = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent('¡Hola! Vengo desde el catálogo online y quisiera hacer una consulta.')}`;
 
-    // MANEJO DE MODO NOCTURNO / CLARO
     function initTheme() {
       const savedTheme = localStorage.getItem("theme");
       const btn = document.getElementById("themeBtn");
@@ -670,26 +674,41 @@
     function toggleTheme() {
       const btn = document.getElementById("themeBtn");
       const isLight = document.body.classList.toggle("light-mode");
-      if (isLight) {
-        localStorage.setItem("theme", "light");
-        btn.textContent = "☀️";
-      } else {
-        localStorage.setItem("theme", "dark");
-        btn.textContent = "🌙";
-      }
+      localStorage.setItem("theme", isLight ? "light" : "dark");
+      btn.textContent = isLight ? "☀️" : "🌙";
     }
 
-    async function loadCatalog() {
+    async function loadCatalog(loadMore = false) {
+      if (!supabaseClient) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+
       const grid = document.getElementById("catalogGrid");
+      if (!loadMore) {
+        currentPage = 0;
+        products = [];
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">⏳ Cargando catálogo...</div>`;
+      }
+
+      const from = currentPage * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
       try {
         const { data, error } = await supabaseClient
           .from("products")
-          .select("*")
-          .order("id", { ascending: false });
+          .select("id, name, price, stock, category, description, images, image")
+          .order("id", { ascending: false })
+          .range(from, to);
 
         if (error) throw error;
 
-        products = data || [];
+        if (data.length < PAGE_SIZE) {
+          hasMoreProducts = false;
+        } else {
+          hasMoreProducts = true;
+        }
+
+        products = loadMore ? [...products, ...data] : data;
         buildCategoriesMenu();
         filterProducts();
       } catch (e) {
@@ -701,9 +720,10 @@
       const bar = document.getElementById("categoriesBar");
       const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
 
-      let html = `<button class="cat-btn active" onclick="selectCategory('all', this)">Todos</button>`;
+      let html = `<button class="cat-btn ${currentCategory === 'all' ? 'active' : ''}" onclick="selectCategory('all', this)">Todos</button>`;
       categories.forEach(cat => {
-        html += `<button class="cat-btn" onclick="selectCategory('${escapeHTML(cat)}', this)">${escapeHTML(cat)}</button>`;
+        const active = currentCategory === cat ? 'active' : '';
+        html += `<button class="cat-btn ${active}" onclick="selectCategory('${escapeHTML(cat)}', this)">${escapeHTML(cat)}</button>`;
       });
 
       bar.innerHTML = html;
@@ -722,9 +742,7 @@
       const filtered = products.filter(p => {
         const matchesCat = currentCategory === 'all' || p.category === currentCategory;
         const text = [p.name, p.category, p.description].filter(Boolean).join(" ").toLowerCase();
-        const matchesQuery = !query || text.includes(query);
-
-        return matchesCat && matchesQuery;
+        return matchesCat && (!query || text.includes(query));
       });
 
       renderCatalog(filtered);
@@ -737,22 +755,32 @@
         return;
       }
 
-      grid.innerHTML = list.map(p => {
+      let html = list.map(p => {
         const images = getImagesArray(p);
         const mainImg = images[0] || 'https://via.placeholder.com/300?text=Sin+Imagen';
 
         return `
           <div class="prod-card">
-            <img class="prod-img" src="${escapeHTML(mainImg)}" alt="Foto" onclick="openModal(${p.id})">
+            <img class="prod-img" src="${escapeHTML(mainImg)}" alt="Foto" loading="lazy" decoding="async" onclick="openModal(${p.id})">
             <div class="prod-title" onclick="openModal(${p.id})">${escapeHTML(p.name)}</div>
             <div class="prod-price">Bs ${Number(p.price || 0).toFixed(2)}</div>
             <button class="btn-add-card" onclick="addToCart(${p.id})">+ Agregar al carrito</button>
           </div>
         `;
       }).join("");
+
+      if (hasMoreProducts && currentCategory === 'all' && !document.getElementById("searchInput").value) {
+        html += `<button class="btn-load-more" onclick="loadNextPage()">Cargar más productos</button>`;
+      }
+
+      grid.innerHTML = html;
     }
 
-    /* CARRITO */
+    function loadNextPage() {
+      currentPage++;
+      loadCatalog(true);
+    }
+
     function addToCart(id) {
       const p = products.find(x => x.id === id);
       if (!p) return;
@@ -816,7 +844,7 @@
 
         return `
           <div class="cart-item">
-            <img src="${escapeHTML(img)}" class="cart-item-img">
+            <img src="${escapeHTML(img)}" class="cart-item-img" loading="lazy" decoding="async">
             <div class="cart-item-info">
               <div class="cart-item-title">${escapeHTML(item.name)}</div>
               <div class="cart-item-price">Bs ${Number(item.price || 0).toFixed(2)}</div>
@@ -851,7 +879,6 @@
       window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    /* MODAL DETALLES */
     function openModal(id) {
       const p = products.find(x => x.id === id);
       if (!p) return;
@@ -869,7 +896,7 @@
 
       if (activeGalleryImages.length) {
         gallery.innerHTML = activeGalleryImages.map((img, idx) => `
-          <img src="${escapeHTML(img)}" class="modal-img" onclick="openLightbox(${idx})">
+          <img src="${escapeHTML(img)}" class="modal-img" loading="lazy" decoding="async" onclick="openLightbox(${idx})">
         `).join("");
         gallery.style.display = "flex";
       } else {
@@ -883,7 +910,6 @@
       document.getElementById(id).classList.remove("open");
     }
 
-    /* LIGHTBOX / VISOR DE IMÁGENES A PANTALLA COMPLETA */
     function openLightbox(index) {
       if (!activeGalleryImages || !activeGalleryImages.length) return;
       activeImageIndex = index;
@@ -933,8 +959,10 @@
         .replace(/"/g, "&quot;");
     }
 
-    initTheme();
-    loadCatalog();
+    document.addEventListener("DOMContentLoaded", () => {
+      initTheme();
+      loadCatalog();
+    });
   </script>
 </body>
 </html>
