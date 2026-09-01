@@ -82,6 +82,11 @@ select{
   font:inherit;
 }
 
+input[type="file"]{
+  padding:10px;
+  background:#fafafa;
+}
+
 textarea{
   min-height:100px;
   resize:vertical;
@@ -120,6 +125,11 @@ label{
 .btn-gray{
   background:#eee;
   color:#111;
+}
+
+.btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
 }
 
 .top-actions{
@@ -226,27 +236,71 @@ label{
   color:#a00000;
 }
 
+.message.info{
+  display:block;
+  background:#e8f1ff;
+  color:#174d8a;
+}
+
 .hidden{
   display:none !important;
 }
 
 .preview{
+  width:180px;
+  height:180px;
+  object-fit:cover;
+  border-radius:14px;
+  display:none;
+  margin:10px 0;
+  background:#eee;
+  border:1px solid #ddd;
+}
+
+.current-image{
   width:120px;
   height:120px;
   object-fit:cover;
   border-radius:12px;
   display:none;
-  margin-bottom:10px;
+  margin:8px 0 12px;
+  background:#eee;
 }
 
-.stock-control{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.upload-box{
+  border:2px dashed #ddd;
+  border-radius:14px;
+  padding:15px;
+  background:#fafafa;
 }
 
-.stock-control input{
-  margin:0;
+.upload-help{
+  font-size:12px;
+  color:#777;
+  margin-top:3px;
+  line-height:1.4;
+}
+
+.file-name{
+  font-size:13px;
+  color:#555;
+  margin:8px 0;
+  word-break:break-word;
+}
+
+.loading{
+  background:#fff;
+  border-radius:18px;
+  padding:30px;
+  text-align:center;
+}
+
+.empty{
+  background:#fff;
+  border-radius:18px;
+  padding:30px;
+  text-align:center;
+  color:#666;
 }
 
 @media(max-width:650px){
@@ -266,6 +320,32 @@ label{
 
   .header-inner{
     align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .products{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .product-card{
+    padding:10px;
+    border-radius:14px;
+  }
+
+  .product-name{
+    font-size:15px;
+  }
+
+  .product-info{
+    font-size:12px;
+  }
+
+  .price{
+    font-size:17px;
+  }
+
+  .actions{
     flex-direction:column;
   }
 
@@ -317,7 +397,6 @@ label{
     class="message"
   ></div>
 
-
   <label>
     Correo electrónico
   </label>
@@ -328,7 +407,6 @@ label{
     placeholder="tu@email.com"
     autocomplete="email"
   >
-
 
   <label>
     Contraseña
@@ -341,8 +419,8 @@ label{
     autocomplete="current-password"
   >
 
-
   <button
+    id="loginButton"
     class="btn btn-primary"
     onclick="login()"
   >
@@ -519,23 +597,52 @@ label{
       </div>
 
 
+      <!-- =================================================
+           FOTO
+      ================================================== -->
+
       <div class="full">
 
         <label>
-          URL de la imagen
+          📷 Foto del producto
         </label>
+
+        <div class="upload-box">
+
+          <input
+            id="productFile"
+            type="file"
+            accept="image/*"
+            onchange="handleImageSelect()"
+          >
+
+          <div class="upload-help">
+            Selecciona una foto directamente desde tu celular.
+            <br>
+            Formatos recomendados: JPG, PNG o WEBP.
+            <br>
+            Tamaño máximo: 10 MB.
+          </div>
+
+          <div
+            id="fileName"
+            class="file-name"
+          ></div>
+
+          <img
+            id="imagePreview"
+            class="preview"
+            alt="Vista previa"
+          >
+
+        </div>
+
+
+        <!-- URL guardada automáticamente -->
 
         <input
           id="productImage"
-          type="url"
-          placeholder="https://..."
-          oninput="previewImage()"
-        >
-
-        <img
-          id="imagePreview"
-          class="preview"
-          alt="Vista previa"
+          type="hidden"
         >
 
       </div>
@@ -546,6 +653,7 @@ label{
     <div class="top-actions">
 
       <button
+        id="saveButton"
         class="btn btn-orange"
         onclick="saveProduct()"
       >
@@ -599,6 +707,18 @@ const supabaseClient =
     SUPABASE_URL,
     SUPABASE_KEY
   );
+
+
+/* =====================================================
+   CONFIGURACIÓN DE IMÁGENES
+===================================================== */
+
+const STORAGE_BUCKET =
+  "product-images";
+
+
+const MAX_IMAGE_SIZE =
+  10 * 1024 * 1024;
 
 
 /* =====================================================
@@ -685,6 +805,11 @@ async function login(){
       .getElementById("loginMessage");
 
 
+  const button =
+    document
+      .getElementById("loginButton");
+
+
   if(!email || !password){
 
     showMessage(
@@ -695,6 +820,9 @@ async function login(){
 
     return;
   }
+
+
+  button.disabled = true;
 
 
   showMessage(
@@ -712,6 +840,9 @@ async function login(){
       email,
       password
     });
+
+
+  button.disabled = false;
 
 
   if(error){
@@ -1059,6 +1190,39 @@ async function editProduct(id){
 
 
   document
+    .getElementById("productFile")
+    .value = "";
+
+
+  document
+    .getElementById("fileName")
+    .textContent =
+      "";
+
+
+  const preview =
+    document.getElementById(
+      "imagePreview"
+    );
+
+
+  if(data.image){
+
+    preview.src =
+      data.image;
+
+    preview.style.display =
+      "block";
+
+  }else{
+
+    preview.style.display =
+      "none";
+
+  }
+
+
+  document
     .getElementById("formTitle")
     .textContent =
       "✏️ Editar producto";
@@ -1069,13 +1233,251 @@ async function editProduct(id){
   );
 
 
-  previewImage();
-
-
   window.scrollTo({
     top:0,
     behavior:"smooth"
   });
+
+}
+
+
+/* =====================================================
+   SELECCIONAR IMAGEN
+===================================================== */
+
+function handleImageSelect(){
+
+  const fileInput =
+    document.getElementById(
+      "productFile"
+    );
+
+
+  const file =
+    fileInput.files[0];
+
+
+  const preview =
+    document.getElementById(
+      "imagePreview"
+    );
+
+
+  const fileName =
+    document.getElementById(
+      "fileName"
+    );
+
+
+  if(!file){
+
+    fileName.textContent =
+      "";
+
+    return;
+  }
+
+
+  if(!file.type.startsWith("image/")){
+
+    alert(
+      "El archivo seleccionado no es una imagen."
+    );
+
+    fileInput.value = "";
+
+    preview.style.display =
+      "none";
+
+    fileName.textContent =
+      "";
+
+    return;
+  }
+
+
+  if(file.size > MAX_IMAGE_SIZE){
+
+    alert(
+      "La imagen es demasiado grande. " +
+      "El máximo permitido es 10 MB."
+    );
+
+    fileInput.value = "";
+
+    preview.style.display =
+      "none";
+
+    fileName.textContent =
+      "";
+
+    return;
+  }
+
+
+  fileName.textContent =
+    "📷 " + file.name;
+
+
+  const objectURL =
+    URL.createObjectURL(file);
+
+
+  preview.src =
+    objectURL;
+
+  preview.style.display =
+    "block";
+
+}
+
+
+/* =====================================================
+   SUBIR IMAGEN A SUPABASE STORAGE
+===================================================== */
+
+async function uploadImage(file){
+
+  if(!file){
+
+    return null;
+
+  }
+
+
+  if(!file.type.startsWith("image/")){
+
+    throw new Error(
+      "El archivo seleccionado no es una imagen."
+    );
+
+  }
+
+
+  if(file.size > MAX_IMAGE_SIZE){
+
+    throw new Error(
+      "La imagen supera el límite de 10 MB."
+    );
+
+  }
+
+
+  const extension =
+    getFileExtension(
+      file.name,
+      file.type
+    );
+
+
+  const randomPart =
+    Math.random()
+      .toString(36)
+      .substring(2,10);
+
+
+  const fileName =
+    Date.now() +
+    "_" +
+    randomPart +
+    extension;
+
+
+  const filePath =
+    fileName;
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .storage
+      .from(STORAGE_BUCKET)
+      .upload(
+        filePath,
+        file,
+        {
+          cacheControl:"3600",
+          upsert:false,
+          contentType:file.type
+        }
+      );
+
+
+  if(error){
+
+    throw new Error(
+      "No se pudo subir la imagen: " +
+      error.message
+    );
+
+  }
+
+
+  const {
+    data
+  } =
+    supabaseClient
+      .storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(filePath);
+
+
+  if(!data || !data.publicUrl){
+
+    throw new Error(
+      "La imagen se subió, pero no se pudo obtener su URL."
+    );
+
+  }
+
+
+  return data.publicUrl;
+
+}
+
+
+/* =====================================================
+   OBTENER EXTENSIÓN
+===================================================== */
+
+function getFileExtension(
+  fileName,
+  mimeType
+){
+
+  const original =
+    String(fileName || "")
+      .toLowerCase();
+
+
+  const dot =
+    original.lastIndexOf(".");
+
+
+  if(dot !== -1){
+
+    return original.substring(dot);
+
+  }
+
+
+  if(mimeType === "image/png"){
+    return ".png";
+  }
+
+
+  if(mimeType === "image/webp"){
+    return ".webp";
+  }
+
+
+  if(mimeType === "image/gif"){
+    return ".gif";
+  }
+
+
+  return ".jpg";
 
 }
 
@@ -1121,7 +1523,7 @@ async function saveProduct(){
     );
 
 
-  const image =
+  const currentImage =
     document
       .getElementById("productImage")
       .value
@@ -1142,10 +1544,29 @@ async function saveProduct(){
       .value === "true";
 
 
+  const fileInput =
+    document.getElementById(
+      "productFile"
+    );
+
+
+  const file =
+    fileInput.files[0] || null;
+
+
   const message =
     document
       .getElementById("formMessage");
 
+
+  const saveButton =
+    document
+      .getElementById("saveButton");
+
+
+  /* -----------------------------------------
+     VALIDACIONES
+  ----------------------------------------- */
 
   if(!name){
 
@@ -1183,78 +1604,166 @@ async function saveProduct(){
   }
 
 
-  const product = {
+  if(file){
 
-    name,
-    category,
-    description,
-    price,
-    image,
-    stock,
-    active
+    if(!file.type.startsWith("image/")){
 
-  };
+      showMessage(
+        message,
+        "El archivo seleccionado no es una imagen.",
+        "error"
+      );
 
-
-  showMessage(
-    message,
-    "Guardando producto...",
-    "ok"
-  );
+      return;
+    }
 
 
-  let result;
+    if(file.size > MAX_IMAGE_SIZE){
 
+      showMessage(
+        message,
+        "La imagen supera el límite de 10 MB.",
+        "error"
+      );
 
-  if(id){
-
-    result =
-      await supabaseClient
-        .from("products")
-        .update(product)
-        .eq("id",Number(id));
-
-  }else{
-
-    result =
-      await supabaseClient
-        .from("products")
-        .insert(product);
+      return;
+    }
 
   }
 
 
-  if(result.error){
+  saveButton.disabled =
+    true;
+
+
+  try{
+
+    let imageURL =
+      currentImage;
+
+
+    /* ---------------------------------------
+       SUBIR NUEVA IMAGEN SI SE SELECCIONÓ
+    --------------------------------------- */
+
+    if(file){
+
+      showMessage(
+        message,
+        "📷 Subiendo imagen...",
+        "info"
+      );
+
+
+      imageURL =
+        await uploadImage(file);
+
+    }
+
+
+    /* ---------------------------------------
+       DATOS DEL PRODUCTO
+    --------------------------------------- */
+
+    const product = {
+
+      name,
+      category,
+      description,
+      price,
+      image:imageURL || "",
+      stock,
+      active
+
+    };
+
 
     showMessage(
       message,
-      "❌ Error: " +
-      result.error.message,
+      "💾 Guardando producto...",
+      "info"
+    );
+
+
+    let result;
+
+
+    /* ---------------------------------------
+       EDITAR
+    --------------------------------------- */
+
+    if(id){
+
+      result =
+        await supabaseClient
+          .from("products")
+          .update(product)
+          .eq("id",Number(id));
+
+    }
+
+
+    /* ---------------------------------------
+       CREAR
+    --------------------------------------- */
+
+    else{
+
+      result =
+        await supabaseClient
+          .from("products")
+          .insert(product);
+
+    }
+
+
+    if(result.error){
+
+      throw new Error(
+        result.error.message
+      );
+
+    }
+
+
+    showMessage(
+      message,
+      "✅ Producto guardado correctamente.",
+      "ok"
+    );
+
+
+    setTimeout(() => {
+
+      clearForm();
+
+      formBox.classList.add(
+        "hidden"
+      );
+
+      loadProducts();
+
+    },900);
+
+
+  }catch(error){
+
+    console.error(error);
+
+
+    showMessage(
+      message,
+      "❌ " + error.message,
       "error"
     );
 
-    return;
+
+  }finally{
+
+    saveButton.disabled =
+      false;
+
   }
-
-
-  showMessage(
-    message,
-    "✅ Producto guardado correctamente.",
-    "ok"
-  );
-
-
-  setTimeout(() => {
-
-    clearForm();
-
-    formBox.classList.add(
-      "hidden"
-    );
-
-    loadProducts();
-
-  },800);
 
 }
 
@@ -1354,6 +1863,16 @@ function clearForm(){
 
 
   document
+    .getElementById("productFile")
+    .value = "";
+
+
+  document
+    .getElementById("fileName")
+    .textContent = "";
+
+
+  document
     .getElementById("formMessage")
     .className =
       "message";
@@ -1383,51 +1902,7 @@ function cancelForm(){
 
 
 /* =====================================================
-   VISTA PREVIA IMAGEN
-===================================================== */
-
-function previewImage(){
-
-  const url =
-    document
-      .getElementById("productImage")
-      .value
-      .trim();
-
-
-  const preview =
-    document
-      .getElementById("imagePreview");
-
-
-  if(!url){
-
-    preview.style.display =
-      "none";
-
-    return;
-  }
-
-
-  preview.src = url;
-
-  preview.style.display =
-    "block";
-
-
-  preview.onerror =
-    function(){
-
-      preview.style.display =
-        "none";
-
-    };
-
-}
-
-
-/* =====================================================
-   COMPROBAR SESIÓN AL ABRIR
+   COMPROBAR SESIÓN
 ===================================================== */
 
 async function checkSession(){
@@ -1461,4 +1936,4 @@ checkSession();
 </script>
 
 </body>
-</html>
+  </html>
