@@ -230,8 +230,6 @@ textarea{
   resize:vertical;
 }
 
-/* CHIPS DE SHORTCUTS */
-
 .chips-wrap{
   display:flex;
   gap:6px;
@@ -253,8 +251,6 @@ textarea{
 .chip-btn:hover{
   border-color:var(--accent-color);
 }
-
-/* BOTÓN DE SUBIDA DE IMAGEN CELULAR */
 
 .upload-box {
   border: 2px dashed var(--border-color);
@@ -358,6 +354,16 @@ th{
   border-radius:8px;
   object-fit:cover;
   background:var(--bg-main);
+  cursor:pointer;
+}
+
+.clickable-name{
+  cursor:pointer;
+}
+
+.clickable-name:hover{
+  color:var(--accent-color);
+  text-decoration:underline;
 }
 
 .badge-status{
@@ -369,8 +375,6 @@ th{
 
 .badge-status.active{ background:#d1fae5; color:#065f46; }
 .badge-status.inactive{ background:#fee2e2; color:#991b1b; }
-
-/* CONTROLES RÁPIDOS EN TABLA */
 
 .qty-table{
   display:flex;
@@ -403,6 +407,88 @@ th{
   cursor:pointer;
   font-size:13px;
 }
+
+
+/* =====================================================
+   MODAL DE VISTA PREVIA DETALLADA
+===================================================== */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:#0008;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:300;
+  padding:16px;
+}
+
+.modal.open{
+  display:flex;
+}
+
+.modal-content{
+  background:var(--bg-card);
+  border-radius:20px;
+  width:min(100%, 520px);
+  max-height:90vh;
+  overflow:auto;
+  padding:20px;
+  box-shadow:0 10px 30px #0005;
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--border-color);
+  padding-bottom:12px;
+  margin-bottom:16px;
+}
+
+.modal-close{
+  border:0;
+  background:var(--bg-main);
+  color:var(--text-main);
+  border-radius:50%;
+  width:32px;
+  height:32px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.modal-gallery{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin-bottom:16px;
+}
+
+.modal-img{
+  width:110px;
+  height:110px;
+  border-radius:10px;
+  object-fit:cover;
+  border:1px solid var(--border-color);
+  flex-shrink:0;
+}
+
+.detail-row{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid var(--border-color);
+  font-size:14px;
+}
+
+.detail-desc{
+  margin-top:12px;
+  line-height:1.5;
+  color:var(--text-muted);
+  font-size:14px;
+}
+
 
 /* =====================================================
    RESPONSIVE
@@ -547,7 +633,7 @@ th{
           <textarea id="description" placeholder="Detalles de la caja o contenido..."></textarea>
         </div>
 
-        <!-- BOTÓN DE SUBIDA DESDE CELULAR / ARCHIVOS -->
+        <!-- BOTÓN DE SUBIDA DESDE CELULAR -->
         <div class="form-group full">
           <label>Imágenes del Producto</label>
           <div class="upload-box" onclick="document.getElementById('fileInput').click()">
@@ -630,6 +716,54 @@ th{
 </main>
 
 
+<!-- =====================================================
+     MODAL DE VISTA PREVIA COMPLETA
+===================================================== -->
+
+<div id="viewModal" class="modal" onclick="if(event.target===this)closeModal()">
+
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3 id="modalTitle" style="margin:0;">Ficha del Producto</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div id="modalGallery" class="modal-gallery"></div>
+
+    <div class="detail-row">
+      <span>🆔 ID Producto:</span>
+      <b id="modalId">-</b>
+    </div>
+
+    <div class="detail-row">
+      <span>🏷️ Categoría:</span>
+      <b id="modalCat">-</b>
+    </div>
+
+    <div class="detail-row">
+      <span>💵 Precio:</span>
+      <b id="modalPrice">-</b>
+    </div>
+
+    <div class="detail-row">
+      <span>📦 Stock disponible:</span>
+      <b id="modalStock">-</b>
+    </div>
+
+    <div class="detail-row">
+      <span>🌐 Estado en catálogo:</span>
+      <b id="modalStatus">-</b>
+    </div>
+
+    <div style="margin-top:14px; font-weight:bold; font-size:13px;">📝 Descripción / Características:</div>
+    <div id="modalDesc" class="detail-desc"></div>
+
+  </div>
+
+</div>
+
+
 <script>
 
 /* =====================================================
@@ -667,6 +801,7 @@ const previewContainer = document.getElementById("previewContainer");
 const formTitle = document.getElementById("formTitle");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
 const themeBtn = document.getElementById("themeBtn");
+const viewModal = document.getElementById("viewModal");
 
 
 /* =====================================================
@@ -771,11 +906,11 @@ function renderTable(list){
     return `
       <tr>
         <td>
-          <img class="prod-img" src="${escapeHTML(mainImg)}" alt="Foto">
+          <img class="prod-img" src="${escapeHTML(mainImg)}" alt="Foto" onclick="viewDetails(${p.id})">
         </td>
 
         <td>
-          <b>${escapeHTML(p.name)}</b><br>
+          <b class="clickable-name" onclick="viewDetails(${p.id})">${escapeHTML(p.name)}</b><br>
           <small style="color:var(--text-muted);">${escapeHTML(p.category || 'Sin categoría')}</small>
         </td>
 
@@ -803,6 +938,7 @@ function renderTable(list){
 
         <td>
           <div class="action-btns">
+            <button class="btn-icon" onclick="viewDetails(${p.id})" title="Ver detalles">👁️</button>
             <button class="btn-icon" onclick="editProduct(${p.id})" title="Editar">✏️</button>
             <button class="btn-icon" onclick="deleteProduct(${p.id})" title="Eliminar">🗑️</button>
           </div>
@@ -812,6 +948,40 @@ function renderTable(list){
 
   }).join("");
 
+}
+
+
+/* =====================================================
+   VISTA PREVIA DETALLADA (MODAL)
+===================================================== */
+
+function viewDetails(id){
+  const p = products.find(x => x.id === id);
+  if(!p) return;
+
+  const images = getImagesArray(p);
+
+  document.getElementById("modalTitle").textContent = p.name || "Sin Nombre";
+  document.getElementById("modalId").textContent = "#" + p.id;
+  document.getElementById("modalCat").textContent = p.category || "General";
+  document.getElementById("modalPrice").textContent = "Bs " + Number(p.price || 0).toFixed(2);
+  document.getElementById("modalStock").textContent = (p.stock || 0) + " unidades";
+  document.getElementById("modalStatus").textContent = p.active ? "🟢 Visible en Tienda" : "🔴 Oculto";
+  document.getElementById("modalDesc").textContent = p.description || "Sin descripción registrada.";
+
+  const gallery = document.getElementById("modalGallery");
+  if(images.length){
+    gallery.innerHTML = images.map(img => `<img src="${escapeHTML(img)}" class="modal-img">`).join("");
+    gallery.style.display = "flex";
+  } else {
+    gallery.style.display = "none";
+  }
+
+  viewModal.classList.add("open");
+}
+
+function closeModal(){
+  viewModal.classList.remove("open");
 }
 
 
@@ -830,7 +1000,7 @@ function getImagesArray(product){
 
 
 /* =====================================================
-   SUBIDA DE IMÁGENES
+   SUBIDA DE IMÁGENES DESDE CELULAR
 ===================================================== */
 
 function handleFileSelect(event){
