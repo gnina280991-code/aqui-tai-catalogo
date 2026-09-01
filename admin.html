@@ -1170,3 +1170,158 @@ function removeImage(idx){
 
 function setCategory(cat){
   categoryInput.value = cat;
+}
+
+function addStockShortcut(amount){
+  const val = Number(stockInput.value || 0);
+  stockInput.value = val + amount;
+}
+
+
+/* =====================================================
+   GUARDAR / EDITAR PRODUCTO
+===================================================== */
+
+async function saveProduct(e){
+  e.preventDefault();
+
+  const id = productId.value;
+
+  const payload = {
+    name: nameInput.value.trim(),
+    category: categoryInput.value.trim(),
+    price: parseFloat(priceInput.value),
+    stock: parseInt(stockInput.value),
+    description: descInput.value.trim(),
+    active: activeSelect.value === "true",
+    images: currentImages,
+    image: currentImages[0] || null
+  };
+
+  let error;
+
+  if(id){
+    const res = await supabaseClient.from("products").update(payload).eq("id", id);
+    error = res.error;
+  } else {
+    const res = await supabaseClient.from("products").insert([payload]);
+    error = res.error;
+  }
+
+  if(error){
+    alert("❌ Error al guardar el producto: " + error.message);
+  } else {
+    resetForm();
+    loadInventory();
+  }
+}
+
+function editProduct(id){
+  const p = products.find(x => x.id === id);
+  if(!p) return;
+
+  productId.value = p.id;
+  nameInput.value = p.name || "";
+  categoryInput.value = p.category || "";
+  priceInput.value = p.price || "";
+  stockInput.value = p.stock || 0;
+  descInput.value = p.description || "";
+  activeSelect.value = String(p.active);
+
+  currentImages = getImagesArray(p);
+  renderImagePreviews();
+
+  formTitle.querySelector("span").textContent = "✏️ Editar Producto";
+  cancelEditBtn.style.display = "inline-block";
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm(){
+  productId.value = "";
+  productForm.reset();
+  currentImages = [];
+  previewContainer.innerHTML = "";
+  formTitle.querySelector("span").textContent = "📦 Agregar Producto";
+  cancelEditBtn.style.display = "none";
+}
+
+
+/* =====================================================
+   ACCIONES RÁPIDAS (TABLA)
+===================================================== */
+
+async function quickStockChange(id, delta){
+  const p = products.find(x => x.id === id);
+  if(!p) return;
+
+  const newStock = Math.max(0, Number(p.stock || 0) + delta);
+
+  const { error } = await supabaseClient
+    .from("products")
+    .update({ stock: newStock })
+    .eq("id", id);
+
+  if(!error){
+    p.stock = newStock;
+    updateMetrics();
+    filterTable();
+  } else {
+    alert("❌ No se pudo actualizar el stock: " + error.message);
+  }
+}
+
+async function toggleActive(id, newStatus){
+  const { error } = await supabaseClient
+    .from("products")
+    .update({ active: newStatus })
+    .eq("id", id);
+
+  if(!error){
+    const p = products.find(x => x.id === id);
+    if(p) p.active = newStatus;
+    updateMetrics();
+    filterTable();
+  } else {
+    alert("❌ No se pudo actualizar el estado: " + error.message);
+  }
+}
+
+async function deleteProduct(id){
+  if(!confirm("¿Seguro que deseas eliminar este producto permanentemente?")) return;
+
+  const { error } = await supabaseClient
+    .from("products")
+    .delete()
+    .eq("id", id);
+
+  if(!error){
+    loadInventory();
+  } else {
+    alert("❌ No se pudo eliminar el producto: " + error.message);
+  }
+}
+
+
+function escapeHTML(str){
+  return String(str || '')
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+
+/* =====================================================
+   INICIALIZACIÓN Y NAVEGACIÓN
+===================================================== */
+
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  checkAuth();
+});
+
+checkAuth();
+
+</script>
+
+</body>
+</html>
