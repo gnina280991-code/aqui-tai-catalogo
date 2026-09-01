@@ -366,15 +366,27 @@ th{
   text-decoration:underline;
 }
 
-.badge-status{
-  padding:4px 8px;
-  border-radius:6px;
-  font-size:11px;
-  font-weight:700;
+/* SELECTOR DE ESTADO DENTRO DE TABLA */
+.status-select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
 }
 
-.badge-status.active{ background:#d1fae5; color:#065f46; }
-.badge-status.inactive{ background:#fee2e2; color:#991b1b; }
+.status-select.active {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #34d399;
+}
+
+.status-select.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #f87171;
+}
 
 .qty-table{
   display:flex;
@@ -645,7 +657,7 @@ th{
 
         <!-- ESTADO ACTIVO -->
         <div class="form-group">
-          <label>Estado en Catálogo</label>
+          <label>Estado Inicial en Catálogo</label>
           <select id="active">
             <option value="true">🟢 Visible (Activo)</option>
             <option value="false">🔴 Oculto (Inactivo)</option>
@@ -697,7 +709,7 @@ th{
           <th>Producto / Categoría</th>
           <th>Precio</th>
           <th>Stock</th>
-          <th>Estado</th>
+          <th>Estado en Tienda</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -927,13 +939,13 @@ function renderTable(list){
         </td>
 
         <td>
-          <button
-            class="badge-status ${p.active ? 'active' : 'inactive'}"
-            style="border:0; cursor:pointer;"
-            onclick="toggleActive(${p.id}, ${!p.active})"
+          <select 
+            class="status-select ${p.active ? 'active' : 'inactive'}"
+            onchange="toggleActive(${p.id}, this.value === 'true')"
           >
-            ${p.active ? '🟢 Activo' : '🔴 Oculto'}
-          </button>
+            <option value="true" ${p.active ? 'selected' : ''}>🟢 Activo</option>
+            <option value="false" ${!p.active ? 'selected' : ''}>🔴 Oculto</option>
+          </select>
         </td>
 
         <td>
@@ -1150,6 +1162,8 @@ async function toggleActive(id, newStatus){
     if(p) p.active = newStatus;
     updateMetrics();
     filterTable();
+  } else {
+    alert("❌ No se pudo actualizar el estado.");
   }
 }
 
