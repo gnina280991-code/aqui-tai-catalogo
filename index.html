@@ -5,17 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Aquí tái | Catálogo</title>
-
-<meta name="description" content="Catálogo de productos Aquí tái">
+<meta name="description" content="Catálogo de productos Aquí tái · Bolivia">
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
   background:#f6f7f9;
-  color:#171717
+  color:#171717;
 }
 
 header{
@@ -23,7 +24,7 @@ header{
   border-bottom:1px solid #eee;
   position:sticky;
   top:0;
-  z-index:10
+  z-index:10;
 }
 
 .top{
@@ -32,7 +33,7 @@ header{
   padding:12px 16px;
   display:flex;
   align-items:center;
-  gap:14px
+  gap:14px;
 }
 
 .logo{
@@ -40,97 +41,110 @@ header{
   width:62px;
   border-radius:50%;
   object-fit:cover;
-  border:1px solid #eee
+  border:1px solid #eee;
 }
 
 .brand{
   font-size:25px;
-  font-weight:800
+  font-weight:800;
 }
 
 .sub{
   font-size:13px;
-  color:#666
+  color:#666;
 }
 
 .wrap{
   max-width:1100px;
   margin:auto;
-  padding:22px 16px
+  padding:22px 16px;
 }
 
 .hero{
   background:#fff;
   border-radius:20px;
   padding:22px;
-  margin-bottom:20px
+  margin-bottom:20px;
 }
 
 .hero h1{
   margin:0 0 6px;
-  font-size:30px
+  font-size:30px;
 }
 
 .hero p{
   margin:0;
-  color:#666
+  color:#666;
+  line-height:1.5;
 }
 
 .search{
   width:100%;
-  padding:14px 16px;
+  padding:15px 16px;
   border:1px solid #ddd;
   border-radius:14px;
   font-size:16px;
-  margin-top:18px
+  margin-top:18px;
+  outline:none;
+}
+
+.search:focus{
+  border-color:#111;
+}
+
+.status{
+  margin-top:12px;
+  font-size:13px;
+  color:#777;
 }
 
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-  gap:16px
+  gap:16px;
 }
 
 .card{
   background:#fff;
   border-radius:18px;
   overflow:hidden;
-  box-shadow:0 3px 15px #0000000c
+  box-shadow:0 3px 15px #0000000c;
 }
 
 .pic{
   width:100%;
   aspect-ratio:1/1;
   object-fit:cover;
-  background:#fafafa
+  background:#fafafa;
+  display:block;
 }
 
 .body{
-  padding:14px
+  padding:14px;
 }
 
 .cat{
   font-size:12px;
-  color:#777
+  color:#777;
 }
 
 .name{
   font-size:18px;
   font-weight:700;
-  margin:5px 0
+  margin:5px 0;
 }
 
 .desc{
   font-size:13px;
   color:#666;
   line-height:1.4;
-  min-height:54px
+  min-height:54px;
 }
 
 .price{
   font-size:22px;
   font-weight:800;
-  margin:12px 0
+  margin:12px 0;
 }
 
 .btn{
@@ -142,7 +156,11 @@ header{
   color:#fff;
   font-weight:700;
   font-size:15px;
-  cursor:pointer
+  cursor:pointer;
+}
+
+.btn:active{
+  transform:scale(.98);
 }
 
 .cart{
@@ -157,7 +175,7 @@ header{
   font-weight:800;
   box-shadow:0 5px 20px #0003;
   cursor:pointer;
-  z-index:15
+  z-index:15;
 }
 
 .panel{
@@ -165,13 +183,13 @@ header{
   inset:0;
   background:#0008;
   display:none;
-  z-index:20
+  z-index:20;
 }
 
 .panel.open{
   display:flex;
   align-items:flex-end;
-  justify-content:center
+  justify-content:center;
 }
 
 .sheet{
@@ -180,7 +198,7 @@ header{
   max-height:90vh;
   overflow:auto;
   border-radius:22px 22px 0 0;
-  padding:20px
+  padding:20px;
 }
 
 .row{
@@ -188,7 +206,7 @@ header{
   justify-content:space-between;
   gap:10px;
   padding:12px 0;
-  border-bottom:1px solid #eee
+  border-bottom:1px solid #eee;
 }
 
 .close{
@@ -198,7 +216,8 @@ header{
   border-radius:50%;
   width:36px;
   height:36px;
-  cursor:pointer
+  cursor:pointer;
+  font-size:18px;
 }
 
 textarea,
@@ -208,53 +227,69 @@ input[type=text]{
   border:1px solid #ddd;
   border-radius:10px;
   margin:6px 0 12px;
-  font:inherit
+  font:inherit;
 }
 
-.loading{
-  text-align:center;
-  padding:40px 10px;
-  color:#666
+textarea{
+  min-height:90px;
+  resize:vertical;
 }
 
 .empty{
   background:#fff;
-  padding:30px;
   border-radius:18px;
+  padding:30px;
   text-align:center;
-  color:#666
+  color:#777;
+}
+
+.loading{
+  background:#fff;
+  border-radius:18px;
+  padding:30px;
+  text-align:center;
+  color:#777;
 }
 
 @media(max-width:480px){
 
   .grid{
     grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px
+    gap:10px;
   }
 
   .card{
-    border-radius:14px
+    border-radius:14px;
   }
 
   .body{
-    padding:10px
+    padding:10px;
   }
 
   .name{
-    font-size:15px
+    font-size:15px;
   }
 
   .desc{
     font-size:12px;
-    min-height:70px
+    min-height:70px;
   }
 
   .price{
-    font-size:18px
+    font-size:18px;
   }
 
   .hero h1{
-    font-size:24px
+    font-size:24px;
+  }
+
+  .logo{
+    height:55px;
+    width:55px;
+  }
+
+  .brand{
+    font-size:22px;
   }
 }
 </style>
@@ -294,8 +329,14 @@ input[type=text]{
     <input
       id="search"
       class="search"
+      type="text"
       placeholder="🔎 Buscar productos..."
+      autocomplete="off"
     >
+
+    <div id="status" class="status">
+      Cargando productos...
+    </div>
 
   </section>
 
@@ -303,7 +344,7 @@ input[type=text]{
   <section id="grid" class="grid">
 
     <div class="loading">
-      Cargando productos...
+      Cargando catálogo...
     </div>
 
   </section>
@@ -367,15 +408,11 @@ input[type=text]{
 </div>
 
 
-<!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
 <script>
 
-/* =========================================================
-   CONEXIÓN CON SUPABASE
-   ========================================================= */
+/* ==========================================
+   CONFIGURACIÓN SUPABASE
+   ========================================== */
 
 const SUPABASE_URL =
   "https://ztsthkoejosgwkhmzfbd.supabase.co";
@@ -384,24 +421,17 @@ const SUPABASE_KEY =
   "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
 
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-
-/* =========================================================
+/* ==========================================
    VARIABLES
-   ========================================================= */
+   ========================================== */
 
 let products = [];
 let cart = [];
 
 
-/* =========================================================
-   REFERENCIAS A ELEMENTOS
-   ========================================================= */
+/* ==========================================
+   ELEMENTOS
+   ========================================== */
 
 const grid =
   document.getElementById("grid");
@@ -427,186 +457,292 @@ const customer =
 const address =
   document.getElementById("address");
 
+const status =
+  document.getElementById("status");
 
-/* =========================================================
+
+/* ==========================================
    CARGAR PRODUCTOS DESDE SUPABASE
-   ========================================================= */
+   ========================================== */
 
 async function loadProducts(){
 
-  grid.innerHTML =
-    '<div class="loading">Cargando productos...</div>';
+  status.textContent =
+    "Conectando con el catálogo...";
 
+  try{
 
-  const { data, error } =
-    await supabaseClient
-      .from("products")
-      .select("*")
-      .eq("active", true)
-      .order("id");
+    const response = await fetch(
+      SUPABASE_URL +
+      "/rest/v1/products?select=*&active=eq.true&order=id.asc",
+      {
+        method:"GET",
 
-
-  if(error){
-
-    console.error(
-      "Error cargando productos:",
-      error
+        headers:{
+          "apikey":SUPABASE_KEY,
+          "Authorization":
+            "Bearer " + SUPABASE_KEY,
+          "Content-Type":
+            "application/json"
+        }
+      }
     );
 
-    loadDefault();
 
-    return;
-  }
+    if(!response.ok){
 
+      throw new Error(
+        "Supabase respondió con error " +
+        response.status
+      );
 
-  products = data || [];
-
-
-  if(!products.length){
-
-    grid.innerHTML =
-      '<div class="empty">No hay productos disponibles.</div>';
-
-    return;
-  }
+    }
 
 
-  render(products);
-}
+    const data =
+      await response.json();
 
 
-/* =========================================================
-   RESPALDO: PRODUCTS.JSON
-   ========================================================= */
+    products =
+      Array.isArray(data)
+        ? data
+        : [];
 
-function loadDefault(){
 
-  fetch("products.json")
-
-    .then(response => {
-
-      if(!response.ok){
-        throw new Error("No se pudo cargar products.json");
-      }
-
-      return response.json();
-
-    })
-
-    .then(data => {
-
-      products = data || [];
+    if(products.length > 0){
 
       render(products);
 
-    })
+      status.textContent =
+        products.length +
+        " producto(s) disponible(s).";
 
-    .catch(error => {
+    }else{
 
-      console.error(error);
+      grid.innerHTML = `
+        <div class="empty">
+          <h3>🛍️ Catálogo vacío</h3>
+          <p>
+            Todavía no hay productos disponibles.
+          </p>
+        </div>
+      `;
 
-      grid.innerHTML =
-        '<div class="empty">No se pudieron cargar los productos.</div>';
+      status.textContent =
+        "No hay productos activos.";
 
-    });
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Error cargando Supabase:",
+      error
+    );
+
+
+    status.textContent =
+      "No se pudo conectar con Supabase. Intentando cargar respaldo...";
+
+
+    loadBackup();
+
+  }
+
 }
 
 
-/* =========================================================
+/* ==========================================
+   RESPALDO: products.json
+   ========================================== */
+
+async function loadBackup(){
+
+  try{
+
+    const response =
+      await fetch("products.json");
+
+
+    if(!response.ok){
+
+      throw new Error(
+        "No existe products.json"
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    products =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    render(products);
+
+
+    status.textContent =
+      "Catálogo cargado desde respaldo.";
+
+  }catch(error){
+
+    console.error(error);
+
+    grid.innerHTML = `
+      <div class="empty">
+
+        <h3>⚠️ No se pudo cargar el catálogo</h3>
+
+        <p>
+          Revisa la conexión con Supabase.
+        </p>
+
+      </div>
+    `;
+
+    status.textContent =
+      "Error cargando productos.";
+
+  }
+
+}
+
+
+/* ==========================================
    MOSTRAR PRODUCTOS
-   ========================================================= */
+   ========================================== */
 
 function render(list){
 
   if(!list.length){
 
-    grid.innerHTML =
-      '<div class="empty">No encontramos productos.</div>';
+    grid.innerHTML = `
+      <div class="empty">
+        No se encontraron productos.
+      </div>
+    `;
 
     return;
   }
 
 
-  grid.innerHTML = list.map(p => `
+  grid.innerHTML =
+    list.map(p => {
 
-    <article class="card">
+      const image =
+        p.image ||
+        "logo.png";
 
-      <img
-        class="pic"
-        src="${p.image || "logo.png"}"
-        alt="${p.name || "Producto"}"
-        onerror="this.src='logo.png'"
-      >
+      const category =
+        p.category ||
+        "Productos";
 
-      <div class="body">
+      const name =
+        p.name ||
+        "Producto";
 
-        <div class="cat">
-          ${p.category || ""}
-        </div>
+      const description =
+        p.description ||
+        "";
 
-        <div class="name">
-          ${p.name || ""}
-        </div>
+      const price =
+        Number(p.price || 0);
 
-        <div class="desc">
-          ${p.description || ""}
-        </div>
 
-        <div class="price">
-          Bs ${p.price || 0}
-        </div>
+      return `
 
-        <button
-          class="btn"
-          onclick="add(${p.id})"
-        >
-          Agregar al carrito
-        </button>
+        <article class="card">
 
-      </div>
+          <img
+            class="pic"
+            src="${escapeHTML(image)}"
+            alt="${escapeHTML(name)}"
+            onerror="this.src='logo.png'"
+          >
 
-    </article>
+          <div class="body">
 
-  `).join("");
+            <div class="cat">
+              ${escapeHTML(category)}
+            </div>
+
+            <div class="name">
+              ${escapeHTML(name)}
+            </div>
+
+            <div class="desc">
+              ${escapeHTML(description)}
+            </div>
+
+            <div class="price">
+              Bs ${price.toFixed(2)}
+            </div>
+
+            <button
+              class="btn"
+              onclick="add(${Number(p.id)})"
+            >
+              Agregar al carrito
+            </button>
+
+          </div>
+
+        </article>
+
+      `;
+
+    }).join("");
+
 }
 
 
-/* =========================================================
+/* ==========================================
    BUSCADOR
-   ========================================================= */
+   ========================================== */
 
-search.oninput = () => {
+search.addEventListener(
+  "input",
+  function(){
 
-  const q =
-    search.value
-      .toLowerCase()
-      .trim();
-
-
-  const filtered =
-    products.filter(p => {
-
-      const text =
-        (
-          (p.name || "") +
-          " " +
-          (p.description || "") +
-          " " +
-          (p.category || "")
-        ).toLowerCase();
+    const q =
+      search.value
+        .toLowerCase()
+        .trim();
 
 
-      return text.includes(q);
-    });
+    const filtered =
+      products.filter(p => {
+
+        const text =
+          (
+            (p.name || "") +
+            " " +
+            (p.description || "") +
+            " " +
+            (p.category || "")
+          ).toLowerCase();
 
 
-  render(filtered);
-};
+        return text.includes(q);
+
+      });
 
 
-/* =========================================================
+    render(filtered);
+
+  }
+);
+
+
+/* ==========================================
    AGREGAR AL CARRITO
-   ========================================================= */
+   ========================================== */
 
 function add(id){
 
@@ -617,13 +753,18 @@ function add(id){
 
 
   if(!product){
+
+    alert(
+      "No se encontró el producto."
+    );
+
     return;
   }
 
 
   const existing =
     cart.find(
-      x => Number(x.id) === Number(id)
+      p => Number(p.id) === Number(id)
     );
 
 
@@ -641,21 +782,23 @@ function add(id){
   }
 
 
-  update();
+  updateCart();
 
   openCart();
+
 }
 
 
-/* =========================================================
+/* ==========================================
    ACTUALIZAR CARRITO
-   ========================================================= */
+   ========================================== */
 
-function update(){
+function updateCart(){
 
   const quantity =
     cart.reduce(
-      (sum,item) => sum + item.qty,
+      (sum,item) =>
+        sum + item.qty,
       0
     );
 
@@ -670,92 +813,108 @@ function update(){
       "<p>Tu carrito está vacío.</p>";
 
     total.textContent =
-      "Total: Bs 0";
+      "Total: Bs 0.00";
 
     return;
+
   }
 
 
   cartItems.innerHTML =
-    cart.map((item,index) => `
+    cart.map(
+      (item,index) => `
 
-      <div class="row">
+        <div class="row">
 
-        <div>
+          <div>
 
-          <b>
-            ${item.name}
-          </b>
+            <b>
+              ${escapeHTML(item.name)}
+            </b>
 
-          <br>
+            <br>
 
-          Bs ${item.price} × ${item.qty}
+            Bs ${Number(item.price).toFixed(2)}
+            × ${item.qty}
+
+          </div>
+
+          <button
+            onclick="removeItem(${index})"
+            style="
+              border:0;
+              background:#eee;
+              border-radius:8px;
+              padding:8px;
+              cursor:pointer;
+            "
+          >
+            🗑️
+          </button>
 
         </div>
 
-
-        <button
-          onclick="removeItem(${index})"
-          style="border:0;background:none;font-size:20px;cursor:pointer"
-        >
-          🗑️
-        </button>
-
-      </div>
-
-    `).join("");
+      `
+    ).join("");
 
 
-  const totalPrice =
+  const totalValue =
     cart.reduce(
       (sum,item) =>
-        sum + Number(item.price) * item.qty,
+        sum +
+        Number(item.price || 0) *
+        item.qty,
       0
     );
 
 
   total.textContent =
-    "Total: Bs " + totalPrice;
+    "Total: Bs " +
+    totalValue.toFixed(2);
+
 }
 
 
-/* =========================================================
-   ELIMINAR DEL CARRITO
-   ========================================================= */
+/* ==========================================
+   ELIMINAR PRODUCTO
+   ========================================== */
 
 function removeItem(index){
 
   cart.splice(index,1);
 
-  update();
+  updateCart();
+
 }
 
 
-/* =========================================================
+/* ==========================================
    ABRIR CARRITO
-   ========================================================= */
+   ========================================== */
 
 function openCart(){
 
   panel.classList.add("open");
 
-  update();
+  updateCart();
+
 }
 
 
-/* =========================================================
+/* ==========================================
    CERRAR CARRITO
-   ========================================================= */
+   ========================================== */
 
 function closeCart(){
 
   panel.classList.remove("open");
+
 }
 
 
-/* =========================================================
+/* ==========================================
    ENVIAR PEDIDO POR WHATSAPP
-   ========================================================= */
+   ========================================== */
 
 function sendWhatsApp(){
 
@@ -766,6 +925,7 @@ function sendWhatsApp(){
     );
 
     return;
+
   }
 
 
@@ -779,47 +939,77 @@ function sendWhatsApp(){
     "No indicada";
 
 
-  const totalPrice =
+  const lines =
+    cart.map(item => {
+
+      const subtotal =
+        Number(item.price || 0) *
+        item.qty;
+
+
+      return (
+        "• " +
+        item.name +
+        " × " +
+        item.qty +
+        " = Bs " +
+        subtotal.toFixed(2)
+      );
+
+    });
+
+
+  const totalValue =
     cart.reduce(
       (sum,item) =>
-        sum + Number(item.price) * item.qty,
+        sum +
+        Number(item.price || 0) *
+        item.qty,
       0
     );
-
-
-  const productsText =
-    cart.map(item =>
-
-      `• ${item.name} × ${item.qty} = Bs ${Number(item.price) * item.qty}`
-
-    ).join("\n");
 
 
   const message =
 `🛍️ *NUEVO PEDIDO - AQUÍ TÁI*
 
-${productsText}
+${lines.join("\n")}
 
-💰 *Total: Bs ${totalPrice}*
+💰 *Total: Bs ${totalValue.toFixed(2)}*
 
 👤 Cliente: ${name}
-
 📍 Entrega: ${addr}`;
 
 
-  const whatsappUrl =
+  const whatsappURL =
     "https://wa.me/59171440907?text=" +
     encodeURIComponent(message);
 
 
-  location.href =
-    whatsappUrl;
+  window.location.href =
+    whatsappURL;
+
 }
 
 
-/* =========================================================
-   INICIAR CATÁLOGO
-   ========================================================= */
+/* ==========================================
+   SEGURIDAD PARA TEXTO HTML
+   ========================================== */
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* ==========================================
+   INICIAR
+   ========================================== */
 
 loadProducts();
 
