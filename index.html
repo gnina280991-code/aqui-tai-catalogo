@@ -5,7 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Aquí tái | Catálogo</title>
-<meta name="description" content="Catálogo de productos Aquí tái · Bolivia">
+
+<meta
+  name="description"
+  content="Catálogo de productos Aquí tái - Bolivia"
+>
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -21,6 +25,8 @@ body{
   background:#f6f7f9;
   color:#171717;
 }
+
+/* HEADER */
 
 header{
   background:#fff;
@@ -57,11 +63,15 @@ header{
   color:#666;
 }
 
+/* CONTENEDOR */
+
 .wrap{
   max-width:1100px;
   margin:auto;
   padding:22px 16px;
 }
+
+/* HERO */
 
 .hero{
   background:#fff;
@@ -92,20 +102,27 @@ header{
 }
 
 .search:focus{
-  border-color:#111;
+  border-color:#ff9d00;
 }
 
-.status{
-  margin-top:14px;
+/* CONTADOR */
+
+.product-count{
+  margin-top:16px;
   color:#666;
-  font-size:14px;
+  font-size:15px;
 }
+
+/* GRID */
 
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  grid-template-columns:
+    repeat(auto-fill,minmax(210px,1fr));
   gap:16px;
 }
+
+/* CARD */
 
 .card{
   background:#fff;
@@ -119,6 +136,7 @@ header{
   aspect-ratio:1/1;
   object-fit:cover;
   background:#fafafa;
+  display:block;
 }
 
 .body{
@@ -146,13 +164,18 @@ header{
 .price{
   font-size:22px;
   font-weight:800;
-  margin:12px 0 4px;
+  margin:12px 0 5px;
 }
 
 .stock{
-  font-size:12px;
-  color:#666;
-  margin-bottom:10px;
+  font-size:13px;
+  color:#555;
+  margin-bottom:12px;
+}
+
+.stock.out{
+  color:#c00;
+  font-weight:700;
 }
 
 .btn{
@@ -172,6 +195,8 @@ header{
   cursor:not-allowed;
 }
 
+/* CARRITO */
+
 .cart{
   position:fixed;
   right:18px;
@@ -186,6 +211,8 @@ header{
   cursor:pointer;
   z-index:15;
 }
+
+/* PANEL */
 
 .panel{
   position:fixed;
@@ -210,45 +237,6 @@ header{
   padding:20px;
 }
 
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  padding:12px 0;
-  border-bottom:1px solid #eee;
-}
-
-.row-controls{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.qty{
-  min-width:25px;
-  text-align:center;
-  font-weight:700;
-}
-
-.small-btn{
-  border:0;
-  background:#eee;
-  border-radius:8px;
-  width:32px;
-  height:32px;
-  cursor:pointer;
-  font-weight:700;
-}
-
-.delete{
-  border:0;
-  background:#f3f3f3;
-  border-radius:8px;
-  padding:8px;
-  cursor:pointer;
-}
-
 .close{
   float:right;
   border:0;
@@ -256,6 +244,23 @@ header{
   border-radius:50%;
   width:36px;
   height:36px;
+  cursor:pointer;
+  font-size:18px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 0;
+  border-bottom:1px solid #eee;
+}
+
+.row button{
+  border:0;
+  background:#eee;
+  border-radius:10px;
+  padding:8px 10px;
   cursor:pointer;
 }
 
@@ -269,31 +274,36 @@ input[type=text]{
   font:inherit;
 }
 
-label{
-  display:block;
-  font-weight:600;
-  margin-top:10px;
+textarea{
+  min-height:90px;
+  resize:vertical;
 }
 
-.empty{
+/* ESTADOS */
+
+.loading{
   background:#fff;
-  border-radius:16px;
+  border-radius:18px;
   padding:30px;
   text-align:center;
   color:#666;
 }
 
-.loading{
+.error{
   background:#fff;
-  border-radius:16px;
-  padding:30px;
+  border-radius:18px;
+  padding:25px;
   text-align:center;
+  color:#b00020;
 }
+
+/* MOBILE */
 
 @media(max-width:480px){
 
   .grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
     gap:10px;
   }
 
@@ -322,13 +332,22 @@ label{
     font-size:24px;
   }
 
+  .hero{
+    padding:20px;
+  }
+
   .brand{
-    font-size:22px;
+    font-size:23px;
   }
 
   .logo{
-    width:55px;
-    height:55px;
+    width:58px;
+    height:58px;
+  }
+
+  .cart{
+    right:12px;
+    bottom:14px;
   }
 }
 </style>
@@ -337,6 +356,7 @@ label{
 <body>
 
 <header>
+
   <div class="top">
 
     <img
@@ -347,21 +367,31 @@ label{
     >
 
     <div>
-      <div class="brand">Aquí tái</div>
-      <div class="sub">Catálogo de productos · Bolivia</div>
+      <div class="brand">
+        Aquí tái
+      </div>
+
+      <div class="sub">
+        Catálogo de productos · Bolivia
+      </div>
     </div>
 
   </div>
+
 </header>
+
 
 <main class="wrap">
 
   <section class="hero">
 
-    <h1>🛍️ Nuestro catálogo</h1>
+    <h1>
+      🛍️ Nuestro catálogo
+    </h1>
 
     <p>
-      Elige tus productos y envíanos tu pedido directamente por WhatsApp.
+      Elige tus productos y envíanos tu pedido
+      directamente por WhatsApp.
     </p>
 
     <input
@@ -369,24 +399,42 @@ label{
       class="search"
       type="text"
       placeholder="🔎 Buscar productos..."
+      autocomplete="off"
     >
 
-    <div id="status" class="status">
+    <div
+      id="productCount"
+      class="product-count"
+    >
       Cargando productos...
     </div>
 
   </section>
 
-  <section id="grid" class="grid"></section>
+
+  <section
+    id="grid"
+    class="grid"
+  >
+
+    <div class="loading">
+      ⏳ Cargando catálogo...
+    </div>
+
+  </section>
 
 </main>
 
-<button class="cart" onclick="openCart()">
+
+<button
+  class="cart"
+  onclick="openCart()"
+>
   🛒 Carrito (<span id="count">0</span>)
 </button>
 
 
-<!-- CARRITO -->
+<!-- PANEL DEL CARRITO -->
 
 <div
   id="panel"
@@ -403,17 +451,25 @@ label{
       ✕
     </button>
 
-    <h2>Tu pedido</h2>
+    <h2>
+      🛒 Tu pedido
+    </h2>
 
     <div id="cartItems"></div>
 
     <div
       id="total"
-      style="font-size:20px;font-weight:800;margin:16px 0"
+      style="
+        font-size:20px;
+        font-weight:800;
+        margin:16px 0;
+      "
     >
+      Total: Bs 0
     </div>
 
-    <label for="customer">
+
+    <label>
       Tu nombre
     </label>
 
@@ -423,7 +479,8 @@ label{
       placeholder="Ej. Juan Pérez"
     >
 
-    <label for="address">
+
+    <label>
       Dirección o zona de entrega
     </label>
 
@@ -431,6 +488,7 @@ label{
       id="address"
       placeholder="Ej. Zona Central"
     ></textarea>
+
 
     <button
       class="btn"
@@ -448,20 +506,16 @@ label{
 
 /* =====================================================
    CONFIGURACIÓN SUPABASE
-===================================================== */
+   ===================================================== */
 
 const SUPABASE_URL =
-  "https://ztsthkoejosgwkhmzfbd.supabase.co";
+  "https://ztsthkoejosgwkhmz fbd.supabase.co";
 
 const SUPABASE_KEY =
   "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
 
 
-/*
-   IMPORTANTE:
-   Si la clave de arriba da error, usa exactamente
-   la Publishable Key que aparece en Supabase.
-*/
+/* Crear conexión */
 
 const supabaseClient =
   window.supabase.createClient(
@@ -472,15 +526,15 @@ const supabaseClient =
 
 /* =====================================================
    VARIABLES
-===================================================== */
+   ===================================================== */
 
 let products = [];
 let cart = [];
 
 
 /* =====================================================
-   ELEMENTOS
-===================================================== */
+   ELEMENTOS HTML
+   ===================================================== */
 
 const grid =
   document.getElementById("grid");
@@ -500,75 +554,124 @@ const total =
 const panel =
   document.getElementById("panel");
 
-const status =
-  document.getElementById("status");
-
 const customer =
   document.getElementById("customer");
 
 const address =
   document.getElementById("address");
 
+const productCount =
+  document.getElementById("productCount");
+
 
 /* =====================================================
    CARGAR PRODUCTOS DESDE SUPABASE
-===================================================== */
+   ===================================================== */
 
 async function loadProducts(){
 
-  status.textContent =
+  grid.innerHTML = `
+    <div class="loading">
+      ⏳ Cargando productos...
+    </div>
+  `;
+
+  productCount.textContent =
     "Cargando productos...";
 
-  const {
-    data,
-    error
-  } = await supabaseClient
-    .from("products")
-    .select("*")
-    .eq("active", true)
-    .order("id", { ascending:true });
+
+  try{
+
+    const { data, error } =
+      await supabaseClient
+        .from("products")
+        .select(
+          "id,name,category,description,price,image,stock,active"
+        )
+        .eq("active", true)
+        .order("id", {
+          ascending:false
+        });
 
 
-  if(error){
+    if(error){
+
+      console.error(
+        "Error Supabase:",
+        error
+      );
+
+      grid.innerHTML = `
+        <div class="error">
+          ❌ No se pudieron cargar los productos.
+          <br><br>
+          Revisa la conexión con Supabase.
+        </div>
+      `;
+
+      productCount.textContent =
+        "Error al cargar productos.";
+
+      return;
+    }
+
+
+    products = data || [];
+
+    render(products);
+
+  }catch(error){
 
     console.error(error);
 
-    status.textContent =
-      "No se pudieron cargar los productos.";
-
     grid.innerHTML = `
-      <div class="empty">
-        ❌ Error al cargar los productos.
-        <br><br>
-        Revisa la conexión con Supabase.
+      <div class="error">
+        ❌ Ocurrió un error al cargar
+        el catálogo.
       </div>
     `;
 
-    return;
+    productCount.textContent =
+      "Error al cargar productos.";
   }
+}
 
 
-  products = data || [];
+/* =====================================================
+   ESCAPAR TEXTO
+   ===================================================== */
 
-  status.textContent =
-    products.length +
-    " producto(s) disponible(s).";
+function escapeHTML(value){
 
-  render(products);
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
 
 /* =====================================================
    MOSTRAR PRODUCTOS
-===================================================== */
+   ===================================================== */
 
 function render(list){
+
+  productCount.textContent =
+    list.length +
+    (
+      list.length === 1
+      ? " producto disponible."
+      : " productos disponibles."
+    );
+
 
   if(!list.length){
 
     grid.innerHTML = `
-      <div class="empty">
-        No encontramos productos.
+      <div class="loading">
+        🔎 No encontramos productos.
       </div>
     `;
 
@@ -576,78 +679,96 @@ function render(list){
   }
 
 
-  grid.innerHTML = list.map(p => {
+  grid.innerHTML =
+    list.map(p => {
 
-    const stock =
-      Number(p.stock || 0);
+      const stock =
+        Number(p.stock || 0);
 
-    const image =
-      p.image ||
-      "https://via.placeholder.com/600?text=Aqui+Tai";
+      const image =
+        p.image ||
+        "https://via.placeholder.com/600x600?text=Aqui+tai";
 
 
-    return `
+      const disabled =
+        stock <= 0
+        ? "disabled"
+        : "";
 
-      <article class="card">
 
-        <img
-          class="pic"
-          src="${escapeHTML(image)}"
-          alt="${escapeHTML(p.name || "Producto")}"
-          onerror="this.src='https://via.placeholder.com/600?text=Sin+imagen'"
-        >
-
-        <div class="body">
-
-          <div class="cat">
-            ${escapeHTML(p.category || "")}
-          </div>
-
-          <div class="name">
-            ${escapeHTML(p.name || "")}
-          </div>
-
-          <div class="desc">
-            ${escapeHTML(p.description || "")}
-          </div>
-
-          <div class="price">
-            Bs ${Number(p.price || 0).toFixed(2)}
-          </div>
-
+      const stockHTML =
+        stock > 0
+        ? `
           <div class="stock">
-            ${
-              stock > 0
-              ? "📦 Disponible: " + stock
-              : "❌ Agotado"
-            }
+            📦 Disponible: ${stock}
+          </div>
+        `
+        : `
+          <div class="stock out">
+            ❌ Agotado
+          </div>
+        `;
+
+
+      return `
+
+        <article class="card">
+
+          <img
+            class="pic"
+            src="${escapeHTML(image)}"
+            alt="${escapeHTML(p.name)}"
+            loading="lazy"
+            onerror="
+              this.src='https://via.placeholder.com/600x600?text=Sin+imagen'
+            "
+          >
+
+          <div class="body">
+
+            <div class="cat">
+              ${escapeHTML(p.category || "Sin categoría")}
+            </div>
+
+            <div class="name">
+              ${escapeHTML(p.name)}
+            </div>
+
+            <div class="desc">
+              ${escapeHTML(p.description || "")}
+            </div>
+
+            <div class="price">
+              Bs ${Number(p.price || 0).toFixed(2)}
+            </div>
+
+            ${stockHTML}
+
+            <button
+              class="btn"
+              ${disabled}
+              onclick="add(${Number(p.id)})"
+            >
+              ${
+                stock > 0
+                ? "Agregar al carrito"
+                : "Agotado"
+              }
+            </button>
+
           </div>
 
-          <button
-            class="btn"
-            onclick="add(${Number(p.id)})"
-            ${stock <= 0 ? "disabled" : ""}
-          >
-            ${
-              stock > 0
-              ? "Agregar al carrito"
-              : "Agotado"
-            }
-          </button>
+        </article>
 
-        </div>
+      `;
 
-      </article>
-
-    `;
-
-  }).join("");
+    }).join("");
 }
 
 
 /* =====================================================
-   BUSCADOR
-===================================================== */
+   BÚSQUEDA
+   ===================================================== */
 
 search.addEventListener(
   "input",
@@ -655,23 +776,34 @@ search.addEventListener(
 
     const q =
       search.value
-        .toLowerCase()
-        .trim();
+        .trim()
+        .toLowerCase();
+
+
+    if(!q){
+
+      render(products);
+
+      return;
+    }
 
 
     const filtered =
       products.filter(p => {
 
         const text =
-          (
-            (p.name || "") +
-            " " +
-            (p.description || "") +
-            " " +
-            (p.category || "")
-          ).toLowerCase();
+          [
+            p.name,
+            p.description,
+            p.category
+          ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
 
         return text.includes(q);
+
       });
 
 
@@ -682,7 +814,7 @@ search.addEventListener(
 
 /* =====================================================
    AGREGAR AL CARRITO
-===================================================== */
+   ===================================================== */
 
 function add(id){
 
@@ -692,16 +824,33 @@ function add(id){
     );
 
 
-  if(!product) return;
+  if(!product){
+
+    alert(
+      "Producto no encontrado."
+    );
+
+    return;
+  }
 
 
   const stock =
     Number(product.stock || 0);
 
 
+  if(stock <= 0){
+
+    alert(
+      "Este producto está agotado."
+    );
+
+    return;
+  }
+
+
   const existing =
     cart.find(
-      p => Number(p.id) === Number(id)
+      x => Number(x.id) === Number(id)
     );
 
 
@@ -710,11 +859,12 @@ function add(id){
     if(existing.qty >= stock){
 
       alert(
-        "No hay más unidades disponibles."
+        "No puedes agregar más unidades de las disponibles."
       );
 
       return;
     }
+
 
     existing.qty++;
 
@@ -728,7 +878,7 @@ function add(id){
   }
 
 
-  update();
+  updateCart();
 
   openCart();
 }
@@ -736,19 +886,20 @@ function add(id){
 
 /* =====================================================
    ACTUALIZAR CARRITO
-===================================================== */
+   ===================================================== */
 
-function update(){
+function updateCart(){
 
-  const totalItems =
+  const quantity =
     cart.reduce(
-      (sum,p) => sum + p.qty,
+      (sum,item) =>
+        sum + Number(item.qty),
       0
     );
 
 
   count.textContent =
-    totalItems;
+    quantity;
 
 
   if(!cart.length){
@@ -764,10 +915,11 @@ function update(){
 
 
   cartItems.innerHTML =
-    cart.map((p,index) => {
+    cart.map((item,index) => {
 
       const subtotal =
-        Number(p.price || 0) * p.qty;
+        Number(item.price || 0) *
+        Number(item.qty || 0);
 
 
       return `
@@ -777,13 +929,14 @@ function update(){
           <div>
 
             <b>
-              ${escapeHTML(p.name)}
+              ${escapeHTML(item.name)}
             </b>
 
             <br>
 
-            Bs ${Number(p.price).toFixed(2)}
-            × ${p.qty}
+            Bs ${Number(item.price || 0).toFixed(2)}
+            ×
+            ${item.qty}
 
             <br>
 
@@ -793,35 +946,11 @@ function update(){
 
           </div>
 
-
-          <div class="row-controls">
-
-            <button
-              class="small-btn"
-              onclick="changeQty(${index},-1)"
-            >
-              −
-            </button>
-
-            <span class="qty">
-              ${p.qty}
-            </span>
-
-            <button
-              class="small-btn"
-              onclick="changeQty(${index},1)"
-            >
-              +
-            </button>
-
-            <button
-              class="delete"
-              onclick="removeItem(${index})"
-            >
-              🗑️
-            </button>
-
-          </div>
+          <button
+            onclick="removeItem(${index})"
+          >
+            🗑️
+          </button>
 
         </div>
 
@@ -832,9 +961,10 @@ function update(){
 
   const grandTotal =
     cart.reduce(
-      (sum,p) =>
+      (sum,item) =>
         sum +
-        Number(p.price || 0) * p.qty,
+        Number(item.price || 0) *
+        Number(item.qty || 0),
       0
     );
 
@@ -846,69 +976,26 @@ function update(){
 
 
 /* =====================================================
-   CAMBIAR CANTIDAD
-===================================================== */
-
-function changeQty(index,change){
-
-  const item =
-    cart[index];
-
-  if(!item) return;
-
-
-  const stock =
-    Number(item.stock || 0);
-
-
-  const newQty =
-    item.qty + change;
-
-
-  if(newQty <= 0){
-
-    cart.splice(index,1);
-
-  }else if(newQty > stock){
-
-    alert(
-      "No hay más unidades disponibles."
-    );
-
-    return;
-
-  }else{
-
-    item.qty =
-      newQty;
-  }
-
-
-  update();
-}
-
-
-/* =====================================================
-   ELIMINAR PRODUCTO
-===================================================== */
+   ELIMINAR DEL CARRITO
+   ===================================================== */
 
 function removeItem(index){
 
   cart.splice(index,1);
 
-  update();
+  updateCart();
 }
 
 
 /* =====================================================
    ABRIR / CERRAR CARRITO
-===================================================== */
+   ===================================================== */
 
 function openCart(){
 
   panel.classList.add("open");
 
-  update();
+  updateCart();
 }
 
 
@@ -919,8 +1006,8 @@ function closeCart(){
 
 
 /* =====================================================
-   ENVIAR PEDIDO A WHATSAPP
-===================================================== */
+   ENVIAR PEDIDO POR WHATSAPP
+   ===================================================== */
 
 function sendWhatsApp(){
 
@@ -946,9 +1033,10 @@ function sendWhatsApp(){
 
   const grandTotal =
     cart.reduce(
-      (sum,p) =>
+      (sum,item) =>
         sum +
-        Number(p.price || 0) * p.qty,
+        Number(item.price || 0) *
+        Number(item.qty || 0),
       0
     );
 
@@ -957,17 +1045,18 @@ function sendWhatsApp(){
     "🛍️ *NUEVO PEDIDO - AQUÍ TÁI*\n\n";
 
 
-  cart.forEach(p => {
+  cart.forEach(item => {
 
     const subtotal =
-      Number(p.price || 0) * p.qty;
+      Number(item.price || 0) *
+      Number(item.qty || 0);
 
 
     message +=
       "• " +
-      p.name +
+      item.name +
       " × " +
-      p.qty +
+      item.qty +
       " = Bs " +
       subtotal.toFixed(2) +
       "\n";
@@ -991,40 +1080,29 @@ function sendWhatsApp(){
     addr;
 
 
-  const phone =
-    "59171440907";
-
-
-  const url =
-    "https://wa.me/" +
-    phone +
-    "?text=" +
+  const encodedMessage =
     encodeURIComponent(message);
 
 
+  /*
+    Número de WhatsApp:
+    Bolivia +591
+    Número: 71440907
+  */
+
+  const whatsappURL =
+    "https://wa.me/59171440907?text=" +
+    encodedMessage;
+
+
   window.location.href =
-    url;
-}
-
-
-/* =====================================================
-   SEGURIDAD BÁSICA PARA TEXTO
-===================================================== */
-
-function escapeHTML(value){
-
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+    whatsappURL;
 }
 
 
 /* =====================================================
    INICIAR
-===================================================== */
+   ===================================================== */
 
 loadProducts();
 
