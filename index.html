@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aquí tái | Tienda en Línea</title>
+
+  <!-- Preconexión a Supabase para reducir latencia de red -->
+  <link rel="preconnect" href="https://ztsthkoejosgwkhmzfbd.supabase.co" crossorigin>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   
   <style>
@@ -65,20 +68,9 @@
       background: var(--bg-main);
     }
 
-    .brand-wrap {
-      flex: 1;
-    }
-
-    .brand {
-      font-size: 20px;
-      font-weight: 800;
-      line-height: 1.1;
-    }
-
-    .sub {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
+    .brand-wrap { flex: 1; }
+    .brand { font-size: 20px; font-weight: 800; line-height: 1.1; }
+    .sub { font-size: 11px; color: var(--text-muted); }
 
     /* BOTÓN MODO NOCTURNO */
     .theme-toggle-btn {
@@ -116,9 +108,7 @@
       transition: background-color 0.3s, border-color 0.3s;
     }
 
-    .search-input:focus {
-      border-color: var(--accent-color);
-    }
+    .search-input:focus { border-color: var(--accent-color); }
 
     .search-icon {
       position: absolute;
@@ -179,6 +169,8 @@
       display: flex;
       flex-direction: column;
       transition: transform .2s, background-color 0.3s;
+      content-visibility: auto; /* Optimiza renderizado en listas largas */
+      contain-intrinsic-size: 220px;
     }
 
     .prod-img {
@@ -275,7 +267,7 @@
       border-radius: 12px;
     }
 
-    /* BOTÓN FLOTANTE WHATSAPP (IZQUIERDA) */
+    /* BOTÓN FLOTANTE WHATSAPP */
     .ws-float-btn {
       position: fixed;
       bottom: 20px;
@@ -297,12 +289,7 @@
     }
 
     .ws-float-btn:active { transform: scale(0.95); }
-
-    .ws-float-btn svg {
-      width: 28px;
-      height: 28px;
-      fill: currentColor;
-    }
+    .ws-float-btn svg { width: 28px; height: 28px; fill: currentColor; }
 
     /* MODALES General */
     .modal {
@@ -337,11 +324,7 @@
       margin-bottom: 16px;
     }
 
-    .modal-title {
-      font-size: 18px;
-      font-weight: 800;
-      margin: 0;
-    }
+    .modal-title { font-size: 18px; font-weight: 800; margin: 0; }
 
     .modal-close {
       background: var(--bg-main);
@@ -427,9 +410,7 @@
       transition: transform 0.2s;
     }
 
-    .modal-img:hover {
-      transform: scale(1.02);
-    }
+    .modal-img:hover { transform: scale(1.02); }
 
     .detail-row {
       display: flex;
@@ -485,9 +466,7 @@
       padding: 16px;
     }
 
-    .lightbox-modal.open {
-      display: flex;
-    }
+    .lightbox-modal.open { display: flex; }
 
     .lightbox-img {
       max-width: 90vw;
@@ -496,6 +475,8 @@
       border-radius: 8px;
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
+
+    .lightbox-close, .lightbox-btn, .lightbox-counter { z-index: 510; }
 
     .lightbox-close {
       position: absolute;
@@ -509,7 +490,6 @@
       height: 40px;
       font-size: 20px;
       cursor: pointer;
-      z-index: 510;
     }
 
     .lightbox-btn {
@@ -527,7 +507,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 510;
     }
 
     .lightbox-btn.prev { left: 16px; }
@@ -541,7 +520,6 @@
       background: rgba(0,0,0,0.5);
       padding: 6px 14px;
       border-radius: 20px;
-      z-index: 510;
     }
   </style>
 </head>
@@ -707,12 +685,7 @@
 
         if (error) throw error;
 
-        if (data.length < PAGE_SIZE) {
-          hasMoreProducts = false;
-        } else {
-          hasMoreProducts = true;
-        }
-
+        hasMoreProducts = data.length >= PAGE_SIZE;
         products = loadMore ? [...products, ...data] : data;
         buildCategoriesMenu();
         filterProducts();
@@ -760,13 +733,18 @@
         return;
       }
 
-      let html = list.map(p => {
-        const images = getImagesArray(p);
+      let html = list.map((p, index) => {
+        // Obtenemos versión liviana para el catálogo
+        const images = getImagesArray(p, 'card');
         const mainImg = images[0] || 'https://via.placeholder.com/300?text=Sin+Imagen';
+
+        // Las primeras 4 imágenes cargan con prioridad alta; las demás con lazy-loading
+        const fetchPriority = index < 4 ? 'fetchpriority="high"' : '';
+        const loadingMode = index < 4 ? 'eager' : 'lazy';
 
         return `
           <div class="prod-card">
-            <img class="prod-img" src="${escapeHTML(mainImg)}" alt="Foto" loading="lazy" decoding="async" onclick="openModal(${p.id})">
+            <img class="prod-img" src="${escapeHTML(mainImg)}" alt="${escapeHTML(p.name)}" ${fetchPriority} loading="${loadingMode}" decoding="async" onclick="openModal(${p.id})">
             <div class="prod-title" onclick="openModal(${p.id})">${escapeHTML(p.name)}</div>
             <div class="prod-price">Bs ${Number(p.price || 0).toFixed(2)}</div>
             <button class="btn-add-card" onclick="addToCart(${p.id})">+ Agregar al carrito</button>
@@ -844,7 +822,7 @@
       cartList.innerHTML = cart.map(item => {
         const itemTotal = (item.price || 0) * item.qty;
         total += itemTotal;
-        const images = getImagesArray(item);
+        const images = getImagesArray(item, 'thumb');
         const img = images[0] || 'https://via.placeholder.com/100?text=Sin+Imagen';
 
         return `
@@ -889,7 +867,8 @@
       if (!p) return;
 
       currentSelectedProduct = p;
-      activeGalleryImages = getImagesArray(p);
+      // Para la galería del modal traemos resolución media
+      activeGalleryImages = getImagesArray(p, 'modal');
 
       document.getElementById("modalTitle").textContent = p.name || "Producto";
       document.getElementById("modalCat").textContent = p.category || "General";
@@ -916,7 +895,9 @@
     }
 
     function openLightbox(index) {
-      if (!activeGalleryImages || !activeGalleryImages.length) return;
+      if (!currentSelectedProduct) return;
+      // Al abrir pantalla completa (lightbox), solicitamos las imágenes en Alta Definición/Originales
+      activeGalleryImages = getImagesArray(currentSelectedProduct, 'full');
       activeImageIndex = index;
       updateLightbox();
       lightboxModal.classList.add("open");
@@ -947,8 +928,11 @@
       window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    /* Retorna URLs originales completas sin forzar transformaciones de recorte */
-    function getImagesArray(product) {
+    /**
+     * Convierte imágenes a WebP y las escala de forma proporcional sin recortar.
+     * Tipos de modo: 'card' (tarjetas catálogo), 'modal' (galería), 'thumb' (carrito), 'full' (lightbox HD original).
+     */
+    function getImagesArray(product, mode = 'full') {
       let list = [];
       if (Array.isArray(product.images)) {
         list = product.images;
@@ -958,7 +942,20 @@
         list = [product.image];
       }
 
-      return list;
+      return list.map(url => {
+        if (typeof url === 'string' && url.includes("/storage/v1/object/public/")) {
+          const renderUrl = url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
+          
+          if (mode === 'card') {
+            return `${renderUrl}?width=300&height=300&resize=contain&quality=70&format=webp`;
+          } else if (mode === 'modal') {
+            return `${renderUrl}?width=600&height=600&resize=contain&quality=80&format=webp`;
+          } else if (mode === 'thumb') {
+            return `${renderUrl}?width=100&height=100&resize=contain&quality=60&format=webp`;
+          }
+        }
+        return url;
+      });
     }
 
     function escapeHTML(str) {
