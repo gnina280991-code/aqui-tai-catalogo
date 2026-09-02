@@ -169,7 +169,7 @@
       display: flex;
       flex-direction: column;
       transition: transform .2s, background-color 0.3s;
-      content-visibility: auto; /* Optimiza renderizado en listas largas */
+      content-visibility: auto;
       contain-intrinsic-size: 220px;
     }
 
@@ -643,6 +643,25 @@
 
     document.getElementById("wsDirectLink").href = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent('¡Hola! Vengo desde el catálogo online y quisiera hacer una consulta.')}`;
 
+    /* INTERCEPCIÓN DEL BOTÓN ATRÁS DEL NAVEGADOR / CELULAR */
+    window.addEventListener('popstate', (e) => {
+      const viewModal = document.getElementById('viewModal');
+      const cartModal = document.getElementById('cartModal');
+      const lightboxModal = document.getElementById('lightboxModal');
+
+      if (lightboxModal && lightboxModal.classList.contains('open')) {
+        lightboxModal.classList.remove('open');
+        return;
+      }
+
+      if (viewModal && viewModal.classList.contains('open')) {
+        viewModal.classList.remove('open');
+      }
+      if (cartModal && cartModal.classList.contains('open')) {
+        cartModal.classList.remove('open');
+      }
+    });
+
     function initTheme() {
       const savedTheme = localStorage.getItem("theme");
       const btn = document.getElementById("themeBtn");
@@ -734,11 +753,9 @@
       }
 
       let html = list.map((p, index) => {
-        // Obtenemos versión liviana para el catálogo
         const images = getImagesArray(p, 'card');
         const mainImg = images[0] || 'https://via.placeholder.com/300?text=Sin+Imagen';
 
-        // Las primeras 4 imágenes cargan con prioridad alta; las demás con lazy-loading
         const fetchPriority = index < 4 ? 'fetchpriority="high"' : '';
         const loadingMode = index < 4 ? 'eager' : 'lazy';
 
@@ -806,6 +823,7 @@
     function openCartModal() {
       renderCart();
       document.getElementById("cartModal").classList.add("open");
+      history.pushState({ modalOpen: true }, "");
     }
 
     function renderCart() {
@@ -867,7 +885,6 @@
       if (!p) return;
 
       currentSelectedProduct = p;
-      // Para la galería del modal traemos resolución media
       activeGalleryImages = getImagesArray(p, 'modal');
 
       document.getElementById("modalTitle").textContent = p.name || "Producto";
@@ -888,23 +905,35 @@
       }
 
       document.getElementById("viewModal").classList.add("open");
+      history.pushState({ modalOpen: true }, "");
     }
 
     function closeModal(id) {
-      document.getElementById(id).classList.remove("open");
+      const modal = document.getElementById(id);
+      if (modal && modal.classList.contains('open')) {
+        modal.classList.remove('open');
+        if (history.state && history.state.modalOpen) {
+          history.back();
+        }
+      }
     }
 
     function openLightbox(index) {
       if (!currentSelectedProduct) return;
-      // Al abrir pantalla completa (lightbox), solicitamos las imágenes en Alta Definición/Originales
       activeGalleryImages = getImagesArray(currentSelectedProduct, 'full');
       activeImageIndex = index;
       updateLightbox();
       lightboxModal.classList.add("open");
+      history.pushState({ modalOpen: true }, "");
     }
 
     function closeLightbox() {
-      lightboxModal.classList.remove("open");
+      if (lightboxModal && lightboxModal.classList.contains('open')) {
+        lightboxModal.classList.remove('open');
+        if (history.state && history.state.modalOpen) {
+          history.back();
+        }
+      }
     }
 
     function changeLightboxImg(step) {
@@ -928,10 +957,6 @@
       window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    /**
-     * Convierte imágenes a WebP y las escala de forma proporcional sin recortar.
-     * Tipos de modo: 'card' (tarjetas catálogo), 'modal' (galería), 'thumb' (carrito), 'full' (lightbox HD original).
-     */
     function getImagesArray(product, mode = 'full') {
       let list = [];
       if (Array.isArray(product.images)) {
