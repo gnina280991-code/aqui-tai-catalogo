@@ -942,13 +942,24 @@
       window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
+    /* Transformación al vuelo con Supabase Storage Transformations */
     function getImagesArray(product) {
-      if (Array.isArray(product.images)) return product.images;
-      if (typeof product.images === 'string') {
-        try { return JSON.parse(product.images); } catch (e) {}
+      let list = [];
+      if (Array.isArray(product.images)) {
+        list = product.images;
+      } else if (typeof product.images === 'string') {
+        try { list = JSON.parse(product.images); } catch (e) {}
+      } else if (product.image) {
+        list = [product.image];
       }
-      if (product.image) return [product.image];
-      return [];
+
+      return list.map(url => {
+        if (typeof url === 'string' && url.includes("/storage/v1/object/public/")) {
+          const renderUrl = url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
+          return `${renderUrl}?width=400&quality=70&format=webp`;
+        }
+        return url;
+      });
     }
 
     function escapeHTML(str) {
