@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aquí tái | Panel Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aquí tái | Panel Admin Express</title>
 
   <!-- SUPABASE SDK -->
   <link rel="preconnect" href="https://ztsthkoejosgwkhmzfbd.supabase.co" crossorigin>
@@ -18,11 +18,14 @@
       --text-muted: #6b7280;
       --border-color: #e5e7eb;
       --accent-color: #ff9d00;
+      --accent-hover: #e08b00;
       --btn-bg: #111827;
       --btn-text: #ffffff;
       --success-color: #10b981;
       --danger-color: #ef4444;
       --warning-color: #f59e0b;
+      --radius: 14px;
+      --shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     body.dark-mode {
@@ -35,17 +38,44 @@
       --btn-text: #ffffff;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg-main);
       color: var(--text-main);
       transition: background 0.3s, color 0.3s;
+      padding-bottom: 40px;
     }
 
     button, input, select, textarea { font-family: inherit; }
+
+    /* TOAST NOTIFICACIONES */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 90vw;
+    }
+
+    .toast {
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      animation: slideUp 0.2s ease-out;
+      border-left: 4px solid var(--accent-color);
+    }
+
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     /* MODAL DE LOGIN AUTH */
     .login-overlay {
@@ -71,7 +101,7 @@
     .login-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; text-align: center; }
     .login-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center; }
 
-    /* HEADER */
+    /* HEADER sticky */
     header {
       background: var(--bg-card);
       border-bottom: 1px solid var(--border-color);
@@ -83,48 +113,48 @@
     .top {
       max-width: 1200px;
       margin: auto;
-      padding: 12px 16px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
 
     .logo {
-      height: 45px;
-      width: 45px;
+      height: 40px;
+      width: 40px;
       border-radius: 50%;
       object-fit: cover;
       border: 1px solid var(--border-color);
     }
 
     .brand-wrap { flex: 1; }
-    .brand { font-size: 20px; font-weight: 800; }
-    .sub { font-size: 12px; color: var(--text-muted); }
+    .brand { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .sub { font-size: 11px; color: var(--text-muted); }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .theme-btn {
       background: none;
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 20px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     .logout-btn {
       background: transparent;
       border: 1px solid var(--danger-color);
       color: var(--danger-color);
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 20px;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: bold;
     }
 
@@ -132,49 +162,81 @@
     .wrap {
       max-width: 1200px;
       margin: auto;
-      padding: 20px 16px 80px;
+      padding: 16px;
       display: none;
     }
+
+    /* NAVEGACIÓN PESTAÑAS (TABS) */
+    .nav-tabs {
+      display: flex;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 8px;
+      border: 0;
+      background: none;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 13px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-color);
+      color: #111;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
     /* MÉTRICAS */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
     .kpi-card {
       background: var(--bg-card);
-      padding: 16px;
-      border-radius: 16px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
       border: 1px solid var(--border-color);
-      box-shadow: 0 2px 6px #00000008;
+      box-shadow: var(--shadow);
     }
 
     .kpi-title {
-      font-size: 12px;
+      font-size: 10px;
       text-transform: uppercase;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    .kpi-value { font-size: 24px; font-weight: 800; }
+    .kpi-value { font-size: 18px; font-weight: 800; }
 
-    /* FORMULARIO DE PRODUCTO */
+    /* FORMULARIO DE PRODUCTO FLUIDO */
     .card-form {
       background: var(--bg-card);
-      border-radius: 18px;
-      padding: 20px;
+      border-radius: var(--radius);
+      padding: 18px;
       border: 1px solid var(--border-color);
-      margin-bottom: 24px;
-      box-shadow: 0 2px 10px #0000000a;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
     }
 
     .card-form h2 {
-      margin: 0 0 16px;
-      font-size: 20px;
+      margin: 0 0 14px;
+      font-size: 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -182,14 +244,14 @@
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 14px;
     }
 
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group.full { grid-column: 1 / -1; }
 
-    label { font-size: 13px; font-weight: 700; }
+    label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
 
     input[type=text], input[type=number], input[type=email], input[type=password], select, textarea {
       padding: 12px;
@@ -199,6 +261,7 @@
       border-radius: 10px;
       font-size: 14px;
       outline: none;
+      transition: border-color 0.2s;
     }
 
     input:focus, select:focus, textarea:focus { border-color: var(--accent-color); }
@@ -210,36 +273,51 @@
       background: var(--bg-main);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 4px 10px;
-      border-radius: 8px;
+      padding: 6px 12px;
+      border-radius: 20px;
       font-size: 12px;
       cursor: pointer;
       font-weight: 600;
     }
 
-    .chip-btn:hover { border-color: var(--accent-color); }
+    .chip-btn:active { transform: scale(0.95); }
 
     .upload-box {
       border: 2px dashed var(--border-color);
       border-radius: 12px;
-      padding: 16px;
+      padding: 20px 14px;
       text-align: center;
       background: var(--bg-main);
       cursor: pointer;
-      transition: border-color 0.2s;
+      transition: 0.2s;
     }
 
     .upload-box:hover { border-color: var(--accent-color); }
 
     .preview-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 
+    .preview-thumb-wrap { position: relative; }
+
     .preview-thumb {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      object-fit: contain;
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      object-fit: cover;
       background: #0001;
       border: 1px solid var(--border-color);
+    }
+
+    .preview-remove {
+      position: absolute;
+      top: -6px; right: -6px;
+      background: var(--danger-color);
+      color: #fff;
+      border: 0;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      font-size: 10px;
+      cursor: pointer;
+      font-weight: bold;
     }
 
     .btn-actions { display: flex; gap: 10px; margin-top: 16px; }
@@ -247,49 +325,52 @@
     .btn {
       border: 0;
       border-radius: 10px;
-      padding: 12px 20px;
+      padding: 14px 20px;
       background: var(--btn-bg);
       color: var(--btn-text);
-      font-weight: 700;
-      font-size: 14px;
+      font-weight: 800;
+      font-size: 15px;
       cursor: pointer;
+      width: 100%;
+      transition: 0.2s;
     }
 
     .btn-primary { background: var(--accent-color); color: #111; }
-    .btn-cancel { background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-primary:active { background: var(--accent-hover); }
+    .btn-cancel { background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); font-size: 13px; padding: 6px 12px; width: auto; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* TABLA Y FILTROS */
-    .table-controls { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    /* CONTROLES Y FILTROS */
+    .table-controls { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 
     .table-wrap {
       background: var(--bg-card);
-      border-radius: 18px;
+      border-radius: var(--radius);
       border: 1px solid var(--border-color);
       overflow: hidden;
-      box-shadow: 0 2px 10px #0000000a;
+      box-shadow: var(--shadow);
     }
 
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-    th, td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); }
-    th { background: var(--bg-main); font-size: 12px; text-transform: uppercase; color: var(--text-muted); }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); }
+    th { background: var(--bg-main); font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
 
     .prod-img {
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       border-radius: 8px;
-      object-fit: contain;
+      object-fit: cover;
       background: var(--bg-main);
       cursor: pointer;
     }
 
-    .clickable-name { cursor: pointer; }
+    .clickable-name { cursor: pointer; font-weight: 700; }
     .clickable-name:hover { color: var(--accent-color); text-decoration: underline; }
 
     .status-select {
-      padding: 6px 10px;
+      padding: 6px 8px;
       border-radius: 8px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
       cursor: pointer;
       border: 1px solid var(--border-color);
@@ -298,27 +379,28 @@
     .status-select.active { background: #d1fae5; color: #065f46; border-color: #34d399; }
     .status-select.inactive { background: #fee2e2; color: #991b1b; border-color: #f87171; }
 
-    .qty-table { display: flex; align-items: center; gap: 6px; }
+    .qty-table { display: flex; align-items: center; gap: 4px; background: var(--bg-main); padding: 2px 6px; border-radius: 8px; border: 1px solid var(--border-color); width: fit-content; }
 
     .btn-qty-mini {
       width: 26px;
       height: 26px;
       border-radius: 6px;
-      border: 1px solid var(--border-color);
-      background: var(--bg-main);
+      border: 0;
+      background: var(--bg-card);
       color: var(--text-main);
       font-weight: bold;
       cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
-    .action-btns { display: flex; gap: 6px; }
+    .action-btns { display: flex; gap: 4px; }
 
     .btn-icon {
       border: 1px solid var(--border-color);
       background: var(--bg-main);
       color: var(--text-main);
       border-radius: 8px;
-      padding: 6px 10px;
+      padding: 6px 8px;
       cursor: pointer;
       font-size: 13px;
     }
@@ -340,7 +422,7 @@
     .modal-content {
       background: var(--bg-card);
       border-radius: 20px;
-      width: min(100%, 520px);
+      width: min(100%, 480px);
       max-height: 90vh;
       overflow: auto;
       padding: 20px;
@@ -378,28 +460,25 @@
     }
 
     .modal-img {
-      width: 110px;
-      height: 110px;
+      width: 100px;
+      height: 100px;
       border-radius: 10px;
-      object-fit: contain;
+      object-fit: cover;
       background: #000;
       border: 1px solid var(--border-color);
       flex-shrink: 0;
       cursor: pointer;
-      transition: transform 0.2s;
     }
-
-    .modal-img:hover { transform: scale(1.03); }
 
     .detail-row {
       display: flex;
       justify-content: space-between;
       padding: 8px 0;
       border-bottom: 1px solid var(--border-color);
-      font-size: 14px;
+      font-size: 13px;
     }
 
-    .detail-desc { margin-top: 12px; line-height: 1.5; color: var(--text-muted); font-size: 14px; white-space: pre-line; }
+    .detail-desc { margin-top: 12px; line-height: 1.5; color: var(--text-muted); font-size: 13px; white-space: pre-line; }
 
     /* LIGHTBOX */
     .lightbox-modal {
@@ -418,11 +497,8 @@
     .lightbox-img {
       max-width: 100%;
       max-height: 80vh;
-      width: auto;
-      height: auto;
       object-fit: contain;
       border-radius: 8px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.8);
     }
 
     .lightbox-close {
@@ -465,7 +541,7 @@
       position: absolute;
       bottom: 20px;
       color: #fff;
-      font-size: 14px;
+      font-size: 13px;
       background: rgba(0,0,0,0.6);
       padding: 6px 14px;
       border-radius: 20px;
@@ -477,6 +553,8 @@
   </style>
 </head>
 <body>
+
+  <div id="toast-container"></div>
 
   <!-- LOGIN OVERLAY -->
   <div class="login-overlay" id="loginOverlay">
@@ -495,7 +573,7 @@
           <input type="password" id="loginPassword" required placeholder="••••••••">
         </div>
 
-        <button type="submit" class="btn btn-primary" id="btnLoginSubmit" style="width: 100%;">Ingresar al Panel</button>
+        <button type="submit" class="btn btn-primary" id="btnLoginSubmit">Ingresar al Panel</button>
       </form>
     </div>
   </div>
@@ -506,8 +584,8 @@
       <img class="logo" src="logo.png" alt="Aquí tái" onerror="this.style.display='none'">
 
       <div class="brand-wrap">
-        <div class="brand">Aquí tái</div>
-        <div class="sub" id="adminUserSub">Panel Administrador · Bolivia</div>
+        <div class="brand">Aquí tái <span style="background:var(--accent-color); color:#000; font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px;">ADMIN</span></div>
+        <div class="sub" id="adminUserSub">Cochabamba, Bolivia</div>
       </div>
 
       <div class="header-actions">
@@ -528,7 +606,7 @@
       </div>
 
       <div class="kpi-card">
-        <div class="kpi-title">Valor del Inventario</div>
+        <div class="kpi-title">Valor Inventario</div>
         <div id="kpiValue" class="kpi-value">Bs 0.00</div>
       </div>
 
@@ -543,108 +621,120 @@
       </div>
     </section>
 
-    <!-- FORMULARIO DE PRODUCTO -->
-    <section class="card-form">
-      <h2 id="formTitle">
-        <span>📦 Agregar Producto</span>
-        <button id="cancelEditBtn" class="btn btn-cancel" style="display:none;" onclick="resetForm()">Cancelar Edición</button>
-      </h2>
-
-      <form id="productForm" onsubmit="saveProduct(event)">
-        <input type="hidden" id="productId">
-
-        <div class="form-grid">
-          <div class="form-group full">
-            <label>Nombre del Producto *</label>
-            <input type="text" id="name" required placeholder="Ej. Caja Sorpresa Herramientas Amazon">
-          </div>
-
-          <div class="form-group">
-            <label>Categoría</label>
-            <input type="text" id="category" placeholder="Ej. Cajas Sorpresa">
-            <div class="chips-wrap">
-              <button type="button" class="chip-btn" onclick="setCategory('Cajas Sorpresa')">🎁 Cajas</button>
-              <button type="button" class="chip-btn" onclick="setCategory('Herramientas')">🛠️ Herramientas</button>
-              <button type="button" class="chip-btn" onclick="setCategory('Electrónica')">⚡ Electrónica</button>
-              <button type="button" class="chip-btn" onclick="setCategory('Hogar')">🏠 Hogar</button>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Precio (Bs) *</label>
-            <input type="number" id="price" step="0.01" min="0" required placeholder="0.00">
-          </div>
-
-          <div class="form-group">
-            <label>Stock (Unidades) *</label>
-            <input type="number" id="stock" min="0" required placeholder="1">
-            <div class="chips-wrap">
-              <button type="button" class="chip-btn" onclick="addStockShortcut(5)">+5</button>
-              <button type="button" class="chip-btn" onclick="addStockShortcut(10)">+10</button>
-              <button type="button" class="chip-btn" onclick="addStockShortcut(20)">+20</button>
-              <button type="button" class="chip-btn" onclick="addStockShortcut(50)">+50</button>
-            </div>
-          </div>
-
-          <div class="form-group full">
-            <label>Descripción</label>
-            <textarea id="description" placeholder="Detalles de la caja o contenido..."></textarea>
-          </div>
-
-          <div class="form-group full">
-            <label>Imágenes del Producto</label>
-            <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-              📷 <b>Toca aquí para seleccionar fotos desde tu celular / archivo</b>
-              <input type="file" id="fileInput" multiple accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
-            </div>
-            <div id="previewContainer" class="preview-container"></div>
-          </div>
-
-          <div class="form-group">
-            <label>Estado Inicial en Catálogo</label>
-            <select id="active">
-              <option value="true">🟢 Visible (Activo)</option>
-              <option value="false">🔴 Oculto (Inactivo)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="btn-actions">
-          <button type="submit" id="saveBtn" class="btn btn-primary">💾 Guardar Producto</button>
-        </div>
-      </form>
-    </section>
-
-    <!-- FILTROS Y TABLA -->
-    <div class="table-controls">
-      <input type="text" id="tableSearch" placeholder="🔎 Buscar en inventario..." style="flex:1; min-width:200px;" oninput="filterTable()">
-      <select id="tableFilter" onchange="filterTable()">
-        <option value="all">Todos los productos</option>
-        <option value="low">⚠️ Stock Bajo (≤ 3)</option>
-        <option value="out">❌ Agotados</option>
-        <option value="inactive">🔴 Ocultos / Inactivos</option>
-      </select>
+    <!-- NAVEGACIÓN EN PESTAÑAS (OPTIMIZADO MOBILE) -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-form')" id="tabBtnForm">➕ Cargar Producto</button>
+      <button class="tab-btn" onclick="switchTab('tab-list')" id="tabBtnList">📦 Inventario (<span id="countBadge">0</span>)</button>
     </div>
 
-    <section class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Imagen</th>
-            <th>Producto / Categoría</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Estado en Tienda</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="inventoryTable">
-          <tr>
-            <td colspan="6" style="text-align:center; padding:30px;">⏳ Cargando inventario...</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+    <!-- PESTAÑA 1: FORMULARIO DE CARGA DE PRODUCTOS -->
+    <div id="tab-form" class="tab-content active">
+      <section class="card-form">
+        <h2 id="formTitle">
+          <span>📦 Agregar Producto</span>
+          <button id="cancelEditBtn" type="button" class="btn-cancel" style="display:none;" onclick="resetForm()">Cancelar Edición</button>
+        </h2>
+
+        <form id="productForm" onsubmit="saveProduct(event)">
+          <input type="hidden" id="productId">
+
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Nombre del Producto *</label>
+              <input type="text" id="name" required placeholder="Ej. Caja Sorpresa Herramientas Amazon">
+            </div>
+
+            <div class="form-group">
+              <label>Categoría</label>
+              <input type="text" id="category" placeholder="Ej. Cajas Sorpresa">
+              <div class="chips-wrap">
+                <button type="button" class="chip-btn" onclick="setCategory('Cajas Sorpresa')">🎁 Cajas</button>
+                <button type="button" class="chip-btn" onclick="setCategory('Herramientas')">🛠️ Herramientas</button>
+                <button type="button" class="chip-btn" onclick="setCategory('Electrónica')">⚡ Electrónica</button>
+                <button type="button" class="chip-btn" onclick="setCategory('Hogar')">🏠 Hogar</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Precio (Bs) *</label>
+              <input type="number" id="price" step="0.01" min="0" required placeholder="0.00">
+            </div>
+
+            <div class="form-group">
+              <label>Stock (Unidades) *</label>
+              <input type="number" id="stock" min="0" required placeholder="1">
+              <div class="chips-wrap">
+                <button type="button" class="chip-btn" onclick="addStockShortcut(5)">+5</button>
+                <button type="button" class="chip-btn" onclick="addStockShortcut(10)">+10</button>
+                <button type="button" class="chip-btn" onclick="addStockShortcut(20)">+20</button>
+                <button type="button" class="chip-btn" onclick="addStockShortcut(50)">+50</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Estado en Catálogo</label>
+              <select id="active">
+                <option value="true">🟢 Visible (Activo)</option>
+                <option value="false">🔴 Oculto (Inactivo)</option>
+              </select>
+            </div>
+
+            <div class="form-group full">
+              <label>Imágenes del Producto</label>
+              <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                📷 <b>Toca aquí para seleccionar fotos desde tu celular</b>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Se optimizan automáticamente a WebP</div>
+                <input type="file" id="fileInput" multiple accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
+              </div>
+              <div id="previewContainer" class="preview-container"></div>
+            </div>
+
+            <div class="form-group full">
+              <label>Descripción / Detalles</label>
+              <textarea id="description" placeholder="Detalles de la caja o contenido..."></textarea>
+            </div>
+          </div>
+
+          <div class="btn-actions">
+            <button type="submit" id="saveBtn" class="btn btn-primary">💾 Guardar e Insertar al Catálogo</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <!-- PESTAÑA 2: LISTA DE INVENTARIO Y FILTROS -->
+    <div id="tab-list" class="tab-content">
+      <div class="table-controls">
+        <input type="text" id="tableSearch" placeholder="🔎 Buscar en inventario..." style="flex:1; min-width:180px;" oninput="filterTable()">
+        <select id="tableFilter" onchange="filterTable()">
+          <option value="all">Todos los productos</option>
+          <option value="low">⚠️ Stock Bajo (≤ 3)</option>
+          <option value="out">❌ Agotados</option>
+          <option value="inactive">🔴 Ocultos / Inactivos</option>
+        </select>
+      </div>
+
+      <section class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Producto / Categoría</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTable">
+            <tr>
+              <td colspan="6" style="text-align:center; padding:30px;">⏳ Cargando inventario...</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
   </main>
 
   <!-- MODAL VISTA PREVIA DETALLADA -->
@@ -682,7 +772,7 @@
         <b id="modalStatus">-</b>
       </div>
 
-      <div style="margin-top:14px; font-weight:bold; font-size:13px;">📝 Descripción / Características:</div>
+      <div style="margin-top:14px; font-weight:bold; font-size:12px; color:var(--text-muted); text-transform:uppercase;">📝 Descripción:</div>
       <div id="modalDesc" class="detail-desc"></div>
     </div>
   </div>
@@ -731,7 +821,26 @@
     const lightboxImg = document.getElementById("lightboxImg");
     const lightboxCounter = document.getElementById("lightboxCounter");
 
-    /* INTERCEPCIÓN DEL BOTÓN ATRÁS DEL CELULAR (GESTO) */
+    /* NOTIFICACIONES TOAST */
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    /* CAMBIO DE PESTAÑAS */
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      if(tabId === 'tab-form') document.getElementById('tabBtnForm').classList.add('active');
+      if(tabId === 'tab-list') document.getElementById('tabBtnList').classList.add('active');
+    }
+
+    /* BOTÓN ATRÁS EN CELULARES */
     window.addEventListener('popstate', (e) => {
       const viewModalEl = document.getElementById('viewModal');
       const lightboxModalEl = document.getElementById('lightboxModal');
@@ -767,7 +876,7 @@
         loginOverlay.style.display = "flex";
         mainWrap.style.display = "none";
         logoutBtn.style.display = "none";
-        adminUserSub.textContent = "Panel Administrador · Bolivia";
+        adminUserSub.textContent = "Cochabamba, Bolivia";
       }
     }
 
@@ -784,7 +893,7 @@
       const { data, error } = await client.auth.signInWithPassword({ email, password });
 
       if (error) {
-        alert("❌ Error de acceso: " + error.message);
+        showToast("❌ Error de acceso: " + error.message);
         btn.disabled = false;
         btn.textContent = "Ingresar al Panel";
       } else {
@@ -827,6 +936,7 @@
         }
 
         products = data || [];
+        document.getElementById("countBadge").textContent = products.length;
         updateMetrics();
         filterTable();
       } catch (e) {
@@ -883,8 +993,8 @@
               <img class="prod-img" src="${escapeHTML(mainImg)}" alt="Foto" loading="lazy" decoding="async" onclick="viewDetails(${p.id})">
             </td>
             <td>
-              <b class="clickable-name" onclick="viewDetails(${p.id})">${escapeHTML(p.name)}</b><br>
-              <small style="color:var(--text-muted);">${escapeHTML(p.category || 'Sin categoría')}</small>
+              <span class="clickable-name" onclick="viewDetails(${p.id})">${escapeHTML(p.name)}</span><br>
+              <small style="color:var(--text-muted);">${escapeHTML(p.category || 'General')}</small>
             </td>
             <td>
               <b>Bs ${Number(p.price || 0).toFixed(2)}</b>
@@ -892,7 +1002,7 @@
             <td>
               <div class="qty-table">
                 <button class="btn-qty-mini" onclick="quickStockChange(${p.id}, -1)">-</button>
-                <b>${stock}</b>
+                <b style="padding:0 4px;">${stock}</b>
                 <button class="btn-qty-mini" onclick="quickStockChange(${p.id}, 1)">+</button>
               </div>
             </td>
@@ -925,7 +1035,7 @@
       document.getElementById("modalCat").textContent = p.category || "General";
       document.getElementById("modalPrice").textContent = "Bs " + Number(p.price || 0).toFixed(2);
       document.getElementById("modalStock").textContent = (p.stock || 0) + " unidades";
-      document.getElementById("modalStatus").textContent = p.active ? "🟢 Visible en Tienda" : "🔴 Oculto";
+      document.getElementById("modalStatus").textContent = p.active ? "🟢 Visible en Catálogo" : "🔴 Oculto";
       document.getElementById("modalDesc").textContent = p.description || "Sin descripción registrada.";
 
       const gallery = document.getElementById("modalGallery");
@@ -1054,7 +1164,7 @@
 
       const saveBtn = document.getElementById("saveBtn");
       saveBtn.disabled = true;
-      saveBtn.textContent = "⏳ Comprimiendo y subiendo...";
+      saveBtn.textContent = "⏳ Comprimiendo y subiendo fotos...";
 
       for (const file of files) {
         try {
@@ -1070,7 +1180,7 @@
             });
 
           if (error) {
-            alert(`❌ Error subiendo ${file.name}: ` + error.message);
+            showToast(`❌ Error subiendo ${file.name}`);
             continue;
           }
 
@@ -1082,21 +1192,22 @@
             currentImages.push(publicData.publicUrl);
           }
         } catch (err) {
-          alert(`❌ Error al procesar ${file.name}`);
+          showToast(`❌ Error al procesar ${file.name}`);
         }
       }
 
       saveBtn.disabled = false;
-      saveBtn.textContent = "💾 Guardar Producto";
+      saveBtn.textContent = "💾 Guardar e Insertar al Catálogo";
       document.getElementById("fileInput").value = "";
       renderImagePreviews();
+      showToast("📷 Fotos subidas correctamente");
     }
 
     function renderImagePreviews() {
       previewContainer.innerHTML = currentImages.map((img, idx) => `
-        <div style="position:relative;">
+        <div class="preview-thumb-wrap">
           <img src="${img}" class="preview-thumb">
-          <button type="button" onclick="removeImage(${idx})" style="position:absolute; top:-6px; right:-6px; background:#ef4444; color:#fff; border:0; border-radius:50%; width:20px; height:20px; font-size:10px; cursor:pointer;">✕</button>
+          <button type="button" class="preview-remove" onclick="removeImage(${idx})">✕</button>
         </div>
       `).join("");
     }
@@ -1119,7 +1230,7 @@
       const saveBtn = document.getElementById("saveBtn");
 
       saveBtn.disabled = true;
-      saveBtn.textContent = "⏳ Guardando...";
+      saveBtn.textContent = "⏳ Guardando en catálogo...";
 
       const id = productId.value;
       const payload = {
@@ -1143,13 +1254,15 @@
       }
 
       saveBtn.disabled = false;
-      saveBtn.textContent = "💾 Guardar Producto";
+      saveBtn.textContent = "💾 Guardar e Insertar al Catálogo";
 
       if (error) {
-        alert("❌ Error al guardar el producto: " + error.message);
+        showToast("❌ Error al guardar producto: " + error.message);
       } else {
+        showToast("✅ ¡Producto guardado en el catálogo!");
         resetForm();
         loadInventory();
+        switchTab('tab-list');
       }
     }
 
@@ -1170,7 +1283,7 @@
 
       formTitle.querySelector("span").textContent = "✏️ Editar Producto";
       cancelEditBtn.style.display = "inline-block";
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      switchTab('tab-form');
     }
 
     function resetForm() {
@@ -1195,7 +1308,7 @@
         updateMetrics();
         filterTable();
       } else {
-        alert("❌ No se pudo actualizar el stock: " + error.message);
+        showToast("❌ No se pudo actualizar el stock");
       }
     }
 
@@ -1208,8 +1321,9 @@
         if (p) p.active = newStatus;
         updateMetrics();
         filterTable();
+        showToast(newStatus ? "🟢 Producto visible" : "🔴 Producto oculto");
       } else {
-        alert("❌ No se pudo actualizar el estado: " + error.message);
+        showToast("❌ No se pudo actualizar el estado");
       }
     }
 
@@ -1220,9 +1334,10 @@
       const { error } = await client.from("products").delete().eq("id", id);
 
       if (!error) {
+        showToast("🗑️ Producto eliminado");
         loadInventory();
       } else {
-        alert("❌ No se pudo eliminar el producto: " + error.message);
+        showToast("❌ No se pudo eliminar el producto");
       }
     }
 
