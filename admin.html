@@ -1,1588 +1,1246 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
-<meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
-
-<title>Aquí tái | Panel Admin</title>
-
-<!-- =====================================================
-     SUPABASE
-===================================================== -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-<style>
-
-/* =====================================================
-   VARIABLES Y MODO OSCURO
-===================================================== */
-
-:root {
-  --bg-main: #f4f6f8;
-  --bg-card: #ffffff;
-  --text-main: #1f2937;
-  --text-muted: #6b7280;
-  --border-color: #e5e7eb;
-  --accent-color: #ff9d00;
-  --btn-bg: #111827;
-  --btn-text: #ffffff;
-  --success-color: #10b981;
-  --danger-color: #ef4444;
-  --warning-color: #f59e0b;
-}
-
-body.dark-mode {
-  --bg-main: #111827;
-  --bg-card: #1f2937;
-  --text-main: #f9fafb;
-  --text-muted: #9ca3af;
-  --border-color: #374151;
-  --btn-bg: #374151;
-  --btn-text: #ffffff;
-}
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg-main);
-  color:var(--text-main);
-  transition: background .3s, color .3s;
-}
-
-button,
-input,
-select,
-textarea{
-  font-family:inherit;
-}
-
-/* =====================================================
-   MODAL DE LOGIN SUPABASE AUTH
-===================================================== */
-
-.login-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  padding: 16px;
-}
-
-.login-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  padding: 30px;
-  border-radius: 20px;
-  width: min(100%, 380px);
-  box-shadow: 0 10px 30px #0002;
-}
-
-.login-title { 
-  font-size: 22px; 
-  font-weight: 800; 
-  margin-bottom: 4px; 
-  text-align: center; 
-}
-
-.login-sub { 
-  font-size: 13px; 
-  color: var(--text-muted); 
-  margin-bottom: 20px; 
-  text-align: center; 
-}
-
-
-/* =====================================================
-   HEADER
-===================================================== */
-
-header{
-  background:var(--bg-card);
-  border-bottom:1px solid var(--border-color);
-  position:sticky;
-  top:0;
-  z-index:100;
-}
-
-.top{
-  max-width:1200px;
-  margin:auto;
-  padding:12px 16px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.logo{
-  height:50px;
-  width:50px;
-  border-radius:50%;
-  object-fit:cover;
-  border:1px solid var(--border-color);
-}
-
-.brand-wrap{
-  flex:1;
-}
-
-.brand{
-  font-size:22px;
-  font-weight:800;
-}
-
-.sub{
-  font-size:12px;
-  color:var(--text-muted);
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.theme-btn{
-  background:none;
-  border:1px solid var(--border-color);
-  color:var(--text-main);
-  padding:8px 12px;
-  border-radius:20px;
-  cursor:pointer;
-  font-size:16px;
-}
-
-.logout-btn {
-  background: transparent;
-  border: 1px solid var(--danger-color);
-  color: var(--danger-color);
-  padding: 8px 12px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-}
-
-
-/* =====================================================
-   CONTENEDOR PRINCIPAL
-===================================================== */
-
-.wrap{
-  max-width:1200px;
-  margin:auto;
-  padding:20px 16px 80px;
-  display: none; /* Oculto hasta verificar sesión */
-}
-
-
-/* =====================================================
-   MÉTRICAS / KPIS
-===================================================== */
-
-.kpi-grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap:14px;
-  margin-bottom:20px;
-}
-
-.kpi-card{
-  background:var(--bg-card);
-  padding:16px;
-  border-radius:16px;
-  border:1px solid var(--border-color);
-  box-shadow:0 2px 6px #00000008;
-}
-
-.kpi-title{
-  font-size:12px;
-  text-transform:uppercase;
-  font-weight:700;
-  color:var(--text-muted);
-  margin-bottom:6px;
-}
-
-.kpi-value{
-  font-size:24px;
-  font-weight:800;
-}
-
-
-/* =====================================================
-   FORMULARIO DE PRODUCTO
-===================================================== */
-
-.card-form{
-  background:var(--bg-card);
-  border-radius:18px;
-  padding:20px;
-  border:1px solid var(--border-color);
-  margin-bottom:24px;
-  box-shadow:0 2px 10px #0000000a;
-}
-
-.card-form h2{
-  margin:0 0 16px;
-  font-size:20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.form-grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap:14px;
-}
-
-.form-group{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.form-group.full{
-  grid-column: 1 / -1;
-}
-
-label{
-  font-size:13px;
-  font-weight:700;
-}
-
-input[type=text],
-input[type=number],
-input[type=email],
-input[type=password],
-select,
-textarea{
-  padding:12px;
-  border:1px solid var(--border-color);
-  background:var(--bg-main);
-  color:var(--text-main);
-  border-radius:10px;
-  font-size:14px;
-  outline:none;
-}
-
-input:focus, select:focus, textarea:focus{
-  border-color:var(--accent-color);
-}
-
-textarea{
-  min-height:80px;
-  resize:vertical;
-}
-
-.chips-wrap{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-  margin-top:4px;
-}
-
-.chip-btn{
-  background:var(--bg-main);
-  border:1px solid var(--border-color);
-  color:var(--text-main);
-  padding:4px 10px;
-  border-radius:8px;
-  font-size:12px;
-  cursor:pointer;
-  font-weight:600;
-}
-
-.chip-btn:hover{
-  border-color:var(--accent-color);
-}
-
-.upload-box {
-  border: 2px dashed var(--border-color);
-  border-radius: 12px;
-  padding: 16px;
-  text-align: center;
-  background: var(--bg-main);
-  cursor: pointer;
-  transition: border-color .2s;
-}
-
-.upload-box:hover {
-  border-color: var(--accent-color);
-}
-
-.preview-container {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.preview-thumb {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  object-fit: contain;
-  background: #0001;
-  border: 1px solid var(--border-color);
-}
-
-.btn-actions{
-  display:flex;
-  gap:10px;
-  margin-top:16px;
-}
-
-.btn{
-  border:0;
-  border-radius:10px;
-  padding:12px 20px;
-  background:var(--btn-bg);
-  color:var(--btn-text);
-  font-weight:700;
-  font-size:14px;
-  cursor:pointer;
-}
-
-.btn-primary{
-  background:var(--accent-color);
-  color:#111;
-}
-
-.btn-cancel{
-  background:var(--bg-main);
-  border:1px solid var(--border-color);
-  color:var(--text-main);
-}
-
-
-/* =====================================================
-   TABLA Y FILTROS DE PRODUCTOS
-===================================================== */
-
-.table-controls{
-  display:flex;
-  gap:10px;
-  margin-bottom:16px;
-  flex-wrap:wrap;
-}
-
-.table-wrap{
-  background:var(--bg-card);
-  border-radius:18px;
-  border:1px solid var(--border-color);
-  overflow:hidden;
-  box-shadow:0 2px 10px #0000000a;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  text-align:left;
-  font-size:14px;
-}
-
-th, td{
-  padding:14px 16px;
-  border-bottom:1px solid var(--border-color);
-}
-
-th{
-  background:var(--bg-main);
-  font-size:12px;
-  text-transform:uppercase;
-  color:var(--text-muted);
-}
-
-.prod-img{
-  width:44px;
-  height:44px;
-  border-radius:8px;
-  object-fit:contain;
-  background:var(--bg-main);
-  cursor:pointer;
-}
-
-.clickable-name{
-  cursor:pointer;
-}
-
-.clickable-name:hover{
-  color:var(--accent-color);
-  text-decoration:underline;
-}
-
-/* SELECTOR DE ESTADO DENTRO DE TABLA */
-.status-select {
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  border: 1px solid var(--border-color);
-}
-
-.status-select.active {
-  background: #d1fae5;
-  color: #065f46;
-  border-color: #34d399;
-}
-
-.status-select.inactive {
-  background: #fee2e2;
-  color: #991b1b;
-  border-color: #f87171;
-}
-
-.qty-table{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.btn-qty-mini{
-  width:26px;
-  height:26px;
-  border-radius:6px;
-  border:1px solid var(--border-color);
-  background:var(--bg-main);
-  color:var(--text-main);
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.action-btns{
-  display:flex;
-  gap:6px;
-}
-
-.btn-icon{
-  border:1px solid var(--border-color);
-  background:var(--bg-main);
-  color:var(--text-main);
-  border-radius:8px;
-  padding:6px 10px;
-  cursor:pointer;
-  font-size:13px;
-}
-
-
-/* =====================================================
-   MODAL DE VISTA PREVIA DETALLADA
-===================================================== */
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:#0008;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:300;
-  padding:16px;
-}
-
-.modal.open{
-  display:flex;
-}
-
-.modal-content{
-  background:var(--bg-card);
-  border-radius:20px;
-  width:min(100%, 520px);
-  max-height:90vh;
-  overflow:auto;
-  padding:20px;
-  box-shadow:0 10px 30px #0005;
-}
-
-.modal-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid var(--border-color);
-  padding-bottom:12px;
-  margin-bottom:16px;
-}
-
-.modal-close{
-  border:0;
-  background:var(--bg-main);
-  color:var(--text-main);
-  border-radius:50%;
-  width:32px;
-  height:32px;
-  cursor:pointer;
-  font-size:16px;
-}
-
-.modal-gallery{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  margin-bottom:16px;
-  background: #0001;
-  padding: 8px;
-  border-radius: 12px;
-}
-
-.modal-img{
-  width:110px;
-  height:110px;
-  border-radius:10px;
-  object-fit:contain;
-  background: #000;
-  border:1px solid var(--border-color);
-  flex-shrink:0;
-  cursor:pointer;
-  transition: transform .2s;
-}
-
-.modal-img:hover {
-  transform: scale(1.03);
-}
-
-.detail-row{
-  display:flex;
-  justify-content:space-between;
-  padding:8px 0;
-  border-bottom:1px solid var(--border-color);
-  font-size:14px;
-}
-
-.detail-desc{
-  margin-top:12px;
-  line-height:1.5;
-  color:var(--text-muted);
-  font-size:14px;
-}
-
-
-/* =====================================================
-   LIGHTBOX / VISOR DE FOTOS COMPLETO
-===================================================== */
-
-.lightbox-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.95);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 500;
-  padding: 16px;
-}
-
-.lightbox-modal.open {
-  display: flex;
-}
-
-.lightbox-img {
-  max-width: 100%;
-  max-height: 80vh;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.8);
-}
-
-.lightbox-close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  border: 0;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 510;
-}
-
-.lightbox-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  border: 0;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 510;
-}
-
-.lightbox-btn.prev { left: 16px; }
-.lightbox-btn.next { right: 16px; }
-
-.lightbox-counter {
-  position: absolute;
-  bottom: 20px;
-  color: #fff;
-  font-size: 14px;
-  background: rgba(0,0,0,0.6);
-  padding: 6px 14px;
-  border-radius: 20px;
-}
-
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-@media(max-width:768px){
-  .table-wrap{
-    overflow-x:auto;
-  }
-}
-
-</style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aquí tái | Panel Admin</title>
+
+  <!-- SUPABASE SDK -->
+  <link rel="preconnect" href="https://ztsthkoejosgwkhmzfbd.supabase.co" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+
+  <style>
+    /* VARIABLES Y MODO OSCURO */
+    :root {
+      --bg-main: #f4f6f8;
+      --bg-card: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+      --accent-color: #ff9d00;
+      --btn-bg: #111827;
+      --btn-text: #ffffff;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+    }
+
+    body.dark-mode {
+      --bg-main: #111827;
+      --bg-card: #1f2937;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --border-color: #374151;
+      --btn-bg: #374151;
+      --btn-text: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    button, input, select, textarea { font-family: inherit; }
+
+    /* MODAL DE LOGIN AUTH */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 16px;
+    }
+
+    .login-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 30px;
+      border-radius: 20px;
+      width: min(100%, 380px);
+      box-shadow: 0 10px 30px #0002;
+    }
+
+    .login-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; text-align: center; }
+    .login-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center; }
+
+    /* HEADER */
+    header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .top {
+      max-width: 1200px;
+      margin: auto;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      height: 45px;
+      width: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--border-color);
+    }
+
+    .brand-wrap { flex: 1; }
+    .brand { font-size: 20px; font-weight: 800; }
+    .sub { font-size: 12px; color: var(--text-muted); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-btn {
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: 1px solid var(--danger-color);
+      color: var(--danger-color);
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .wrap {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px 16px 80px;
+      display: none;
+    }
+
+    /* MÉTRICAS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 6px #00000008;
+    }
+
+    .kpi-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value { font-size: 24px; font-weight: 800; }
+
+    /* FORMULARIO DE PRODUCTO */
+    .card-form {
+      background: var(--bg-card);
+      border-radius: 18px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px #0000000a;
+    }
+
+    .card-form h2 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label { font-size: 13px; font-weight: 700; }
+
+    input[type=text], input[type=number], input[type=email], input[type=password], select, textarea {
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-main);
+      color: var(--text-main);
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus { border-color: var(--accent-color); }
+    textarea { min-height: 80px; resize: vertical; }
+
+    .chips-wrap { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+
+    .chip-btn {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .chip-btn:hover { border-color: var(--accent-color); }
+
+    .upload-box {
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      background: var(--bg-main);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .upload-box:hover { border-color: var(--accent-color); }
+
+    .preview-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+
+    .preview-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: contain;
+      background: #0001;
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-actions { display: flex; gap: 10px; margin-top: 16px; }
+
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 20px;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-primary { background: var(--accent-color); color: #111; }
+    .btn-cancel { background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* TABLA Y FILTROS */
+    .table-controls { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+
+    .table-wrap {
+      background: var(--bg-card);
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      box-shadow: 0 2px 10px #0000000a;
+    }
+
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+    th, td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); }
+    th { background: var(--bg-main); font-size: 12px; text-transform: uppercase; color: var(--text-muted); }
+
+    .prod-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: contain;
+      background: var(--bg-main);
+      cursor: pointer;
+    }
+
+    .clickable-name { cursor: pointer; }
+    .clickable-name:hover { color: var(--accent-color); text-decoration: underline; }
+
+    .status-select {
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+    }
+
+    .status-select.active { background: #d1fae5; color: #065f46; border-color: #34d399; }
+    .status-select.inactive { background: #fee2e2; color: #991b1b; border-color: #f87171; }
+
+    .qty-table { display: flex; align-items: center; gap: 6px; }
+
+    .btn-qty-mini {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-main);
+      color: var(--text-main);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .action-btns { display: flex; gap: 6px; }
+
+    .btn-icon {
+      border: 1px solid var(--border-color);
+      background: var(--bg-main);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* MODAL DE VISTA PREVIA */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: #0008;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: 16px;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-content {
+      background: var(--bg-card);
+      border-radius: 20px;
+      width: min(100%, 520px);
+      max-height: 90vh;
+      overflow: auto;
+      padding: 20px;
+      box-shadow: 0 10px 30px #0005;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-close {
+      border: 0;
+      background: var(--bg-main);
+      color: var(--text-main);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .modal-gallery {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+      background: #0001;
+      padding: 8px;
+      border-radius: 12px;
+    }
+
+    .modal-img {
+      width: 110px;
+      height: 110px;
+      border-radius: 10px;
+      object-fit: contain;
+      background: #000;
+      border: 1px solid var(--border-color);
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .modal-img:hover { transform: scale(1.03); }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+    }
+
+    .detail-desc { margin-top: 12px; line-height: 1.5; color: var(--text-muted); font-size: 14px; white-space: pre-line; }
+
+    /* LIGHTBOX */
+    .lightbox-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      padding: 16px;
+    }
+
+    .lightbox-modal.open { display: flex; }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 80vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 0;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 510;
+    }
+
+    .lightbox-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 0;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 510;
+    }
+
+    .lightbox-btn.prev { left: 16px; }
+    .lightbox-btn.next { right: 16px; }
+
+    .lightbox-counter {
+      position: absolute;
+      bottom: 20px;
+      color: #fff;
+      font-size: 14px;
+      background: rgba(0,0,0,0.6);
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    @media(max-width:768px) {
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
 </head>
-
-
 <body>
 
-<!-- =====================================================
-     LOGIN OVERLAY (SUPABASE AUTH)
-===================================================== -->
+  <!-- LOGIN OVERLAY -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+      <div class="login-title">🔐 Panel Admin</div>
+      <div class="login-sub">Ingresa con tus credenciales de Supabase</div>
 
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-box">
-    <div class="login-title">🔐 Panel Admin</div>
-    <div class="login-sub">Ingresa con tus credenciales de Supabase</div>
-
-    <form onsubmit="handleLogin(event)">
-      <div class="form-group" style="margin-bottom: 12px;">
-        <label>Correo Electrónico</label>
-        <input type="email" id="loginEmail" required placeholder="tu-correo@ejemplo.com" autofocus>
-      </div>
-
-      <div class="form-group" style="margin-bottom: 20px;">
-        <label>Contraseña</label>
-        <input type="password" id="loginPassword" required placeholder="••••••••">
-      </div>
-
-      <button type="submit" class="btn btn-primary" id="btnLoginSubmit" style="width: 100%;">Ingresar al Panel</button>
-    </form>
-  </div>
-</div>
-
-
-<!-- =====================================================
-     HEADER
-===================================================== -->
-
-<header>
-
-  <div class="top">
-
-    <img
-      class="logo"
-      src="logo.png"
-      alt="Aquí tái"
-      onerror="this.style.display='none'"
-    >
-
-    <div class="brand-wrap">
-      <div class="brand">Aquí tái</div>
-      <div class="sub" id="adminUserSub">Panel Administrador · Bolivia</div>
-    </div>
-
-    <div class="header-actions">
-      <button
-        id="themeBtn"
-        class="theme-btn"
-        onclick="toggleTheme()"
-        title="Cambiar tema"
-      >
-        🌙
-      </button>
-
-      <button
-        id="logoutBtn"
-        class="logout-btn"
-        onclick="logout()"
-        style="display:none;"
-      >
-        🔒 Salir
-      </button>
-    </div>
-
-  </div>
-
-</header>
-
-
-<!-- =====================================================
-     CONTENIDO
-===================================================== -->
-
-<main class="wrap" id="mainWrap">
-
-
-  <!-- MÉTRICAS DE INVENTARIO -->
-
-  <section class="kpi-grid">
-
-    <div class="kpi-card">
-      <div class="kpi-title">Productos Activos</div>
-      <div id="kpiTotal" class="kpi-value">0</div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-title">Valor del Inventario</div>
-      <div id="kpiValue" class="kpi-value">Bs 0.00</div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-title">Stock Bajo (≤ 3)</div>
-      <div id="kpiLow" class="kpi-value" style="color:var(--warning-color)">0</div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-title">Agotados</div>
-      <div id="kpiOut" class="kpi-value" style="color:var(--danger-color)">0</div>
-    </div>
-
-  </section>
-
-
-  <!-- FORMULARIO DE PRODUCTO -->
-
-  <section class="card-form">
-
-    <h2 id="formTitle">
-      <span>📦 Agregar Producto</span>
-      <button id="cancelEditBtn" class="btn btn-cancel" style="display:none;" onclick="resetForm()">Cancelar Edición</button>
-    </h2>
-
-    <form id="productForm" onsubmit="saveProduct(event)">
-
-      <input type="hidden" id="productId">
-
-      <div class="form-grid">
-
-        <!-- NOMBRE -->
-        <div class="form-group full">
-          <label>Nombre del Producto *</label>
-          <input type="text" id="name" required placeholder="Ej. Caja Sorpresa Herramientas Amazon">
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Correo Electrónico</label>
+          <input type="email" id="loginEmail" required placeholder="tu-correo@ejemplo.com" autofocus>
         </div>
 
-        <!-- CATEGORÍA CON ATAJOS -->
-        <div class="form-group">
-          <label>Categoría</label>
-          <input type="text" id="category" placeholder="Ej. Cajas Sorpresa">
-          <div class="chips-wrap">
-            <button type="button" class="chip-btn" onclick="setCategory('Cajas Sorpresa')">🎁 Cajas</button>
-            <button type="button" class="chip-btn" onclick="setCategory('Herramientas')">🛠️ Herramientas</button>
-            <button type="button" class="chip-btn" onclick="setCategory('Electrónica')">⚡ Electrónica</button>
-            <button type="button" class="chip-btn" onclick="setCategory('Hogar')">🏠 Hogar</button>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label>Contraseña</label>
+          <input type="password" id="loginPassword" required placeholder="••••••••">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btnLoginSubmit" style="width: 100%;">Ingresar al Panel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="top">
+      <img class="logo" src="logo.png" alt="Aquí tái" onerror="this.style.display='none'">
+
+      <div class="brand-wrap">
+        <div class="brand">Aquí tái</div>
+        <div class="sub" id="adminUserSub">Panel Administrador · Bolivia</div>
+      </div>
+
+      <div class="header-actions">
+        <button id="themeBtn" class="theme-btn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+        <button id="logoutBtn" class="logout-btn" onclick="logout()" style="display:none;">🔒 Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO -->
+  <main class="wrap" id="mainWrap">
+
+    <!-- MÉTRICAS -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-title">Productos Activos</div>
+        <div id="kpiTotal" class="kpi-value">0</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Valor del Inventario</div>
+        <div id="kpiValue" class="kpi-value">Bs 0.00</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Stock Bajo (≤ 3)</div>
+        <div id="kpiLow" class="kpi-value" style="color:var(--warning-color)">0</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Agotados</div>
+        <div id="kpiOut" class="kpi-value" style="color:var(--danger-color)">0</div>
+      </div>
+    </section>
+
+    <!-- FORMULARIO DE PRODUCTO -->
+    <section class="card-form">
+      <h2 id="formTitle">
+        <span>📦 Agregar Producto</span>
+        <button id="cancelEditBtn" class="btn btn-cancel" style="display:none;" onclick="resetForm()">Cancelar Edición</button>
+      </h2>
+
+      <form id="productForm" onsubmit="saveProduct(event)">
+        <input type="hidden" id="productId">
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Nombre del Producto *</label>
+            <input type="text" id="name" required placeholder="Ej. Caja Sorpresa Herramientas Amazon">
+          </div>
+
+          <div class="form-group">
+            <label>Categoría</label>
+            <input type="text" id="category" placeholder="Ej. Cajas Sorpresa">
+            <div class="chips-wrap">
+              <button type="button" class="chip-btn" onclick="setCategory('Cajas Sorpresa')">🎁 Cajas</button>
+              <button type="button" class="chip-btn" onclick="setCategory('Herramientas')">🛠️ Herramientas</button>
+              <button type="button" class="chip-btn" onclick="setCategory('Electrónica')">⚡ Electrónica</button>
+              <button type="button" class="chip-btn" onclick="setCategory('Hogar')">🏠 Hogar</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Precio (Bs) *</label>
+            <input type="number" id="price" step="0.01" min="0" required placeholder="0.00">
+          </div>
+
+          <div class="form-group">
+            <label>Stock (Unidades) *</label>
+            <input type="number" id="stock" min="0" required placeholder="1">
+            <div class="chips-wrap">
+              <button type="button" class="chip-btn" onclick="addStockShortcut(5)">+5</button>
+              <button type="button" class="chip-btn" onclick="addStockShortcut(10)">+10</button>
+              <button type="button" class="chip-btn" onclick="addStockShortcut(20)">+20</button>
+              <button type="button" class="chip-btn" onclick="addStockShortcut(50)">+50</button>
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label>Descripción</label>
+            <textarea id="description" placeholder="Detalles de la caja o contenido..."></textarea>
+          </div>
+
+          <div class="form-group full">
+            <label>Imágenes del Producto</label>
+            <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+              📷 <b>Toca aquí para seleccionar fotos desde tu celular / archivo</b>
+              <input type="file" id="fileInput" multiple accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
+            </div>
+            <div id="previewContainer" class="preview-container"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Estado Inicial en Catálogo</label>
+            <select id="active">
+              <option value="true">🟢 Visible (Activo)</option>
+              <option value="false">🔴 Oculto (Inactivo)</option>
+            </select>
           </div>
         </div>
 
-        <!-- PRECIO -->
-        <div class="form-group">
-          <label>Precio (Bs) *</label>
-          <input type="number" id="price" step="0.01" min="0" required placeholder="0.00">
+        <div class="btn-actions">
+          <button type="submit" id="saveBtn" class="btn btn-primary">💾 Guardar Producto</button>
         </div>
+      </form>
+    </section>
 
-        <!-- STOCK CON ATAJOS -->
-        <div class="form-group">
-          <label>Stock (Unidades) *</label>
-          <input type="number" id="stock" min="0" required placeholder="1">
-          <div class="chips-wrap">
-            <button type="button" class="chip-btn" onclick="addStockShortcut(5)">+5</button>
-            <button type="button" class="chip-btn" onclick="addStockShortcut(10)">+10</button>
-            <button type="button" class="chip-btn" onclick="addStockShortcut(20)">+20</button>
-            <button type="button" class="chip-btn" onclick="addStockShortcut(50)">+50</button>
-          </div>
-        </div>
+    <!-- FILTROS Y TABLA -->
+    <div class="table-controls">
+      <input type="text" id="tableSearch" placeholder="🔎 Buscar en inventario..." style="flex:1; min-width:200px;" oninput="filterTable()">
+      <select id="tableFilter" onchange="filterTable()">
+        <option value="all">Todos los productos</option>
+        <option value="low">⚠️ Stock Bajo (≤ 3)</option>
+        <option value="out">❌ Agotados</option>
+        <option value="inactive">🔴 Ocultos / Inactivos</option>
+      </select>
+    </div>
 
-        <!-- DESCRIPCIÓN -->
-        <div class="form-group full">
-          <label>Descripción</label>
-          <textarea id="description" placeholder="Detalles de la caja o contenido..."></textarea>
-        </div>
+    <section class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Producto / Categoría</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Estado en Tienda</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="inventoryTable">
+          <tr>
+            <td colspan="6" style="text-align:center; padding:30px;">⏳ Cargando inventario...</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
 
-        <!-- BOTÓN DE SUBIDA DESDE CELULAR -->
-        <div class="form-group full">
-          <label>Imágenes del Producto</label>
-          <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-            📷 <b>Toca aquí para seleccionar fotos desde tu celular / archivo</b>
-            <input type="file" id="fileInput" multiple accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
-          </div>
-          <div id="previewContainer" class="preview-container"></div>
-        </div>
-
-        <!-- ESTADO ACTIVO -->
-        <div class="form-group">
-          <label>Estado Inicial en Catálogo</label>
-          <select id="active">
-            <option value="true">🟢 Visible (Activo)</option>
-            <option value="false">🔴 Oculto (Inactivo)</option>
-          </select>
-        </div>
-
+  <!-- MODAL VISTA PREVIA DETALLADA -->
+  <div id="viewModal" class="modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle" style="margin:0;">Ficha del Producto</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
 
-      <div class="btn-actions">
-        <button type="submit" id="saveBtn" class="btn btn-primary">💾 Guardar Producto</button>
+      <div id="modalGallery" class="modal-gallery"></div>
+
+      <div class="detail-row">
+        <span>🆔 ID Producto:</span>
+        <b id="modalId">-</b>
       </div>
 
-    </form>
+      <div class="detail-row">
+        <span>🏷️ Categoría:</span>
+        <b id="modalCat">-</b>
+      </div>
 
-  </section>
+      <div class="detail-row">
+        <span>💵 Precio:</span>
+        <b id="modalPrice">-</b>
+      </div>
 
+      <div class="detail-row">
+        <span>📦 Stock disponible:</span>
+        <b id="modalStock">-</b>
+      </div>
 
-  <!-- CONTROLES Y FILTROS DE TABLA -->
+      <div class="detail-row">
+        <span>🌐 Estado en catálogo:</span>
+        <b id="modalStatus">-</b>
+      </div>
 
-  <div class="table-controls">
-
-    <input
-      type="text"
-      id="tableSearch"
-      placeholder="🔎 Buscar en inventario..."
-      style="flex:1; min-width:200px;"
-      oninput="filterTable()"
-    >
-
-    <select id="tableFilter" onchange="filterTable()">
-      <option value="all">Todos los productos</option>
-      <option value="low">⚠️ Stock Bajo (≤ 3)</option>
-      <option value="out">❌ Agotados</option>
-      <option value="inactive">🔴 Ocultos / Inactivos</option>
-    </select>
-
+      <div style="margin-top:14px; font-weight:bold; font-size:13px;">📝 Descripción / Características:</div>
+      <div id="modalDesc" class="detail-desc"></div>
+    </div>
   </div>
 
-
-  <!-- TABLA DE INVENTARIO -->
-
-  <section class="table-wrap">
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>Imagen</th>
-          <th>Producto / Categoría</th>
-          <th>Precio</th>
-          <th>Stock</th>
-          <th>Estado en Tienda</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-
-      <tbody id="inventoryTable">
-        <tr>
-          <td colspan="6" style="text-align:center; padding:30px;">⏳ Cargando inventario...</td>
-        </tr>
-      </tbody>
-
-    </table>
-
-  </section>
-
-
-</main>
-
-
-<!-- =====================================================
-     MODAL DE VISTA PREVIA COMPLETA
-===================================================== -->
-
-<div id="viewModal" class="modal" onclick="if(event.target===this)closeModal()">
-
-  <div class="modal-content">
-
-    <div class="modal-header">
-      <h3 id="modalTitle" style="margin:0;">Ficha del Producto</h3>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-
-    <div id="modalGallery" class="modal-gallery"></div>
-
-    <div class="detail-row">
-      <span>🆔 ID Producto:</span>
-      <b id="modalId">-</b>
-    </div>
-
-    <div class="detail-row">
-      <span>🏷️ Categoría:</span>
-      <b id="modalCat">-</b>
-    </div>
-
-    <div class="detail-row">
-      <span>💵 Precio:</span>
-      <b id="modalPrice">-</b>
-    </div>
-
-    <div class="detail-row">
-      <span>📦 Stock disponible:</span>
-      <b id="modalStock">-</b>
-    </div>
-
-    <div class="detail-row">
-      <span>🌐 Estado en catálogo:</span>
-      <b id="modalStatus">-</b>
-    </div>
-
-    <div style="margin-top:14px; font-weight:bold; font-size:13px;">📝 Descripción / Características:</div>
-    <div id="modalDesc" class="detail-desc"></div>
-
+  <!-- VISOR LIGHTBOX PANTALLA COMPLETA -->
+  <div id="lightboxModal" class="lightbox-modal" onclick="if(event.target===this)closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox-btn prev" onclick="changeLightboxImg(-1)">◀</button>
+    <img id="lightboxImg" class="lightbox-img" src="" alt="Vista Completa">
+    <button class="lightbox-btn next" onclick="changeLightboxImg(1)">▶</button>
+    <div id="lightboxCounter" class="lightbox-counter">1 / 1</div>
   </div>
 
-</div>
+  <script>
+    const SUPABASE_URL = "https://ztsthkoejosgwkhmzfbd.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
+    const BUCKET_NAME = "product-images";
 
+    let supabaseClient = null;
+    let products = [];
+    let currentImages = [];
+    let activeGalleryImages = [];
+    let activeImageIndex = 0;
 
-<!-- =====================================================
-     VISOR LIGHTBOX (CARRUSEL A PANTALLA COMPLETA)
-===================================================== -->
+    const inventoryTable = document.getElementById("inventoryTable");
+    const productForm = document.getElementById("productForm");
+    const productId = document.getElementById("productId");
+    const nameInput = document.getElementById("name");
+    const categoryInput = document.getElementById("category");
+    const priceInput = document.getElementById("price");
+    const stockInput = document.getElementById("stock");
+    const descInput = document.getElementById("description");
+    const activeSelect = document.getElementById("active");
+    const previewContainer = document.getElementById("previewContainer");
+    const formTitle = document.getElementById("formTitle");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const themeBtn = document.getElementById("themeBtn");
+    const viewModal = document.getElementById("viewModal");
 
-<div id="lightboxModal" class="lightbox-modal" onclick="if(event.target===this)closeLightbox()">
-  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-  <button class="lightbox-btn prev" onclick="changeLightboxImg(-1)">◀</button>
-  <img id="lightboxImg" class="lightbox-img" src="" alt="Vista Completa">
-  <button class="lightbox-btn next" onclick="changeLightboxImg(1)">▶</button>
-  <div id="lightboxCounter" class="lightbox-counter">1 / 1</div>
-</div>
+    const loginOverlay = document.getElementById("loginOverlay");
+    const mainWrap = document.getElementById("mainWrap");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const adminUserSub = document.getElementById("adminUserSub");
 
+    const lightboxModal = document.getElementById("lightboxModal");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const lightboxCounter = document.getElementById("lightboxCounter");
 
-<script>
+    /* INTERCEPCIÓN DEL BOTÓN ATRÁS DEL CELULAR (GESTO) */
+    window.addEventListener('popstate', (e) => {
+      const viewModalEl = document.getElementById('viewModal');
+      const lightboxModalEl = document.getElementById('lightboxModal');
 
-/* =====================================================
-   CONFIGURACIÓN SUPABASE Y STORAGE
-===================================================== */
+      if (lightboxModalEl && lightboxModalEl.classList.contains('open')) {
+        lightboxModalEl.classList.remove('open');
+        return;
+      }
 
-const SUPABASE_URL = "https://ztsthkoejosgwkhmzfbd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";
-const BUCKET_NAME = "product-images";
+      if (viewModalEl && viewModalEl.classList.contains('open')) {
+        viewModalEl.classList.remove('open');
+      }
+    });
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-
-/* =====================================================
-   VARIABLES
-===================================================== */
-
-let products = [];
-let currentImages = [];
-let activeGalleryImages = [];
-let activeImageIndex = 0;
-
-
-/* =====================================================
-   ELEMENTOS
-===================================================== */
-
-const inventoryTable = document.getElementById("inventoryTable");
-const productForm = document.getElementById("productForm");
-const productId = document.getElementById("productId");
-const nameInput = document.getElementById("name");
-const categoryInput = document.getElementById("category");
-const priceInput = document.getElementById("price");
-const stockInput = document.getElementById("stock");
-const descInput = document.getElementById("description");
-const activeSelect = document.getElementById("active");
-const previewContainer = document.getElementById("previewContainer");
-const formTitle = document.getElementById("formTitle");
-const cancelEditBtn = document.getElementById("cancelEditBtn");
-const themeBtn = document.getElementById("themeBtn");
-const viewModal = document.getElementById("viewModal");
-
-const loginOverlay = document.getElementById("loginOverlay");
-const mainWrap = document.getElementById("mainWrap");
-const logoutBtn = document.getElementById("logoutBtn");
-const adminUserSub = document.getElementById("adminUserSub");
-
-const lightboxModal = document.getElementById("lightboxModal");
-const lightboxImg = document.getElementById("lightboxImg");
-const lightboxCounter = document.getElementById("lightboxCounter");
-
-
-/* =====================================================
-   CONTROL DE AUTENTICACIÓN (SUPABASE AUTH)
-===================================================== */
-
-async function checkAuth(){
-  const { data: { session } } = await supabaseClient.auth.getSession();
-
-  if (session) {
-    loginOverlay.style.display = "none";
-    mainWrap.style.display = "block";
-    logoutBtn.style.display = "inline-block";
-    adminUserSub.textContent = `Sesión: ${session.user.email}`;
-    loadInventory();
-  } else {
-    loginOverlay.style.display = "flex";
-    mainWrap.style.display = "none";
-    logoutBtn.style.display = "none";
-    adminUserSub.textContent = "Panel Administrador · Bolivia";
-  }
-}
-
-async function handleLogin(e){
-  e.preventDefault();
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value;
-  const btn = document.getElementById("btnLoginSubmit");
-
-  btn.disabled = true;
-  btn.textContent = "Verificando...";
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: email,
-    password: password
-  });
-
-  if (error) {
-    alert("❌ Error de acceso: " + error.message);
-    btn.disabled = false;
-    btn.textContent = "Ingresar al Panel";
-  } else {
-    document.getElementById("loginPassword").value = "";
-    btn.disabled = false;
-    btn.textContent = "Ingresar al Panel";
-    checkAuth();
-  }
-}
-
-async function logout(){
-  await supabaseClient.auth.signOut();
-  checkAuth();
-}
-
-
-/* =====================================================
-   MODO OSCURO / CLARO
-===================================================== */
-
-function toggleTheme(){
-  document.body.classList.toggle("dark-mode");
-  const isDark = document.body.classList.contains("dark-mode");
-  themeBtn.textContent = isDark ? "☀️" : "🌙";
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-}
-
-if(localStorage.getItem("theme") === "dark"){
-  document.body.classList.add("dark-mode");
-  themeBtn.textContent = "☀️";
-}
-
-
-/* =====================================================
-   CARGAR INVENTARIO
-===================================================== */
-
-async function loadInventory(){
-
-  try{
-    const { data, error } = await supabaseClient
-      .from("products")
-      .select("*")
-      .order("id", { ascending: false });
-
-    if(error){
-      inventoryTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger-color);">❌ Error al cargar datos: ${escapeHTML(error.message)}</td></tr>`;
-      return;
+    function getSupabase() {
+      if (!supabaseClient) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+      return supabaseClient;
     }
 
-    products = data || [];
-    updateMetrics();
-    filterTable();
+    async function checkAuth() {
+      const client = getSupabase();
+      const { data: { session } } = await client.auth.getSession();
 
-  } catch(e){
-    inventoryTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger-color);">❌ Error de conexión.</td></tr>`;
-  }
+      if (session) {
+        loginOverlay.style.display = "none";
+        mainWrap.style.display = "block";
+        logoutBtn.style.display = "inline-block";
+        adminUserSub.textContent = `Sesión: ${session.user.email}`;
+        loadInventory();
+      } else {
+        loginOverlay.style.display = "flex";
+        mainWrap.style.display = "none";
+        logoutBtn.style.display = "none";
+        adminUserSub.textContent = "Panel Administrador · Bolivia";
+      }
+    }
 
-}
+    async function handleLogin(e) {
+      e.preventDefault();
+      const client = getSupabase();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const btn = document.getElementById("btnLoginSubmit");
 
+      btn.disabled = true;
+      btn.textContent = "Verificando...";
 
-/* =====================================================
-   MÉTRICAS EN TIEMPO REAL
-===================================================== */
-
-function updateMetrics(){
-  const activeProds = products.filter(p => p.active);
-  const totalValue = activeProds.reduce((sum, p) => sum + (Number(p.price || 0) * Number(p.stock || 0)), 0);
-  const lowStock = products.filter(p => Number(p.stock || 0) > 0 && Number(p.stock || 0) <= 3);
-  const outOfStock = products.filter(p => Number(p.stock || 0) <= 0);
-
-  document.getElementById("kpiTotal").textContent = activeProds.length;
-  document.getElementById("kpiValue").textContent = "Bs " + totalValue.toFixed(2);
-  document.getElementById("kpiLow").textContent = lowStock.length;
-  document.getElementById("kpiOut").textContent = outOfStock.length;
-}
-
-
-/* =====================================================
-   FILTRADO Y RENDER DE TABLA
-===================================================== */
-
-function filterTable(){
-  const q = document.getElementById("tableSearch").value.toLowerCase();
-  const filter = document.getElementById("tableFilter").value;
-
-  let list = products.filter(p => {
-    const text = [p.name, p.category, p.description].filter(Boolean).join(" ").toLowerCase();
-    const matchesQ = !q || text.includes(q);
-
-    if(!matchesQ) return false;
-
-    if(filter === "low") return Number(p.stock || 0) > 0 && Number(p.stock || 0) <= 3;
-    if(filter === "out") return Number(p.stock || 0) <= 0;
-    if(filter === "inactive") return !p.active;
-
-    return true;
-  });
-
-  renderTable(list);
-}
-
-function renderTable(list){
-
-  if(!list.length){
-    inventoryTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">No hay productos para mostrar.</td></tr>`;
-    return;
-  }
-
-  inventoryTable.innerHTML = list.map(p => {
-
-    const images = getImagesArray(p);
-    const mainImg = images[0] || 'https://via.placeholder.com/100?text=No+Img';
-    const stock = Number(p.stock || 0);
-
-    return `
-      <tr>
-        <td>
-          <img class="prod-img" src="${escapeHTML(mainImg)}" alt="Foto" loading="lazy" decoding="async" onclick="viewDetails(${p.id})">
-        </td>
-
-        <td>
-          <b class="clickable-name" onclick="viewDetails(${p.id})">${escapeHTML(p.name)}</b><br>
-          <small style="color:var(--text-muted);">${escapeHTML(p.category || 'Sin categoría')}</small>
-        </td>
-
-        <td>
-          <b>Bs ${Number(p.price || 0).toFixed(2)}</b>
-        </td>
-
-        <td>
-          <div class="qty-table">
-            <button class="btn-qty-mini" onclick="quickStockChange(${p.id}, -1)">-</button>
-            <b>${stock}</b>
-            <button class="btn-qty-mini" onclick="quickStockChange(${p.id}, 1)">+</button>
-          </div>
-        </td>
-
-        <td>
-          <select 
-            class="status-select ${p.active ? 'active' : 'inactive'}"
-            onchange="toggleActive(${p.id}, this.value === 'true')"
-          >
-            <option value="true" ${p.active ? 'selected' : ''}>🟢 Activo</option>
-            <option value="false" ${!p.active ? 'selected' : ''}>🔴 Oculto</option>
-          </select>
-        </td>
-
-        <td>
-          <div class="action-btns">
-            <button class="btn-icon" onclick="viewDetails(${p.id})" title="Ver detalles">👁️</button>
-            <button class="btn-icon" onclick="editProduct(${p.id})" title="Editar">✏️</button>
-            <button class="btn-icon" onclick="deleteProduct(${p.id})" title="Eliminar">🗑️</button>
-          </div>
-        </td>
-      </tr>
-    `;
-
-  }).join("");
-
-}
-
-
-/* =====================================================
-   VISTA PREVIA DETALLADA (MODAL)
-===================================================== */
-
-function viewDetails(id){
-  const p = products.find(x => x.id === id);
-  if(!p) return;
-
-  activeGalleryImages = getImagesArray(p);
-
-  document.getElementById("modalTitle").textContent = p.name || "Sin Nombre";
-  document.getElementById("modalId").textContent = "#" + p.id;
-  document.getElementById("modalCat").textContent = p.category || "General";
-  document.getElementById("modalPrice").textContent = "Bs " + Number(p.price || 0).toFixed(2);
-  document.getElementById("modalStock").textContent = (p.stock || 0) + " unidades";
-  document.getElementById("modalStatus").textContent = p.active ? "🟢 Visible en Tienda" : "🔴 Oculto";
-  document.getElementById("modalDesc").textContent = p.description || "Sin descripción registrada.";
-
-  const gallery = document.getElementById("modalGallery");
-  if(activeGalleryImages.length){
-    gallery.innerHTML = activeGalleryImages.map((img, idx) => `
-      <img src="${escapeHTML(img)}" class="modal-img" loading="lazy" onclick="openLightbox(${idx})">
-    `).join("");
-    gallery.style.display = "flex";
-  } else {
-    gallery.style.display = "none";
-  }
-
-  viewModal.classList.add("open");
-}
-
-function closeModal(){
-  viewModal.classList.remove("open");
-}
-
-
-/* =====================================================
-   LIGHTBOX / VISOR DE IMÁGENES A PANTALLA COMPLETA
-===================================================== */
-
-function openLightbox(index){
-  if(!activeGalleryImages || !activeGalleryImages.length) return;
-  activeImageIndex = index;
-  updateLightbox();
-  lightboxModal.classList.add("open");
-}
-
-function closeLightbox(){
-  lightboxModal.classList.remove("open");
-}
-
-function changeLightboxImg(step){
-  activeImageIndex += step;
-  if(activeImageIndex < 0){
-    activeImageIndex = activeGalleryImages.length - 1;
-  } else if(activeImageIndex >= activeGalleryImages.length){
-    activeImageIndex = 0;
-  }
-  updateLightbox();
-}
-
-function updateLightbox(){
-  lightboxImg.src = activeGalleryImages[activeImageIndex];
-  lightboxCounter.textContent = `${activeImageIndex + 1} / ${activeGalleryImages.length}`;
-}
-
-
-/* =====================================================
-   HELPER IMÁGENES
-===================================================== */
-
-function getImagesArray(product){
-  if(Array.isArray(product.images)) return product.images;
-  if(typeof product.images === 'string'){
-    try { return JSON.parse(product.images); } catch(e){}
-  }
-  if(product.image) return [product.image];
-  return [];
-}
-
-
-/* =====================================================
-   COMPRESIÓN WEBP PROPORCIONAL + SUBIDA A SUPABASE
-===================================================== */
-
-function compressImage(file, maxDimension = 800, quality = 0.8) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target.result;
-
-      img.onload = () => {
-        let width = img.width;
-        let height = img.height;
-
-        // Escala proporcional exacta según la dimensión mayor sin deformar
-        if (width > height) {
-          if (width > maxDimension) {
-            height = Math.round((height * maxDimension) / width);
-            width = maxDimension;
-          }
-        } else {
-          if (height > maxDimension) {
-            width = Math.round((width * maxDimension) / height);
-            height = maxDimension;
-          }
-        }
-
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
-
-        canvas.toBlob(
-          (blob) => {
-            if (blob) resolve(blob);
-            else reject(new Error("Error al convertir a Blob"));
-          },
-          "image/webp",
-          quality
-        );
-      };
-      img.onerror = (err) => reject(err);
-    };
-    reader.onerror = (err) => reject(err);
-  });
-}
-
-async function handleFileSelect(event){
-  const files = Array.from(event.target.files);
-  if (!files.length) return;
-
-  const saveBtn = document.getElementById("saveBtn");
-  saveBtn.disabled = true;
-  saveBtn.textContent = "⏳ Comprimiendo y subiendo imágenes...";
-
-  for (const file of files) {
-    try {
-      // Compresión WebP en el navegador manteniendo el aspecto real
-      const compressedBlob = await compressImage(file, 800, 0.8);
-
-      // Nombre único de archivo
-      const fileName = `prod_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.webp`;
-
-      // Subida a Supabase Storage
-      const { data, error } = await supabaseClient.storage
-        .from(BUCKET_NAME)
-        .upload(fileName, compressedBlob, {
-          contentType: "image/webp",
-          cacheControl: "3600",
-          upsert: false
-        });
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
 
       if (error) {
-        alert(`❌ Error subiendo ${file.name}: ` + error.message);
-        continue;
+        alert("❌ Error de acceso: " + error.message);
+        btn.disabled = false;
+        btn.textContent = "Ingresar al Panel";
+      } else {
+        document.getElementById("loginPassword").value = "";
+        btn.disabled = false;
+        btn.textContent = "Ingresar al Panel";
+        checkAuth();
       }
-
-      // Obtener la URL pública liviana
-      const { data: publicData } = supabaseClient.storage
-        .from(BUCKET_NAME)
-        .getPublicUrl(fileName);
-
-      if (publicData && publicData.publicUrl) {
-        currentImages.push(publicData.publicUrl);
-      }
-
-    } catch (err) {
-      console.error(err);
-      alert(`❌ Error al optimizar ${file.name}`);
     }
-  }
 
-  saveBtn.disabled = false;
-  saveBtn.textContent = "💾 Guardar Producto";
-  document.getElementById("fileInput").value = "";
-  renderImagePreviews();
-}
+    async function logout() {
+      const client = getSupabase();
+      await client.auth.signOut();
+      checkAuth();
+    }
 
-function renderImagePreviews(){
-  previewContainer.innerHTML = currentImages.map((img, idx) => `
-    <div style="position:relative;">
-      <img src="${img}" class="preview-thumb">
-      <button
-        type="button"
-        onclick="removeImage(${idx})"
-        style="position:absolute; top:-6px; right:-6px; background:#ef4444; color:#fff; border:0; border-radius:50%; width:20px; height:20px; font-size:10px; cursor:pointer;"
-      >✕</button>
-    </div>
-  `).join("");
-}
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      const isDark = document.body.classList.contains("dark-mode");
+      themeBtn.textContent = isDark ? "☀️" : "🌙";
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    }
 
-function removeImage(idx){
-  currentImages.splice(idx, 1);
-  renderImagePreviews();
-}
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark-mode");
+      themeBtn.textContent = "☀️";
+    }
 
+    async function loadInventory() {
+      const client = getSupabase();
+      try {
+        const { data, error } = await client
+          .from("products")
+          .select("*")
+          .order("id", { ascending: false });
 
-/* =====================================================
-   SHORTCUTS EN FORMULARIO
-===================================================== */
+        if (error) {
+          inventoryTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger-color);">❌ Error al cargar datos: ${escapeHTML(error.message)}</td></tr>`;
+          return;
+        }
 
-function setCategory(cat){
-  categoryInput.value = cat;
-}
+        products = data || [];
+        updateMetrics();
+        filterTable();
+      } catch (e) {
+        inventoryTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger-color);">❌ Error de conexión.</td></tr>`;
+      }
+    }
 
-function addStockShortcut(amount){
-  const val = Number(stockInput.value || 0);
-  stockInput.value = val + amount;
-}
+    function updateMetrics() {
+      const activeProds = products.filter(p => p.active);
+      const totalValue = activeProds.reduce((sum, p) => sum + (Number(p.price || 0) * Number(p.stock || 0)), 0);
+      const lowStock = products.filter(p => Number(p.stock || 0) > 0 && Number(p.stock || 0) <= 3);
+      const outOfStock = products.filter(p => Number(p.stock || 0) <= 0);
 
+      document.getElementById("kpiTotal").textContent = activeProds.length;
+      document.getElementById("kpiValue").textContent = "Bs " + totalValue.toFixed(2);
+      document.getElementById("kpiLow").textContent = lowStock.length;
+      document.getElementById("kpiOut").textContent = outOfStock.length;
+    }
 
-/* =====================================================
-   GUARDAR / EDITAR PRODUCTO
-===================================================== */
+    function filterTable() {
+      const q = document.getElementById("tableSearch").value.toLowerCase();
+      const filter = document.getElementById("tableFilter").value;
 
-async function saveProduct(e){
-  e.preventDefault();
+      let list = products.filter(p => {
+        const text = [p.name, p.category, p.description].filter(Boolean).join(" ").toLowerCase();
+        const matchesQ = !q || text.includes(q);
 
-  const id = productId.value;
+        if (!matchesQ) return false;
 
-  const payload = {
-    name: nameInput.value.trim(),
-    category: categoryInput.value.trim(),
-    price: parseFloat(priceInput.value),
-    stock: parseInt(stockInput.value),
-    description: descInput.value.trim(),
-    active: activeSelect.value === "true",
-    images: currentImages,
-    image: currentImages[0] || null
-  };
+        if (filter === "low") return Number(p.stock || 0) > 0 && Number(p.stock || 0) <= 3;
+        if (filter === "out") return Number(p.stock || 0) <= 0;
+        if (filter === "inactive") return !p.active;
 
-  let error;
+        return true;
+      });
 
-  if(id){
-    const res = await supabaseClient.from("products").update(payload).eq("id", id);
-    error = res.error;
-  } else {
-    const res = await supabaseClient.from("products").insert([payload]);
-    error = res.error;
-  }
+      renderTable(list);
+    }
 
-  if(error){
-    alert("❌ Error al guardar el producto: " + error.message);
-  } else {
-    resetForm();
-    loadInventory();
-  }
-}
+    function renderTable(list) {
+      if (!list.length) {
+        inventoryTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">No hay productos para mostrar.</td></tr>`;
+        return;
+      }
 
-function editProduct(id){
-  const p = products.find(x => x.id === id);
-  if(!p) return;
+      inventoryTable.innerHTML = list.map(p => {
+        const images = getImagesArray(p, 'thumb');
+        const mainImg = images[0] || 'https://via.placeholder.com/100?text=No+Img';
+        const stock = Number(p.stock || 0);
 
-  productId.value = p.id;
-  nameInput.value = p.name || "";
-  categoryInput.value = p.category || "";
-  priceInput.value = p.price || "";
-  stockInput.value = p.stock || 0;
-  descInput.value = p.description || "";
-  activeSelect.value = String(p.active);
+        return `
+          <tr>
+            <td>
+              <img class="prod-img" src="${escapeHTML(mainImg)}" alt="Foto" loading="lazy" decoding="async" onclick="viewDetails(${p.id})">
+            </td>
+            <td>
+              <b class="clickable-name" onclick="viewDetails(${p.id})">${escapeHTML(p.name)}</b><br>
+              <small style="color:var(--text-muted);">${escapeHTML(p.category || 'Sin categoría')}</small>
+            </td>
+            <td>
+              <b>Bs ${Number(p.price || 0).toFixed(2)}</b>
+            </td>
+            <td>
+              <div class="qty-table">
+                <button class="btn-qty-mini" onclick="quickStockChange(${p.id}, -1)">-</button>
+                <b>${stock}</b>
+                <button class="btn-qty-mini" onclick="quickStockChange(${p.id}, 1)">+</button>
+              </div>
+            </td>
+            <td>
+              <select class="status-select ${p.active ? 'active' : 'inactive'}" onchange="toggleActive(${p.id}, this.value === 'true')">
+                <option value="true" ${p.active ? 'selected' : ''}>🟢 Activo</option>
+                <option value="false" ${!p.active ? 'selected' : ''}>🔴 Oculto</option>
+              </select>
+            </td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-icon" onclick="viewDetails(${p.id})" title="Ver detalles">👁️</button>
+                <button class="btn-icon" onclick="editProduct(${p.id})" title="Editar">✏️</button>
+                <button class="btn-icon" onclick="deleteProduct(${p.id})" title="Eliminar">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
 
-  currentImages = getImagesArray(p);
-  renderImagePreviews();
+    function viewDetails(id) {
+      const p = products.find(x => x.id === id);
+      if (!p) return;
 
-  formTitle.querySelector("span").textContent = "✏️ Editar Producto";
-  cancelEditBtn.style.display = "inline-block";
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+      activeGalleryImages = getImagesArray(p, 'full');
 
-function resetForm(){
-  productId.value = "";
-  productForm.reset();
-  currentImages = [];
-  previewContainer.innerHTML = "";
-  formTitle.querySelector("span").textContent = "📦 Agregar Producto";
-  cancelEditBtn.style.display = "none";
-}
+      document.getElementById("modalTitle").textContent = p.name || "Sin Nombre";
+      document.getElementById("modalId").textContent = "#" + p.id;
+      document.getElementById("modalCat").textContent = p.category || "General";
+      document.getElementById("modalPrice").textContent = "Bs " + Number(p.price || 0).toFixed(2);
+      document.getElementById("modalStock").textContent = (p.stock || 0) + " unidades";
+      document.getElementById("modalStatus").textContent = p.active ? "🟢 Visible en Tienda" : "🔴 Oculto";
+      document.getElementById("modalDesc").textContent = p.description || "Sin descripción registrada.";
 
+      const gallery = document.getElementById("modalGallery");
+      if (activeGalleryImages.length) {
+        gallery.innerHTML = activeGalleryImages.map((img, idx) => `
+          <img src="${escapeHTML(img)}" class="modal-img" loading="lazy" onclick="openLightbox(${idx})">
+        `).join("");
+        gallery.style.display = "flex";
+      } else {
+        gallery.style.display = "none";
+      }
 
-/* =====================================================
-   ACCIONES RÁPIDAS (TABLA)
-===================================================== */
+      viewModal.classList.add("open");
+      history.pushState({ modalOpen: true }, "");
+    }
 
-async function quickStockChange(id, delta){
-  const p = products.find(x => x.id === id);
-  if(!p) return;
+    function closeModal() {
+      if (viewModal.classList.contains('open')) {
+        viewModal.classList.remove("open");
+        if (history.state && history.state.modalOpen) {
+          history.back();
+        }
+      }
+    }
 
-  const newStock = Math.max(0, Number(p.stock || 0) + delta);
+    function openLightbox(index) {
+      if (!activeGalleryImages || !activeGalleryImages.length) return;
+      activeImageIndex = index;
+      updateLightbox();
+      lightboxModal.classList.add("open");
+      history.pushState({ modalOpen: true }, "");
+    }
 
-  const { error } = await supabaseClient
-    .from("products")
-    .update({ stock: newStock })
-    .eq("id", id);
+    function closeLightbox() {
+      if (lightboxModal.classList.contains('open')) {
+        lightboxModal.classList.remove("open");
+        if (history.state && history.state.modalOpen) {
+          history.back();
+        }
+      }
+    }
 
-  if(!error){
-    p.stock = newStock;
-    updateMetrics();
-    filterTable();
-  } else {
-    alert("❌ No se pudo actualizar el stock: " + error.message);
-  }
-}
+    function changeLightboxImg(step) {
+      activeImageIndex += step;
+      if (activeImageIndex < 0) {
+        activeImageIndex = activeGalleryImages.length - 1;
+      } else if (activeImageIndex >= activeGalleryImages.length) {
+        activeImageIndex = 0;
+      }
+      updateLightbox();
+    }
 
-async function toggleActive(id, newStatus){
-  const { error } = await supabaseClient
-    .from("products")
-    .update({ active: newStatus })
-    .eq("id", id);
+    function updateLightbox() {
+      lightboxImg.src = activeGalleryImages[activeImageIndex];
+      lightboxCounter.textContent = `${activeImageIndex + 1} / ${activeGalleryImages.length}`;
+    }
 
-  if(!error){
-    const p = products.find(x => x.id === id);
-    if(p) p.active = newStatus;
-    updateMetrics();
-    filterTable();
-  } else {
-    alert("❌ No se pudo actualizar el estado: " + error.message);
-  }
-}
+    function getImagesArray(product, mode = 'full') {
+      let list = [];
+      if (Array.isArray(product.images)) list = product.images;
+      else if (typeof product.images === 'string') {
+        try { list = JSON.parse(product.images); } catch(e){}
+      } else if (product.image) list = [product.image];
 
-async function deleteProduct(id){
-  if(!confirm("¿Seguro que deseas eliminar este producto permanentemente?")) return;
+      return list.map(url => {
+        if (typeof url === 'string' && url.includes("/storage/v1/object/public/")) {
+          const renderUrl = url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
+          if (mode === 'thumb') return `${renderUrl}?width=100&height=100&resize=contain&quality=60&format=webp`;
+          if (mode === 'modal') return `${renderUrl}?width=600&height=600&resize=contain&quality=80&format=webp`;
+        }
+        return url;
+      });
+    }
 
-  const { error } = await supabaseClient
-    .from("products")
-    .delete()
-    .eq("id", id);
+    function compressImage(file, maxDimension = 800, quality = 0.8) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
 
-  if(!error){
-    loadInventory();
-  } else {
-    alert("❌ No se pudo eliminar el producto: " + error.message);
-  }
-}
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
 
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
 
-function escapeHTML(str){
-  return String(str || '')
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
+            if (width > height) {
+              if (width > maxDimension) {
+                height = Math.round((height * maxDimension) / width);
+                width = maxDimension;
+              }
+            } else {
+              if (height > maxDimension) {
+                width = Math.round((width * maxDimension) / height);
+                height = maxDimension;
+              }
+            }
 
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
 
-/* =====================================================
-   INICIALIZACIÓN Y NAVEGACIÓN
-===================================================== */
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
 
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  checkAuth();
-});
+            canvas.toBlob(
+              (blob) => {
+                if (blob) resolve(blob);
+                else reject(new Error("Error de compresión Blob"));
+              },
+              "image/webp",
+              quality
+            );
+          };
+          img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+      });
+    }
 
-checkAuth();
+    async function handleFileSelect(event) {
+      const client = getSupabase();
+      const files = Array.from(event.target.files);
+      if (!files.length) return;
 
-</script>
+      const saveBtn = document.getElementById("saveBtn");
+      saveBtn.disabled = true;
+      saveBtn.textContent = "⏳ Comprimiendo y subiendo...";
 
+      for (const file of files) {
+        try {
+          const compressedBlob = await compressImage(file, 800, 0.8);
+          const fileName = `prod_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.webp`;
+
+          const { error } = await client.storage
+            .from(BUCKET_NAME)
+            .upload(fileName, compressedBlob, {
+              contentType: "image/webp",
+              cacheControl: "3600",
+              upsert: false
+            });
+
+          if (error) {
+            alert(`❌ Error subiendo ${file.name}: ` + error.message);
+            continue;
+          }
+
+          const { data: publicData } = client.storage
+            .from(BUCKET_NAME)
+            .getPublicUrl(fileName);
+
+          if (publicData && publicData.publicUrl) {
+            currentImages.push(publicData.publicUrl);
+          }
+        } catch (err) {
+          alert(`❌ Error al procesar ${file.name}`);
+        }
+      }
+
+      saveBtn.disabled = false;
+      saveBtn.textContent = "💾 Guardar Producto";
+      document.getElementById("fileInput").value = "";
+      renderImagePreviews();
+    }
+
+    function renderImagePreviews() {
+      previewContainer.innerHTML = currentImages.map((img, idx) => `
+        <div style="position:relative;">
+          <img src="${img}" class="preview-thumb">
+          <button type="button" onclick="removeImage(${idx})" style="position:absolute; top:-6px; right:-6px; background:#ef4444; color:#fff; border:0; border-radius:50%; width:20px; height:20px; font-size:10px; cursor:pointer;">✕</button>
+        </div>
+      `).join("");
+    }
+
+    function removeImage(idx) {
+      currentImages.splice(idx, 1);
+      renderImagePreviews();
+    }
+
+    function setCategory(cat) { categoryInput.value = cat; }
+
+    function addStockShortcut(amount) {
+      const val = Number(stockInput.value || 0);
+      stockInput.value = val + amount;
+    }
+
+    async function saveProduct(e) {
+      e.preventDefault();
+      const client = getSupabase();
+      const saveBtn = document.getElementById("saveBtn");
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = "⏳ Guardando...";
+
+      const id = productId.value;
+      const payload = {
+        name: nameInput.value.trim(),
+        category: categoryInput.value.trim(),
+        price: parseFloat(priceInput.value),
+        stock: parseInt(stockInput.value),
+        description: descInput.value.trim(),
+        active: activeSelect.value === "true",
+        images: currentImages,
+        image: currentImages[0] || null
+      };
+
+      let error;
+      if (id) {
+        const res = await client.from("products").update(payload).eq("id", id);
+        error = res.error;
+      } else {
+        const res = await client.from("products").insert([payload]);
+        error = res.error;
+      }
+
+      saveBtn.disabled = false;
+      saveBtn.textContent = "💾 Guardar Producto";
+
+      if (error) {
+        alert("❌ Error al guardar el producto: " + error.message);
+      } else {
+        resetForm();
+        loadInventory();
+      }
+    }
+
+    function editProduct(id) {
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+
+      productId.value = p.id;
+      nameInput.value = p.name || "";
+      categoryInput.value = p.category || "";
+      priceInput.value = p.price || "";
+      stockInput.value = p.stock || 0;
+      descInput.value = p.description || "";
+      activeSelect.value = String(p.active);
+
+      currentImages = getImagesArray(p, 'full');
+      renderImagePreviews();
+
+      formTitle.querySelector("span").textContent = "✏️ Editar Producto";
+      cancelEditBtn.style.display = "inline-block";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+      productId.value = "";
+      productForm.reset();
+      currentImages = [];
+      previewContainer.innerHTML = "";
+      formTitle.querySelector("span").textContent = "📦 Agregar Producto";
+      cancelEditBtn.style.display = "none";
+    }
+
+    async function quickStockChange(id, delta) {
+      const client = getSupabase();
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+
+      const newStock = Math.max(0, Number(p.stock || 0) + delta);
+      const { error } = await client.from("products").update({ stock: newStock }).eq("id", id);
+
+      if (!error) {
+        p.stock = newStock;
+        updateMetrics();
+        filterTable();
+      } else {
+        alert("❌ No se pudo actualizar el stock: " + error.message);
+      }
+    }
+
+    async function toggleActive(id, newStatus) {
+      const client = getSupabase();
+      const { error } = await client.from("products").update({ active: newStatus }).eq("id", id);
+
+      if (!error) {
+        const p = products.find(x => x.id === id);
+        if (p) p.active = newStatus;
+        updateMetrics();
+        filterTable();
+      } else {
+        alert("❌ No se pudo actualizar el estado: " + error.message);
+      }
+    }
+
+    async function deleteProduct(id) {
+      const client = getSupabase();
+      if (!confirm("¿Seguro que deseas eliminar este producto permanentemente?")) return;
+
+      const { error } = await client.from("products").delete().eq("id", id);
+
+      if (!error) {
+        loadInventory();
+      } else {
+        alert("❌ No se pudo eliminar el producto: " + error.message);
+      }
+    }
+
+    function escapeHTML(str) {
+      return String(str || '')
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const client = getSupabase();
+      client.auth.onAuthStateChange((event, session) => {
+        checkAuth();
+      });
+      checkAuth();
+    });
+  </script>
 </body>
 </html>
