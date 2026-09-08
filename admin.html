@@ -1407,6 +1407,36 @@
         .replace(/'/g, "&#039;");
     }
 
+    // LIMPIEZA AUTOMÁTICA DE GOOGLE LENS AL PEGAR
+    document.getElementById('description').addEventListener('paste', function (e) {
+      e.preventDefault();
+
+      let text = (e.clipboardData || window.clipboardData).getData('text');
+
+      // 1. Elimina links e hipervínculos completos (http, https, www)
+      text = text.replace(/https?:\/\/[^\s\)]+/gi, '');
+      text = text.replace(/www\.[^\s\)]+/gi, '');
+
+      // 2. Elimina corchetes de referencias como [1], [2], etc.
+      text = text.replace(/\[\d+\]/g, '');
+
+      // 3. Elimina paréntesis vacíos () sobrantes
+      text = text.replace(/\(\s*\)/g, '');
+
+      // 4. Limpia espacios múltiples innecesarios
+      text = text.replace(/  +/g, ' ').trim();
+
+      // Inserción en el cuadro de texto
+      const input = this;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+
+      input.value = input.value.substring(0, start) + text + input.value.substring(end);
+      input.selectionStart = input.selectionEnd = start + text.length;
+
+      showToast("🧹 Texto pegado y limpiado sin enlaces");
+    });
+
     document.addEventListener("DOMContentLoaded", () => {
       const client = getSupabase();
       client.auth.onAuthStateChange(() => {
