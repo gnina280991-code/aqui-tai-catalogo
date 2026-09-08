@@ -645,13 +645,17 @@
             </div>
 
             <div class="form-group">
-              <label>Categoría</label>
-              <input type="text" id="category" placeholder="Ej. Cajas Sorpresa">
-              <div class="chips-wrap">
-                <button type="button" class="chip-btn" onclick="setCategory('Cajas Sorpresa')">🎁 Cajas</button>
-                <button type="button" class="chip-btn" onclick="setCategory('Herramientas')">🛠️ Herramientas</button>
-                <button type="button" class="chip-btn" onclick="setCategory('Electrónica')">⚡ Electrónica</button>
-                <button type="button" class="chip-btn" onclick="setCategory('Hogar')">🏠 Hogar</button>
+              <label>Categoría *</label>
+              <div style="display: flex; gap: 6px;">
+                <select id="category" required style="flex: 1;">
+                  <option value="">Selecciona una categoría</option>
+                  <option value="Computación">💻 Computación</option>
+                  <option value="Auto y Moto">🚗 Auto y Moto</option>
+                  <option value="Bisutería">💍 Bisutería</option>
+                  <option value="Cocina">🍳 Cocina</option>
+                  <option value="Cuidado Personal">🧴 Cuidado Personal</option>
+                </select>
+                <button type="button" class="btn-cancel" onclick="addNewCategoryPrompt()" style="padding: 0 12px; font-weight: bold;">➕ Nueva</button>
               </div>
             </div>
 
@@ -707,7 +711,13 @@
       <div class="table-controls">
         <input type="text" id="tableSearch" placeholder="🔎 Buscar en inventario..." style="flex:1; min-width:180px;" oninput="filterTable()">
         <select id="tableFilter" onchange="filterTable()">
-          <option value="all">Todos los productos</option>
+          <option value="all">📂 Todas las categorías (Todo)</option>
+          <option value="Computación">💻 Computación</option>
+          <option value="Auto y Moto">🚗 Auto y Moto</option>
+          <option value="Bisutería">💍 Bisutería</option>
+          <option value="Cocina">🍳 Cocina</option>
+          <option value="Cuidado Personal">🧴 Cuidado Personal</option>
+          <option disabled>──────────</option>
           <option value="low">⚠️ Stock Bajo (≤ 3)</option>
           <option value="out">❌ Agotados</option>
           <option value="inactive">🔴 Ocultos / Inactivos</option>
@@ -801,7 +811,7 @@
     const productForm = document.getElementById("productForm");
     const productId = document.getElementById("productId");
     const nameInput = document.getElementById("name");
-    const categoryInput = document.getElementById("category");
+    const categorySelect = document.getElementById("category");
     const priceInput = document.getElementById("price");
     const stockInput = document.getElementById("stock");
     const descInput = document.getElementById("description");
@@ -922,6 +932,31 @@
       themeBtn.textContent = "☀️";
     }
 
+    /* AGREGAR NUEVA CATEGORÍA DINÁMICAMENTE */
+    function addNewCategoryPrompt() {
+      const newCat = prompt("Escribe el nombre de la nueva categoría:");
+      if (!newCat || !newCat.trim()) return;
+
+      const cleanCat = newCat.trim();
+      const selectCat = document.getElementById("category");
+      const selectFilter = document.getElementById("tableFilter");
+
+      let exists = Array.from(selectCat.options).some(opt => opt.value.toLowerCase() === cleanCat.toLowerCase());
+
+      if (!exists) {
+        const optForm = new Option(`📦 ${cleanCat}`, cleanCat);
+        selectCat.add(optForm);
+        selectCat.value = cleanCat;
+
+        const optFilter = new Option(`📦 ${cleanCat}`, cleanCat);
+        selectFilter.insertBefore(optFilter, selectFilter.options[6]);
+
+        showToast(`✅ Categoría "${cleanCat}" agregada`);
+      } else {
+        selectCat.value = cleanCat;
+      }
+    }
+
     async function loadInventory() {
       const client = getSupabase();
       try {
@@ -937,6 +972,20 @@
 
         products = data || [];
         document.getElementById("countBadge").textContent = products.length;
+        
+        // Cargar categorías existentes de los productos en los selectores si no están presentes
+        products.forEach(p => {
+          if (p.category && p.category.trim()) {
+            const cat = p.category.trim();
+            let exists = Array.from(categorySelect.options).some(opt => opt.value.toLowerCase() === cat.toLowerCase());
+            if (!exists) {
+              categorySelect.add(new Option(`📦 ${cat}`, cat));
+              const selectFilter = document.getElementById("tableFilter");
+              selectFilter.insertBefore(new Option(`📦 ${cat}`, cat), selectFilter.options[6]);
+            }
+          }
+        });
+
         updateMetrics();
         filterTable();
       } catch (e) {
@@ -969,6 +1018,10 @@
         if (filter === "low") return Number(p.stock || 0) > 0 && Number(p.stock || 0) <= 3;
         if (filter === "out") return Number(p.stock || 0) <= 0;
         if (filter === "inactive") return !p.active;
+
+        if (filter !== "all") {
+          return (p.category || "").toLowerCase() === filter.toLowerCase();
+        }
 
         return true;
       });
@@ -1217,8 +1270,6 @@
       renderImagePreviews();
     }
 
-    function setCategory(cat) { categoryInput.value = cat; }
-
     function addStockShortcut(amount) {
       const val = Number(stockInput.value || 0);
       stockInput.value = val + amount;
@@ -1235,7 +1286,7 @@
       const id = productId.value;
       const payload = {
         name: nameInput.value.trim(),
-        category: categoryInput.value.trim(),
+        category: categorySelect.value.trim(),
         price: parseFloat(priceInput.value),
         stock: parseInt(stockInput.value),
         description: descInput.value.trim(),
@@ -1272,7 +1323,14 @@
 
       productId.value = p.id;
       nameInput.value = p.name || "";
-      categoryInput.value = p.category || "";
+      
+      const catVal = p.category || "";
+      let exists = Array.from(categorySelect.options).some(opt => opt.value.toLowerCase() === catVal.toLowerCase());
+      if (catVal && !exists) {
+        categorySelect.add(new Option(`📦 ${catVal}`, catVal));
+      }
+      categorySelect.value = catVal;
+
       priceInput.value = p.price || "";
       stockInput.value = p.stock || 0;
       descInput.value = p.description || "";
