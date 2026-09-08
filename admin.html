@@ -1183,7 +1183,7 @@
             } else {
               if (height > maxDimension) {
                 width = Math.round((width * maxDimension) / height);
-                height = maxDimension;
+                width = maxDimension;
               }
             }
 
@@ -1407,34 +1407,36 @@
         .replace(/'/g, "&#039;");
     }
 
-    // LIMPIEZA AUTOMÁTICA DE GOOGLE LENS AL PEGAR
-    document.getElementById('description').addEventListener('paste', function (e) {
-      e.preventDefault();
+    // LIMPIEZA AUTOMÁTICA EN TIEMPO REAL (LENS / PORTAPAPELES EN MÓVILES)
+    const descArea = document.getElementById('description');
 
-      let text = (e.clipboardData || window.clipboardData).getData('text');
+    function cleanDescriptionText(text) {
+      return text
+        // 1. Eliminar URLs completas (http, https, www, subdominios)
+        .replace(/https?:\/\/[^\s\)]+/gi, '')
+        .replace(/www\.[^\s\)]+/gi, '')
+        // 2. Eliminar referencias de corchetes como [1], [2], [3]
+        .replace(/\[\d+\]/g, '')
+        // 3. Eliminar paréntesis vacíos ()
+        .replace(/\(\s*\)/g, '')
+        // 4. Limpiar espacios múltiples y bordes sobrantes
+        .replace(/  +/g, ' ')
+        .trim();
+    }
 
-      // 1. Elimina links e hipervínculos completos (http, https, www)
-      text = text.replace(/https?:\/\/[^\s\)]+/gi, '');
-      text = text.replace(/www\.[^\s\)]+/gi, '');
+    // Escuchar 'paste' e 'input' para teclados móviles (Android Gboard / SwiftKey)
+    ['paste', 'input'].forEach(eventType => {
+      descArea.addEventListener(eventType, function () {
+        setTimeout(() => {
+          const originalText = this.value;
+          const cleanedText = cleanDescriptionText(originalText);
 
-      // 2. Elimina corchetes de referencias como [1], [2], etc.
-      text = text.replace(/\[\d+\]/g, '');
-
-      // 3. Elimina paréntesis vacíos () sobrantes
-      text = text.replace(/\(\s*\)/g, '');
-
-      // 4. Limpia espacios múltiples innecesarios
-      text = text.replace(/  +/g, ' ').trim();
-
-      // Inserción en el cuadro de texto
-      const input = this;
-      const start = input.selectionStart;
-      const end = input.selectionEnd;
-
-      input.value = input.value.substring(0, start) + text + input.value.substring(end);
-      input.selectionStart = input.selectionEnd = start + text.length;
-
-      showToast("🧹 Texto pegado y limpiado sin enlaces");
+          if (originalText !== cleanedText) {
+            this.value = cleanedText;
+            showToast("🧹 Enlaces y referencias eliminados");
+          }
+        }, 10);
+      });
     });
 
     document.addEventListener("DOMContentLoaded", () => {
