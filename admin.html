@@ -101,7 +101,7 @@
     .login-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; text-align: center; }
     .login-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-align: center; }
 
-    /* HEADER sticky */
+    /* HEADER STICKY */
     header {
       background: var(--bg-card);
       border-bottom: 1px solid var(--border-color);
@@ -224,7 +224,7 @@
 
     .kpi-value { font-size: 18px; font-weight: 800; }
 
-    /* FORMULARIO DE PRODUCTO FLUIDO */
+    /* FORMULARIO DE PRODUCTO */
     .card-form {
       background: var(--bg-card);
       border-radius: var(--radius);
@@ -340,7 +340,7 @@
     .btn-cancel { background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); font-size: 13px; padding: 6px 12px; width: auto; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* CONTROLES Y FILTROS */
+    /* TABLAS Y CONTROLES */
     .table-controls { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 
     .table-wrap {
@@ -405,7 +405,7 @@
       font-size: 13px;
     }
 
-    /* MODAL DE VISTA PREVIA */
+    /* MODAL DETALLES */
     .modal {
       position: fixed;
       inset: 0;
@@ -621,13 +621,13 @@
       </div>
     </section>
 
-    <!-- NAVEGACIÓN EN PESTAÑAS (OPTIMIZADO MOBILE) -->
+    <!-- NAVEGACIÓN EN PESTAÑAS -->
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchTab('tab-form')" id="tabBtnForm">➕ Cargar Producto</button>
       <button class="tab-btn" onclick="switchTab('tab-list')" id="tabBtnList">📦 Inventario (<span id="countBadge">0</span>)</button>
     </div>
 
-    <!-- PESTAÑA 1: FORMULARIO DE CARGA DE PRODUCTOS -->
+    <!-- PESTAÑA 1: FORMULARIO -->
     <div id="tab-form" class="tab-content active">
       <section class="card-form">
         <h2 id="formTitle">
@@ -706,7 +706,7 @@
       </section>
     </div>
 
-    <!-- PESTAÑA 2: LISTA DE INVENTARIO Y FILTROS -->
+    <!-- PESTAÑA 2: LISTA DE INVENTARIO -->
     <div id="tab-list" class="tab-content">
       <div class="table-controls">
         <input type="text" id="tableSearch" placeholder="🔎 Buscar en inventario..." style="flex:1; min-width:180px;" oninput="filterTable()">
@@ -851,7 +851,7 @@
     }
 
     /* BOTÓN ATRÁS EN CELULARES */
-    window.addEventListener('popstate', (e) => {
+    window.addEventListener('popstate', () => {
       const viewModalEl = document.getElementById('viewModal');
       const lightboxModalEl = document.getElementById('lightboxModal');
 
@@ -900,7 +900,7 @@
       btn.disabled = true;
       btn.textContent = "Verificando...";
 
-      const { data, error } = await client.auth.signInWithPassword({ email, password });
+      const { error } = await client.auth.signInWithPassword({ email, password });
 
       if (error) {
         showToast("❌ Error de acceso: " + error.message);
@@ -944,8 +944,7 @@
       let exists = Array.from(selectCat.options).some(opt => opt.value.toLowerCase() === cleanCat.toLowerCase());
 
       if (!exists) {
-        const optForm = new Option(`📦 ${cleanCat}`, cleanCat);
-        selectCat.add(optForm);
+        selectCat.add(new Option(`📦 ${cleanCat}`, cleanCat));
         selectCat.value = cleanCat;
 
         const optFilter = new Option(`📦 ${cleanCat}`, cleanCat);
@@ -973,14 +972,14 @@
         products = data || [];
         document.getElementById("countBadge").textContent = products.length;
         
-        // Cargar categorías existentes de los productos en los selectores si no están presentes
+        // Sincronizar categorías no registradas en los selectores
+        const selectFilter = document.getElementById("tableFilter");
         products.forEach(p => {
           if (p.category && p.category.trim()) {
             const cat = p.category.trim();
             let exists = Array.from(categorySelect.options).some(opt => opt.value.toLowerCase() === cat.toLowerCase());
             if (!exists) {
               categorySelect.add(new Option(`📦 ${cat}`, cat));
-              const selectFilter = document.getElementById("tableFilter");
               selectFilter.insertBefore(new Option(`📦 ${cat}`, cat), selectFilter.options[6]);
             }
           }
@@ -1259,7 +1258,7 @@
     function renderImagePreviews() {
       previewContainer.innerHTML = currentImages.map((img, idx) => `
         <div class="preview-thumb-wrap">
-          <img src="${img}" class="preview-thumb">
+          <img src="${escapeHTML(img)}" class="preview-thumb">
           <button type="button" class="preview-remove" onclick="removeImage(${idx})">✕</button>
         </div>
       `).join("");
@@ -1404,12 +1403,13 @@
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       const client = getSupabase();
-      client.auth.onAuthStateChange((event, session) => {
+      client.auth.onAuthStateChange(() => {
         checkAuth();
       });
       checkAuth();
