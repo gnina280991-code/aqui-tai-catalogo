@@ -19,6 +19,7 @@
       --border-color: #334155;
       --accent-color: #ff9d00;
       --whatsapp-color: #25d366;
+      --danger-color: #ef4444;
     }
 
     /* VISTA TEMA CLARO */
@@ -168,9 +169,37 @@
       padding: 10px;
       display: flex;
       flex-direction: column;
+      position: relative;
       transition: transform .2s, background-color 0.3s;
       content-visibility: auto;
       contain-intrinsic-size: 220px;
+    }
+
+    .badge-new {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: var(--accent-color);
+      color: #0f172a;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    .badge-out {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: var(--danger-color);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      z-index: 10;
     }
 
     .prod-img {
@@ -219,7 +248,14 @@
       color: #0f172a;
     }
 
-    .btn-add-card:active {
+    .btn-add-card:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: var(--bg-main) !important;
+      color: var(--text-muted) !important;
+    }
+
+    .btn-add-card:not(:disabled):active {
       background: var(--accent-color) !important;
       color: #0f172a !important;
     }
@@ -454,6 +490,13 @@
       cursor: pointer;
     }
 
+    .btn-add-modal:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: var(--bg-main);
+      color: var(--text-muted);
+    }
+
     /* VISOR LIGHTBOX (PANTALLA COMPLETA) */
     .lightbox-modal {
       position: fixed;
@@ -588,7 +631,7 @@
       <div class="detail-desc-title">📝 Descripción / Características:</div>
       <div id="modalDesc" class="detail-desc"></div>
 
-      <button class="btn-add-modal" onclick="addCurrentProductToCart()">🛒 Agregar al Carrito</button>
+      <button id="modalAddBtn" class="btn-add-modal" onclick="addCurrentProductToCart()">🛒 Agregar al Carrito</button>
       <button class="btn-ws" onclick="orderSingleWhatsapp()">💬 Pedir directamente</button>
     </div>
   </div>
@@ -636,6 +679,7 @@
     let activeImageIndex = 0;
     let currentPage = 0;
     let hasMoreProducts = true;
+    let maxId = 0; // Para calcular las publicaciones recientes
 
     const lightboxModal = document.getElementById("lightboxModal");
     const lightboxImg = document.getElementById("lightboxImg");
@@ -661,6 +705,22 @@
         cartModal.classList.remove('open');
       }
     });
+
+    /* PERSISTENCIA DEL CARRITO */
+    function loadSavedCart() {
+      try {
+        const saved = localStorage.getItem("aqui_ta_cart");
+        if (saved) cart = JSON.parse(saved);
+      } catch (e) {
+        cart = [];
+      }
+      updateCartBadge();
+    }
+
+    function saveCart() {
+      localStorage.setItem("aqui_ta_cart", JSON.stringify(cart));
+      updateCartBadge();
+    }
 
     function initTheme() {
       const savedTheme = localStorage.getItem("theme");
@@ -698,7 +758,8 @@
       try {
         const { data, error } = await supabaseClient
           .from("products")
-          .select("id, name, price, stock, category, description, images, image")
+          .select("id, name, price, stock, category, description, images, image, active")
+          .eq("active", true)
           .order("id", { ascending: false })
           .range(from, to);
 
@@ -706,6 +767,11 @@
 
         hasMoreProducts = data.length >= PAGE_SIZE;
         products = loadMore ? [...products, ...data] : data;
+
+        if (products.length > 0 && currentPage === 0) {
+          maxId = products[0].id; // El id más alto se usa de referencia para "Nuevos"
+        }
+
         buildCategoriesMenu();
         filterProducts();
       } catch (e) {
@@ -759,12 +825,19 @@
         const fetchPriority = index < 4 ? 'fetchpriority="high"' : '';
         const loadingMode = index < 4 ? 'eager' : 'lazy';
 
+        const isNew = maxId > 0 && (maxId - p.id) < 5; // Muestra "¡Nuevo!" en los últimos 5 ítems cargados
+        const isOutOfStock = Number(p.stock || 0) <= 0;
+
         return `
           <div class="prod-card">
+            ${isNew ? '<span class="badge-new">✨ Nuevo</span>' : ''}
+            ${isOutOfStock ? '<span class="badge-out">Agotado</span>' : ''}
             <img class="prod-img" src="${escapeHTML(mainImg)}" alt="${escapeHTML(p.name)}" ${fetchPriority} loading="${loadingMode}" decoding="async" onclick="openModal(${p.id})">
             <div class="prod-title" onclick="openModal(${p.id})">${escapeHTML(p.name)}</div>
             <div class="prod-price">Bs ${Number(p.price || 0).toFixed(2)}</div>
-            <button class="btn-add-card" onclick="addToCart(${p.id})">+ Agregar al carrito</button>
+            <button class="btn-add-card" onclick="addToCart(${p.id})" ${isOutOfStock ? 'disabled' : ''}>
+              ${isOutOfStock ? '❌ Agotado' : '+ Agregar al carrito'}
+            </button>
           </div>
         `;
       }).join("");
@@ -783,7 +856,7 @@
 
     function addToCart(id) {
       const p = products.find(x => x.id === id);
-      if (!p) return;
+      if (!p || Number(p.stock || 0) <= 0) return;
 
       const item = cart.find(x => x.id === id);
       if (item) {
@@ -792,7 +865,7 @@
         cart.push({ ...p, qty: 1 });
       }
 
-      updateCartBadge();
+      saveCart();
     }
 
     function addCurrentProductToCart() {
@@ -811,7 +884,7 @@
         cart = cart.filter(x => x.id !== id);
       }
 
-      updateCartBadge();
+      saveCart();
       renderCart();
     }
 
@@ -887,11 +960,17 @@
       currentSelectedProduct = p;
       activeGalleryImages = getImagesArray(p, 'modal');
 
+      const isOutOfStock = Number(p.stock || 0) <= 0;
+      const modalAddBtn = document.getElementById("modalAddBtn");
+
       document.getElementById("modalTitle").textContent = p.name || "Producto";
       document.getElementById("modalCat").textContent = p.category || "General";
       document.getElementById("modalPrice").textContent = "Bs " + Number(p.price || 0).toFixed(2);
-      document.getElementById("modalStock").textContent = (p.stock || 0) + " unidades";
+      document.getElementById("modalStock").textContent = isOutOfStock ? "❌ Agotado" : (p.stock + " unidades");
       document.getElementById("modalDesc").textContent = p.description || "Sin descripción registrada.";
+
+      modalAddBtn.disabled = isOutOfStock;
+      modalAddBtn.textContent = isOutOfStock ? "❌ Producto Agotado" : "🛒 Agregar al Carrito";
 
       const gallery = document.getElementById("modalGallery");
 
@@ -993,6 +1072,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       initTheme();
+      loadSavedCart();
       loadCatalog();
     });
   </script>
