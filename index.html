@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Aquí tái | Tienda en Línea</title>
 
   <!-- Preconexión a Supabase para reducir latencia de red -->
@@ -500,7 +500,7 @@
       color: var(--text-muted);
     }
 
-    /* VISOR LIGHTBOX CON SOPORTE COMPATIBLE DE ZOOM Y SWIPE */
+    /* VISOR LIGHTBOX CON ZOOM RESTRINGIDO ÚNICAMENTE AL INTERIOR */
     .lightbox-modal {
       position: fixed;
       inset: 0;
@@ -511,7 +511,6 @@
       z-index: 500;
       padding: 16px;
       overflow: hidden;
-      touch-action: none; /* Permite que PinchZoom maneje los gestos táctiles completamente */
     }
 
     .lightbox-modal.open { display: flex; }
@@ -524,6 +523,7 @@
       justify-content: center;
       overflow: hidden;
       position: relative;
+      touch-action: none; /* Bloquea el zoom general del navegador únicamente en este contenedor */
     }
 
     .lightbox-img {
@@ -677,7 +677,7 @@
     </div>
   </div>
 
-  <!-- LIGHTBOX CON SOPORTE DE ZOOM Y SWIPE -->
+  <!-- LIGHTBOX CON SOPORTE DE ZOOM ÚNICAMENTE DENTRO DEL VISOR -->
   <div id="lightboxModal" class="lightbox-modal" onclick="if(event.target===this)closeLightbox()">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     <button class="lightbox-btn prev" onclick="changeLightboxImg(-1)">◀</button>
@@ -1052,7 +1052,7 @@
       }
     }
 
-    /* VISOR LIGHTBOX CON ZOOM Y DESLIZAMIENTO (SWIPE) INTEGRADO */
+    /* VISOR LIGHTBOX CON ZOOM Y DESLIZAMIENTO EXCLUSIVO */
     function openLightbox(index) {
       if (!currentSelectedProduct) return;
       activeGalleryImages = getImagesArray(currentSelectedProduct, 'full');
@@ -1061,6 +1061,7 @@
       lightboxModal.classList.add("open");
       history.pushState({ modalOpen: true }, "");
 
+      // Vincula PinchZoom únicamente al elemento contenedor de la imagen del visor
       if (typeof PinchZoom !== "undefined" && lightboxContainer) {
         if (pzInstance) {
           pzInstance.destroy();
@@ -1114,12 +1115,11 @@
     }
 
     function handleTouchStart(event) {
-      // Si hay más de un toque (multitouch/pinch zoom) no ejecutamos swipe
+      // Ignora multitouch o zoom dentro del visor
       if (event.touches && event.touches.length > 1) {
         isDragging = false;
         return;
       }
-      // Evitamos arrastrar swipe si la imagen tiene zoom activo
       if (pzInstance && pzInstance.zoomFactor > 1.05) return;
       if (activeGalleryImages.length <= 1) return;
 
@@ -1130,7 +1130,6 @@
 
     function handleTouchMove(event) {
       if (!isDragging) return;
-      // Si el usuario pone un segundo dedo a mitad de camino, se cancela el swipe para permitir el zoom
       if (event.touches && event.touches.length > 1) {
         isDragging = false;
         lightboxImg.style.transform = 'translateX(0px)';
@@ -1146,7 +1145,6 @@
       isDragging = false;
       lightboxImg.style.transition = 'transform 0.25s ease-out';
 
-      // Límite de desplazamiento para cambiar de imagen (50px)
       if (currentTranslate < -50) {
         changeLightboxImg(1);
       } else if (currentTranslate > 50) {
@@ -1157,7 +1155,7 @@
       currentTranslate = 0;
     }
 
-    // Vinculación de eventos táctiles y de ratón al contenedor de la imagen
+    // Eventos asignados únicamente al contenedor interno del visor
     lightboxContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
     lightboxContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
     lightboxContainer.addEventListener('touchend', handleTouchEnd);
