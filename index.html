@@ -8,7 +8,9 @@
   <!-- Preconexión a Supabase para reducir latencia de red -->
   <link rel="preconnect" href="https://ztsthkoejosgwkhmzfbd.supabase.co" crossorigin>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  
+  <!-- Librería ligera para control táctil de zoom -->
+  <script src="https://cdn.jsdelivr.net/npm/pinch-zoom-js@2.3.5/dist/pinch-zoom.umd.min.js"></script>
+
   <style>
     /* VARIABLES DE TEMA (MODO NOCTURNO POR DEFECTO) */
     :root {
@@ -498,7 +500,7 @@
       color: var(--text-muted);
     }
 
-    /* VISOR LIGHTBOX CON GESTOS TÁCTILES */
+    /* VISOR LIGHTBOX CON SOPORTE DE ZOOM */
     .lightbox-modal {
       position: fixed;
       inset: 0;
@@ -508,10 +510,19 @@
       justify-content: center;
       z-index: 500;
       padding: 16px;
-      touch-action: pan-y;
+      overflow: hidden;
     }
 
     .lightbox-modal.open { display: flex; }
+
+    .lightbox-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
 
     .lightbox-img {
       max-width: 90vw;
@@ -662,15 +673,15 @@
     </div>
   </div>
 
-  <!-- LIGHTBOX CON GESTOS TÁCTILES -->
-  <div id="lightboxModal" class="lightbox-modal" 
-       onclick="if(event.target===this)closeLightbox()"
-       ontouchstart="handleTouchStart(event)"
-       ontouchmove="handleTouchMove(event)"
-       ontouchend="handleTouchEnd()">
+  <!-- LIGHTBOX CON SOPORTE DE ZOOM -->
+  <div id="lightboxModal" class="lightbox-modal" onclick="if(event.target===this)closeLightbox()">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     <button class="lightbox-btn prev" onclick="changeLightboxImg(-1)">◀</button>
-    <img id="lightboxImg" class="lightbox-img" src="" alt="Vista Completa" loading="eager" decoding="async">
+    
+    <div id="lightboxContainer" class="lightbox-container">
+      <img id="lightboxImg" class="lightbox-img" src="" alt="Vista Completa" loading="eager" decoding="async">
+    </div>
+
     <button class="lightbox-btn next" onclick="changeLightboxImg(1)">▶</button>
     <div id="lightboxCounter" class="lightbox-counter">1 / 1</div>
   </div>
@@ -691,13 +702,11 @@
     let currentPage = 0;
     let hasMoreProducts = true;
     let maxId = 0;
-
-    /* VARIABLES PARA DETECCIÓN DE GESTOS TÁCTILES (SWIPE) */
-    let touchStartX = 0;
-    let touchEndX = 0;
+    let pzInstance = null;
 
     const lightboxModal = document.getElementById("lightboxModal");
     const lightboxImg = document.getElementById("lightboxImg");
+    const lightboxContainer = document.getElementById("lightboxContainer");
     const lightboxCounter = document.getElementById("lightboxCounter");
 
     document.getElementById("wsDirectLink").href = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent('¡Hola! Vengo desde el catálogo online y quisiera hacer una consulta.')}`;
@@ -1034,7 +1043,7 @@
       }
     }
 
-    /* VISOR LIGHTBOX Y MANEJO DE SWIPE TÁCTIL */
+    /* VISOR LIGHTBOX CON ZOOM INTEGRADO */
     function openLightbox(index) {
       if (!currentSelectedProduct) return;
       activeGalleryImages = getImagesArray(currentSelectedProduct, 'full');
@@ -1042,11 +1051,26 @@
       updateLightbox();
       lightboxModal.classList.add("open");
       history.pushState({ modalOpen: true }, "");
+
+      if (typeof PinchZoom !== "undefined" && lightboxContainer) {
+        if (pzInstance) {
+          pzInstance.destroy();
+        }
+        pzInstance = new PinchZoom(lightboxContainer, {
+          draggableUnzoomed: false,
+          minZoom: 1,
+          maxZoom: 4
+        });
+      }
     }
 
     function closeLightbox() {
       if (lightboxModal && lightboxModal.classList.contains('open')) {
         lightboxModal.classList.remove('open');
+        if (pzInstance) {
+          pzInstance.destroy();
+          pzInstance = null;
+        }
         if (history.state && history.state.modalOpen) {
           history.back();
         }
@@ -1066,28 +1090,9 @@
     function updateLightbox() {
       lightboxImg.src = activeGalleryImages[activeImageIndex];
       lightboxCounter.textContent = `${activeImageIndex + 1} / ${activeGalleryImages.length}`;
-    }
-
-    /* MANEJADORES DE EVENTOS DE TOQUE */
-    function handleTouchStart(e) {
-      touchStartX = e.changedTouches[0].screenX;
-    }
-
-    function handleTouchMove(e) {
-      touchEndX = e.changedTouches[0].screenX;
-    }
-
-    function handleTouchEnd() {
-      const swipeThreshold = 40;
-      
-      if (touchStartX - touchEndX > swipeThreshold && touchEndX !== 0) {
-        changeLightboxImg(1);
-      } else if (touchEndX - touchStartX > swipeThreshold && touchEndX !== 0) {
-        changeLightboxImg(-1);
+      if (pzInstance) {
+        pzInstance.zoomTo({ x: 0, y: 0, scale: 1, animated: false });
       }
-      
-      touchStartX = 0;
-      touchEndX = 0;
     }
 
     function orderSingleWhatsapp() {
