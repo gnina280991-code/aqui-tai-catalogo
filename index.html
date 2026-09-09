@@ -138,14 +138,12 @@
       background-size: 16px;  
     }  
   
-    /* CONTENEDOR PRINCIPAL */  
     .main-container {  
       max-width: 1000px;  
       margin: 16px auto;  
       padding: 0 16px;  
     }  
 
-    /* SECCIONES DE CATEGORÍA */  
     .category-section {  
       margin-bottom: 24px;  
     }  
@@ -175,7 +173,23 @@
       cursor: pointer;  
     }  
 
-    /* CARRUSEL HORIZONTAL */  
+    .btn-back-cat {
+      background: var(--bg-card);
+      color: var(--accent-color);
+      border: 1px solid var(--border-color);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      transition: transform 0.1s;
+    }
+    .btn-back-cat:active { transform: scale(0.96); }
+
     .horizontal-scroll {  
       display: flex;  
       gap: 12px;  
@@ -188,14 +202,12 @@
     .horizontal-scroll::-webkit-scrollbar { height: 4px; }  
     .horizontal-scroll::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }  
 
-    /* GRID TRADICIONAL */  
     .grid {  
       display: grid;  
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));  
       gap: 14px;  
     }  
 
-    /* TARJETA DE PRODUCTO */  
     .prod-card {  
       background: var(--bg-card);  
       border: 1px solid var(--border-color);  
@@ -300,7 +312,6 @@
       color: #0f172a !important;  
     }  
   
-    /* BOTONES FLOTANTES */  
     .cart-float-btn {  
       position: fixed;  
       bottom: 20px;  
@@ -349,7 +360,6 @@
     }  
     .ws-float-btn svg { width: 28px; height: 28px; fill: currentColor; }  
   
-    /* MODALES */  
     .modal {  
       position: fixed;  
       inset: 0;  
@@ -513,7 +523,6 @@
     }  
     .btn-add-modal:disabled { opacity: 0.5; cursor: not-allowed; background: var(--bg-main); color: var(--text-muted); }  
   
-    /* LIGHTBOX */  
     .lightbox-modal {  
       position: fixed;  
       inset: 0;  
@@ -540,8 +549,8 @@
 
   <header>  
     <div class="top-bar">  
-      <img class="logo" src="logo.png" alt="Logo" loading="lazy" decoding="async" onerror="this.style.display='none'" onclick="reloadPage()">  
-      <div class="brand-wrap" onclick="reloadPage()">  
+      <img class="logo" src="logo.png" alt="Logo" loading="lazy" decoding="async" onerror="this.style.display='none'" onclick="selectCategory('all')">  
+      <div class="brand-wrap" onclick="selectCategory('all')">  
         <div class="brand">Aquí tái</div>  
         <div class="sub">Catálogo Oficial · Bolivia</div>  
       </div>  
@@ -662,9 +671,8 @@
   
     document.getElementById("wsDirectLink").href = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent('¡Hola! Vengo desde el catálogo online y quisiera hacer una consulta.')}`;  
   
-    function reloadPage() { window.location.reload(); }  
-  
-    window.addEventListener('popstate', () => {  
+    // GESTIÓN DEL BOTÓN ATRÁS DEL TELÉFONO / NAVEGADOR
+    window.addEventListener('popstate', (e) => {  
       const viewModal = document.getElementById('viewModal');  
       const cartModal = document.getElementById('cartModal');  
 
@@ -673,8 +681,16 @@
         if (pzInstance) { pzInstance.destroy(); pzInstance = null; }  
         return;  
       }  
-      if (viewModal && viewModal.classList.contains('open')) viewModal.classList.remove('open');  
-      if (cartModal && cartModal.classList.contains('open')) cartModal.classList.remove('open');  
+      if (viewModal && viewModal.classList.contains('open')) { viewModal.classList.remove('open'); return; }  
+      if (cartModal && cartModal.classList.contains('open')) { cartModal.classList.remove('open'); return; }  
+
+      if (e.state && e.state.category) {
+        currentCategory = e.state.category;
+      } else {
+        currentCategory = 'all';
+      }
+      document.getElementById("categorySelect").value = currentCategory;
+      filterAndRender();
     });  
   
     function loadSavedCart() {  
@@ -716,7 +732,6 @@
       const container = document.getElementById("catalogContainer");  
 
       try {  
-        // Consulta única e inmediata a Supabase
         const { data, error } = await supabaseClient  
           .from("products")  
           .select("id, name, price, stock, category, description, images, image, active")  
@@ -728,7 +743,6 @@
         allProducts = data || [];  
         if (allProducts.length > 0) maxId = allProducts[0].id;  
 
-        // Poblar categorías localmente sin llamadas extra
         populateCategoriesLocal();  
         filterAndRender();  
         checkUrlProductParam();  
@@ -750,6 +764,17 @@
       select.innerHTML = html;  
     }  
 
+    function selectCategory(cat, isFromHistory = false) {  
+      currentCategory = cat;  
+      document.getElementById("categorySelect").value = cat;  
+      
+      if (!isFromHistory && history.state?.category !== cat) {
+        history.pushState({ category: cat }, "", window.location.pathname);
+      }
+      
+      filterAndRender();  
+    }
+
     function filterAndRender() {  
       const container = document.getElementById("catalogContainer");  
       const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();  
@@ -765,13 +790,18 @@
       }  
 
       if (!list.length) {  
-        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px;">No se encontraron productos.</div>`;  
+        let backBtn = currentCategory !== 'all' ? 
+          `<button class="btn-back-cat" onclick="selectCategory('all')">⬅️ Volver a todas las categorías</button>` : '';
+        container.innerHTML = `${backBtn}<div style="text-align:center; color:var(--text-muted); padding:30px;">No se encontraron productos.</div>`;  
         return;  
       }  
 
-      // SI HAY BÚSQUEDA O CATEGORÍA ÚNICA SELECCIONADA -> MOSTRAR EN GRID  
+      // SI SE FILTRA POR CATEGORÍA O BÚSQUEDA
       if (currentCategory !== 'all' || searchQuery !== '') {  
-        container.innerHTML = `<div class="grid">${list.map(p => renderProductCard(p)).join('')}</div>`;  
+        let backBtn = currentCategory !== 'all' ? 
+          `<button class="btn-back-cat" onclick="selectCategory('all')">⬅️ Volver a todas las categorías</button>` : '';
+
+        container.innerHTML = `${backBtn}<div class="grid">${list.map(p => renderProductCard(p)).join('')}</div>`;  
         return;  
       }  
 
@@ -819,12 +849,6 @@
           </button>  
         </div>  
       `;  
-    }  
-
-    function selectCategory(cat) {  
-      currentCategory = cat;  
-      document.getElementById("categorySelect").value = cat;  
-      filterAndRender();  
     }  
 
     function debounceSearch() {  
