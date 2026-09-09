@@ -2,18 +2,17 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <!-- Se deshabilita el zoom nativo del navegador para que toda la interfaz sea fija -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aquí tái | Tienda en Línea</title>
 
-  <!-- Preconexión a Supabase -->
+  <!-- Preconexión a Supabase para reducir latencia de red -->
   <link rel="preconnect" href="https://ztsthkoejosgwkhmzfbd.supabase.co" crossorigin>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <!-- Librería ligera para zoom manipulado por CSS dentro de contenedores -->
+  <!-- Librería ligera para control táctil de zoom -->
   <script src="https://cdn.jsdelivr.net/npm/pinch-zoom-js@2.3.5/dist/pinch-zoom.umd.min.js"></script>
 
   <style>
-    /* VARIABLES DE TEMA */
+    /* VARIABLES DE TEMA (MODO NOCTURNO POR DEFECTO) */
     :root {
       --bg-main: #0f172a;
       --bg-card: #1e293b;
@@ -25,6 +24,7 @@
       --danger-color: #ef4444;
     }
 
+    /* VISTA TEMA CLARO */
     body.light-mode {
       --bg-main: #f1f5f9;
       --bg-card: #ffffff;
@@ -41,8 +41,6 @@
       color: var(--text-main);
       padding-bottom: 90px;
       transition: background-color 0.3s, color 0.3s;
-      /* Evita el desplazamiento elástico global en móviles */
-      overscroll-behavior-y: none;
     }
 
     /* HEADER */
@@ -81,6 +79,7 @@
     .brand { font-size: 20px; font-weight: 800; line-height: 1.1; }
     .sub { font-size: 11px; color: var(--text-muted); }
 
+    /* BOTÓN MODO NOCTURNO */
     .theme-toggle-btn {
       background: var(--bg-main);
       border: 1px solid var(--border-color);
@@ -127,6 +126,7 @@
       opacity: 0.6;
     }
 
+    /* MENÚ DESPLEGABLE DE CATEGORÍAS */
     .category-select-wrapper {
       max-width: 1000px;
       margin: 10px auto 0;
@@ -152,7 +152,9 @@
       transition: border-color 0.3s, background-color 0.3s;
     }
 
-    .category-select:focus { border-color: var(--accent-color); }
+    .category-select:focus {
+      border-color: var(--accent-color);
+    }
 
     /* GRID DE PRODUCTOS */
     .grid {
@@ -498,18 +500,17 @@
       color: var(--text-muted);
     }
 
-    /* VISOR LIGHTBOX (ÚNICA ÁREA DONDE OPERA EL ZOOM INTERNO) */
+    /* VISOR LIGHTBOX CON SOPORTE DE ZOOM */
     .lightbox-modal {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.95);
+      background: rgba(0, 0, 0, 0.92);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 500;
-      padding: 0;
+      padding: 16px;
       overflow: hidden;
-      touch-action: none; /* Bloquea gestos del navegador dentro de la ventana */
     }
 
     .lightbox-modal.open { display: flex; }
@@ -521,7 +522,6 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      position: relative;
     }
 
     .lightbox-img {
@@ -529,9 +529,9 @@
       max-height: 80vh;
       object-fit: contain;
       border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
       user-select: none;
       -webkit-user-drag: none;
-      will-change: transform;
     }
 
     .lightbox-close, .lightbox-btn, .lightbox-counter { z-index: 510; }
@@ -575,7 +575,7 @@
       bottom: 20px;
       color: #fff;
       font-size: 14px;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.5);
       padding: 6px 14px;
       border-radius: 20px;
     }
@@ -673,7 +673,7 @@
     </div>
   </div>
 
-  <!-- VISOR LIGHTBOX CON ZOOM EXCLUSIVO PARA LA IMAGEN EN PANTALLA COMPLETA -->
+  <!-- LIGHTBOX CON SOPORTE DE ZOOM -->
   <div id="lightboxModal" class="lightbox-modal" onclick="if(event.target===this)closeLightbox()">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     <button class="lightbox-btn prev" onclick="changeLightboxImg(-1)">◀</button>
@@ -704,10 +704,6 @@
     let maxId = 0;
     let pzInstance = null;
 
-    let startX = 0;
-    let currentTranslate = 0;
-    let isDragging = false;
-
     const lightboxModal = document.getElementById("lightboxModal");
     const lightboxImg = document.getElementById("lightboxImg");
     const lightboxContainer = document.getElementById("lightboxContainer");
@@ -719,14 +715,16 @@
       window.location.reload();
     }
 
+    /* GESTIÓN DE BOTÓN ATRÁS EN NAVEGADOR Y MÓVILES */
     window.addEventListener('popstate', (e) => {
       const viewModal = document.getElementById('viewModal');
       const cartModal = document.getElementById('cartModal');
 
       if (lightboxModal && lightboxModal.classList.contains('open')) {
-        closeLightbox();
+        lightboxModal.classList.remove('open');
         return;
       }
+
       if (viewModal && viewModal.classList.contains('open')) {
         viewModal.classList.remove('open');
       }
@@ -735,6 +733,7 @@
       }
     });
 
+    /* PERSISTENCIA DEL CARRITO */
     function loadSavedCart() {
       try {
         const saved = localStorage.getItem("aqui_ta_cart");
@@ -811,6 +810,7 @@
       }
     }
 
+    /* OBTENER TODAS LAS CATEGORÍAS REGISTRADAS EN LA BASE DE DATOS DE SUPABASE */
     async function fetchAllCategories() {
       if (!supabaseClient) {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -836,7 +836,7 @@
 
         select.innerHTML = html;
       } catch (err) {
-        console.error("Error al cargar categorías:", err);
+        console.error("Error al cargar menú de categorías:", err);
       }
     }
 
@@ -1043,7 +1043,7 @@
       }
     }
 
-    /* INICIALIZACIÓN DE PINCHZOOM SOLO PARA LA IMAGEN DEL LIGHTBOX */
+    /* VISOR LIGHTBOX CON ZOOM INTEGRADO */
     function openLightbox(index) {
       if (!currentSelectedProduct) return;
       activeGalleryImages = getImagesArray(currentSelectedProduct, 'full');
@@ -1052,12 +1052,11 @@
       lightboxModal.classList.add("open");
       history.pushState({ modalOpen: true }, "");
 
-      const imgElement = document.getElementById("lightboxImg");
-      if (typeof PinchZoom !== "undefined" && imgElement) {
+      if (typeof PinchZoom !== "undefined" && lightboxContainer) {
         if (pzInstance) {
           pzInstance.destroy();
         }
-        pzInstance = new PinchZoom(imgElement, {
+        pzInstance = new PinchZoom(lightboxContainer, {
           draggableUnzoomed: false,
           minZoom: 1,
           maxZoom: 4
@@ -1079,7 +1078,6 @@
     }
 
     function changeLightboxImg(step) {
-      if (activeGalleryImages.length <= 1) return;
       activeImageIndex += step;
       if (activeImageIndex < 0) {
         activeImageIndex = activeGalleryImages.length - 1;
@@ -1090,69 +1088,12 @@
     }
 
     function updateLightbox() {
-      lightboxImg.style.transition = 'none';
-      lightboxImg.style.transform = 'translateX(0px)';
       lightboxImg.src = activeGalleryImages[activeImageIndex];
       lightboxCounter.textContent = `${activeImageIndex + 1} / ${activeGalleryImages.length}`;
-      
       if (pzInstance) {
         pzInstance.zoomTo({ x: 0, y: 0, scale: 1, animated: false });
       }
     }
-
-    /* DESLIZAMIENTO CON UN SOLO DEDO */
-    function getXPos(event) {
-      return event.type.includes('mouse') ? event.clientX : event.touches[0].clientX;
-    }
-
-    function handleTouchStart(event) {
-      if (event.touches && event.touches.length > 1) {
-        isDragging = false;
-        return;
-      }
-      if (pzInstance && pzInstance.zoomFactor > 1.05) return;
-      if (activeGalleryImages.length <= 1) return;
-
-      isDragging = true;
-      startX = getXPos(event);
-      lightboxImg.style.transition = 'none';
-    }
-
-    function handleTouchMove(event) {
-      if (!isDragging) return;
-      if (event.touches && event.touches.length > 1) {
-        isDragging = false;
-        lightboxImg.style.transform = 'translateX(0px)';
-        return;
-      }
-      const currentX = getXPos(event);
-      currentTranslate = currentX - startX;
-      lightboxImg.style.transform = `translateX(${currentTranslate}px)`;
-    }
-
-    function handleTouchEnd() {
-      if (!isDragging) return;
-      isDragging = false;
-      lightboxImg.style.transition = 'transform 0.25s ease-out';
-
-      if (currentTranslate < -50) {
-        changeLightboxImg(1);
-      } else if (currentTranslate > 50) {
-        changeLightboxImg(-1);
-      } else {
-        lightboxImg.style.transform = 'translateX(0px)';
-      }
-      currentTranslate = 0;
-    }
-
-    lightboxContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-    lightboxContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
-    lightboxContainer.addEventListener('touchend', handleTouchEnd);
-
-    lightboxContainer.addEventListener('mousedown', handleTouchStart);
-    lightboxContainer.addEventListener('mousemove', handleTouchMove);
-    lightboxContainer.addEventListener('mouseup', handleTouchEnd);
-    lightboxContainer.addEventListener('mouseleave', () => { if (isDragging) handleTouchEnd(); });
 
     function orderSingleWhatsapp() {
       if (!currentSelectedProduct) return;
