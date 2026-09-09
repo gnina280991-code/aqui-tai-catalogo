@@ -500,7 +500,7 @@
       color: var(--text-muted);
     }
 
-    /* VISOR LIGHTBOX CON SOPORTE DE SWIPE Y ZOOM */
+    /* VISOR LIGHTBOX CON SOPORTE COMPATIBLE DE ZOOM Y SWIPE */
     .lightbox-modal {
       position: fixed;
       inset: 0;
@@ -511,7 +511,7 @@
       z-index: 500;
       padding: 16px;
       overflow: hidden;
-      touch-action: pan-y;
+      touch-action: none; /* Permite que PinchZoom maneje los gestos táctiles completamente */
     }
 
     .lightbox-modal.open { display: flex; }
@@ -1114,7 +1114,12 @@
     }
 
     function handleTouchStart(event) {
-      // Evitamos arrastrar si hay zoom activo
+      // Si hay más de un toque (multitouch/pinch zoom) no ejecutamos swipe
+      if (event.touches && event.touches.length > 1) {
+        isDragging = false;
+        return;
+      }
+      // Evitamos arrastrar swipe si la imagen tiene zoom activo
       if (pzInstance && pzInstance.zoomFactor > 1.05) return;
       if (activeGalleryImages.length <= 1) return;
 
@@ -1125,6 +1130,12 @@
 
     function handleTouchMove(event) {
       if (!isDragging) return;
+      // Si el usuario pone un segundo dedo a mitad de camino, se cancela el swipe para permitir el zoom
+      if (event.touches && event.touches.length > 1) {
+        isDragging = false;
+        lightboxImg.style.transform = 'translateX(0px)';
+        return;
+      }
       const currentX = getXPos(event);
       currentTranslate = currentX - startX;
       lightboxImg.style.transform = `translateX(${currentTranslate}px)`;
