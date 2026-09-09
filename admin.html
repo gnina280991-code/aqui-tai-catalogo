@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Aquí tái | Panel Admin Express</title>
+  <title>Aquí tái | Panel Admin Express Pro</title>
 
-  <!-- SUPABASE SDK -->
+  <!-- SUPABASE SDK & SORTABLE JS -->
   <link rel="preconnect" href="https://ztsthkoejosgwkhmzfbd.supabase.co" crossorigin>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
 
   <style>
     /* VARIABLES Y MODO OSCURO */
@@ -73,6 +74,21 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       animation: slideUp 0.2s ease-out;
       border-left: 4px solid var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .toast-btn {
+      background: var(--danger-color);
+      color: #fff;
+      border: 0;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
     }
 
     @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -282,21 +298,10 @@
 
     .chip-btn:active { transform: scale(0.95); }
 
-    .upload-box {
-      border: 2px dashed var(--border-color);
-      border-radius: 12px;
-      padding: 20px 14px;
-      text-align: center;
-      background: var(--bg-main);
-      cursor: pointer;
-      transition: 0.2s;
-    }
+    .preview-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; min-height: 74px; }
 
-    .upload-box:hover { border-color: var(--accent-color); }
-
-    .preview-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-
-    .preview-thumb-wrap { position: relative; }
+    .preview-thumb-wrap { position: relative; cursor: grab; }
+    .preview-thumb-wrap:active { cursor: grabbing; }
 
     .preview-thumb {
       width: 64px;
@@ -305,6 +310,18 @@
       object-fit: cover;
       background: #0001;
       border: 1px solid var(--border-color);
+    }
+
+    .badge-main {
+      position: absolute;
+      bottom: 2px;
+      left: 2px;
+      background: var(--accent-color);
+      color: #000;
+      font-size: 8px;
+      font-weight: 900;
+      padding: 1px 4px;
+      border-radius: 4px;
     }
 
     .preview-remove {
@@ -684,12 +701,28 @@
             </div>
 
             <div class="form-group full">
-              <label>Imágenes del Producto</label>
-              <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-                📷 <b>Toca aquí para seleccionar fotos desde tu celular</b>
-                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Se optimizan automáticamente a WebP</div>
-                <input type="file" id="fileInput" multiple accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label>Imágenes del Producto (Arrastra para reordenar)</label>
+                <select id="imgQuality" style="font-size: 10px; padding: 2px 6px;">
+                  <option value="600">⚡ Ligera (600px)</option>
+                  <option value="800" selected>⚖️ Balanceada (800px)</option>
+                  <option value="1200">📸 HD (1200px)</option>
+                </select>
               </div>
+
+              <!-- BOTONES DE CARGA Y CÁMARA DIRECTA -->
+              <div style="display: flex; gap: 8px; margin-top: 6px;">
+                <button type="button" class="btn" style="background: var(--accent-color); color: #000; font-size: 13px; padding: 10px;" onclick="document.getElementById('cameraInput').click()">
+                  📸 Tomar Foto con Cámara
+                </button>
+                <button type="button" class="btn" style="background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); font-size: 13px; padding: 10px;" onclick="document.getElementById('fileInput').click()">
+                  🖼️ Elegir de Galería
+                </button>
+              </div>
+
+              <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleFileSelect(event)">
+              <input type="file" id="fileInput" multiple accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
+
               <div id="previewContainer" class="preview-container"></div>
             </div>
 
@@ -806,6 +839,7 @@
     let currentImages = [];
     let activeGalleryImages = [];
     let activeImageIndex = 0;
+    let sortableInstance = null;
 
     const inventoryTable = document.getElementById("inventoryTable");
     const productForm = document.getElementById("productForm");
@@ -832,13 +866,28 @@
     const lightboxCounter = document.getElementById("lightboxCounter");
 
     /* NOTIFICACIONES TOAST */
-    function showToast(message) {
+    function showToast(message, actionCallback = null, actionLabel = "") {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = 'toast';
-      toast.textContent = message;
+      
+      const textSpan = document.createElement('span');
+      textSpan.textContent = message;
+      toast.appendChild(textSpan);
+
+      if (actionCallback) {
+        const btn = document.createElement('button');
+        btn.className = 'toast-btn';
+        btn.textContent = actionLabel || 'Confirmar';
+        btn.onclick = () => {
+          actionCallback();
+          toast.remove();
+        };
+        toast.appendChild(btn);
+      }
+
       container.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
+      setTimeout(() => { if (toast.parentNode) toast.remove(); }, actionCallback ? 6000 : 3500);
     }
 
     /* CAMBIO DE PESTAÑAS */
@@ -932,7 +981,6 @@
       themeBtn.textContent = "☀️";
     }
 
-    /* AGREGAR NUEVA CATEGORÍA DINÁMICAMENTE */
     function addNewCategoryPrompt() {
       const newCat = prompt("Escribe el nombre de la nueva categoría:");
       if (!newCat || !newCat.trim()) return;
@@ -972,7 +1020,6 @@
         products = data || [];
         document.getElementById("countBadge").textContent = products.length;
         
-        // Sincronizar categorías no registradas en los selectores
         const selectFilter = document.getElementById("tableFilter");
         products.forEach(p => {
           if (p.category && p.category.trim()) {
@@ -1068,7 +1115,7 @@
               <div class="action-btns">
                 <button class="btn-icon" onclick="viewDetails(${p.id})" title="Ver detalles">👁️</button>
                 <button class="btn-icon" onclick="editProduct(${p.id})" title="Editar">✏️</button>
-                <button class="btn-icon" onclick="deleteProduct(${p.id})" title="Eliminar">🗑️</button>
+                <button class="btn-icon" onclick="deleteProductPrompt(${p.id})" title="Eliminar">🗑️</button>
               </div>
             </td>
           </tr>
@@ -1214,13 +1261,14 @@
       const files = Array.from(event.target.files);
       if (!files.length) return;
 
+      const maxDim = parseInt(document.getElementById("imgQuality").value || "800");
       const saveBtn = document.getElementById("saveBtn");
       saveBtn.disabled = true;
       saveBtn.textContent = "⏳ Comprimiendo y subiendo fotos...";
 
       for (const file of files) {
         try {
-          const compressedBlob = await compressImage(file, 800, 0.8);
+          const compressedBlob = await compressImage(file, maxDim, 0.8);
           const fileName = `prod_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.webp`;
 
           const { error } = await client.storage
@@ -1250,18 +1298,41 @@
 
       saveBtn.disabled = false;
       saveBtn.textContent = "💾 Guardar e Insertar al Catálogo";
+
+      // Limpia ambos inputs para permitir capturas o selecciones repetidas
       document.getElementById("fileInput").value = "";
+      document.getElementById("cameraInput").value = "";
+
       renderImagePreviews();
       showToast("📷 Fotos subidas correctamente");
     }
 
     function renderImagePreviews() {
       previewContainer.innerHTML = currentImages.map((img, idx) => `
-        <div class="preview-thumb-wrap">
+        <div class="preview-thumb-wrap" data-id="${idx}">
           <img src="${escapeHTML(img)}" class="preview-thumb">
+          ${idx === 0 ? '<span class="badge-main">PORTADA</span>' : ''}
           <button type="button" class="preview-remove" onclick="removeImage(${idx})">✕</button>
         </div>
       `).join("");
+
+      initSortable();
+    }
+
+    function initSortable() {
+      if (sortableInstance) sortableInstance.destroy();
+      sortableInstance = new Sortable(previewContainer, {
+        animation: 150,
+        onEnd: function () {
+          const newArr = [];
+          previewContainer.querySelectorAll('.preview-thumb-wrap').forEach(el => {
+            const oldIndex = parseInt(el.getAttribute('data-id'));
+            newArr.push(currentImages[oldIndex]);
+          });
+          currentImages = newArr;
+          renderImagePreviews();
+        }
+      });
     }
 
     function removeImage(idx) {
@@ -1384,10 +1455,12 @@
       }
     }
 
+    function deleteProductPrompt(id) {
+      showToast("⚠️ ¿Eliminar permanentemente?", () => deleteProduct(id), "Sí, eliminar");
+    }
+
     async function deleteProduct(id) {
       const client = getSupabase();
-      if (!confirm("¿Seguro que deseas eliminar este producto permanentemente?")) return;
-
       const { error } = await client.from("products").delete().eq("id", id);
 
       if (!error) {
@@ -1407,24 +1480,18 @@
         .replace(/'/g, "&#039;");
     }
 
-    // LIMPIEZA AUTOMÁTICA EN TIEMPO REAL (LENS / PORTAPAPELES EN MÓVILES)
     const descArea = document.getElementById('description');
 
     function cleanDescriptionText(text) {
       return text
-        // 1. Eliminar URLs completas (http, https, www, subdominios)
         .replace(/https?:\/\/[^\s\)]+/gi, '')
         .replace(/www\.[^\s\)]+/gi, '')
-        // 2. Eliminar referencias de corchetes como [1], [2], [3]
         .replace(/\[\d+\]/g, '')
-        // 3. Eliminar paréntesis vacíos ()
         .replace(/\(\s*\)/g, '')
-        // 4. Limpiar espacios múltiples y bordes sobrantes
         .replace(/  +/g, ' ')
         .trim();
     }
 
-    // Escuchar 'paste' e 'input' para teclados móviles (Android Gboard / SwiftKey)
     ['paste', 'input'].forEach(eventType => {
       descArea.addEventListener(eventType, function () {
         setTimeout(() => {
