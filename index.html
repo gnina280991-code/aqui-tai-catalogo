@@ -67,9 +67,13 @@
       object-fit: cover;
       border: 1px solid var(--border-color);
       background: var(--bg-main);
+      cursor: pointer;
     }
 
-    .brand-wrap { flex: 1; }
+    .brand-wrap { 
+      flex: 1; 
+      cursor: pointer;
+    }
     .brand { font-size: 20px; font-weight: 800; line-height: 1.1; }
     .sub { font-size: 11px; color: var(--text-muted); }
 
@@ -570,8 +574,8 @@
 
   <header>
     <div class="top-bar">
-      <img class="logo" src="logo.png" alt="Logo" loading="lazy" decoding="async" onerror="this.style.display='none'">
-      <div class="brand-wrap">
+      <img class="logo" src="logo.png" alt="Logo" loading="lazy" decoding="async" onerror="this.style.display='none'" onclick="reloadPage()">
+      <div class="brand-wrap" onclick="reloadPage()">
         <div class="brand">Aquí tái</div>
         <div class="sub">Catálogo Oficial · Bolivia</div>
       </div>
@@ -698,6 +702,10 @@
 
     document.getElementById("wsDirectLink").href = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent('¡Hola! Vengo desde el catálogo online y quisiera hacer una consulta.')}`;
 
+    function reloadPage() {
+      window.location.reload();
+    }
+
     /* GESTIÓN DE BOTÓN ATRÁS EN NAVEGADOR Y MÓVILES */
     window.addEventListener('popstate', (e) => {
       const viewModal = document.getElementById('viewModal');
@@ -807,7 +815,6 @@
 
         if (error) throw error;
 
-        // Extraer lista de categorías únicas filtrando nulos/vacíos
         const categories = [...new Set(data.map(p => p.category).filter(Boolean))].sort();
 
         const select = document.getElementById("categorySelect");
