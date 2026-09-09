@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aquí tái | Tienda en Línea</title>
 
   <!-- Preconexión a Supabase para reducir latencia de red -->
@@ -523,7 +523,7 @@
       justify-content: center;
       overflow: hidden;
       position: relative;
-      touch-action: none; /* Bloquea el zoom general del navegador únicamente en este contenedor */
+      touch-action: none;
     }
 
     .lightbox-img {
@@ -1061,12 +1061,13 @@
       lightboxModal.classList.add("open");
       history.pushState({ modalOpen: true }, "");
 
-      // Vincula PinchZoom únicamente al elemento contenedor de la imagen del visor
-      if (typeof PinchZoom !== "undefined" && lightboxContainer) {
+      // Vincula PinchZoom al elemento <img> dentro del lightbox
+      const imgElement = document.getElementById("lightboxImg");
+      if (typeof PinchZoom !== "undefined" && imgElement) {
         if (pzInstance) {
           pzInstance.destroy();
         }
-        pzInstance = new PinchZoom(lightboxContainer, {
+        pzInstance = new PinchZoom(imgElement, {
           draggableUnzoomed: false,
           minZoom: 1,
           maxZoom: 4
@@ -1115,7 +1116,6 @@
     }
 
     function handleTouchStart(event) {
-      // Ignora multitouch o zoom dentro del visor
       if (event.touches && event.touches.length > 1) {
         isDragging = false;
         return;
