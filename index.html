@@ -6,7 +6,7 @@
   <title>Aquí tái | Tienda en Línea</title>    
   <link rel="preconnect" href="https://ztsthkoejosgwkhmzfbd.supabase.co" crossorigin>  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>  
-  <script src="https://cdn.jsdelivr.net/npm/pinch-zoom-js@2.3.5/dist/pinch-zoom.umd.min.js"></script>    
+  <script src="https://cdn.jsdelivr.net/npm/pinch-zoom-js@2.3.5/dist/pinch-zoom.umd.min.js" defer></script>    
 
   <style>  
     :root {  
@@ -145,7 +145,7 @@
       padding: 0 16px;  
     }  
 
-    /* ESTILOS DE SECCIÓN DE CATEGORÍA */  
+    /* SECCIONES DE CATEGORÍA */  
     .category-section {  
       margin-bottom: 24px;  
     }  
@@ -183,11 +183,12 @@
       scroll-snap-type: x mandatory;  
       padding-bottom: 8px;  
       -webkit-overflow-scrolling: touch;  
+      will-change: scroll-position;  
     }  
     .horizontal-scroll::-webkit-scrollbar { height: 4px; }  
     .horizontal-scroll::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }  
 
-    /* GRID TRADICIONAL PARA BÚSQUEDAS/CATEGORÍA ÚNICA */  
+    /* GRID TRADICIONAL */  
     .grid {  
       display: grid;  
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));  
@@ -204,12 +205,12 @@
       flex-direction: column;  
       position: relative;  
       transition: transform .2s;  
-      flex: 0 0 160px; /* Ancho fijo para el deslizamiento horizontal */  
+      flex: 0 0 160px;  
       scroll-snap-align: start;  
     }  
 
     .grid .prod-card {  
-      flex: auto; /* Ancho flexible cuando está en modo Grid */  
+      flex: auto;  
     }  
   
     .badge-new {  
@@ -644,7 +645,7 @@
     const PHONE_NUMBER = "59171440907";  
   
     let supabaseClient = null;  
-    let products = [];  
+    let allProducts = [];  
     let cart = [];  
     let currentCategory = 'all';  
     let currentSelectedProduct = null;  
@@ -663,7 +664,7 @@
   
     function reloadPage() { window.location.reload(); }  
   
-    window.addEventListener('popstate', (e) => {  
+    window.addEventListener('popstate', () => {  
       const viewModal = document.getElementById('viewModal');  
       const cartModal = document.getElementById('cartModal');  
 
@@ -713,53 +714,68 @@
       }  
   
       const container = document.getElementById("catalogContainer");  
-      const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();  
-
-      container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">⏳ Cargando catálogo...</div>`;  
 
       try {  
-        let query = supabaseClient  
+        // Consulta única e inmediata a Supabase
+        const { data, error } = await supabaseClient  
           .from("products")  
           .select("id, name, price, stock, category, description, images, image, active")  
           .eq("active", true)  
           .order("id", { ascending: false });  
 
-        if (currentCategory !== 'all') {  
-          query = query.eq("category", currentCategory);  
-        }  
-
-        if (searchQuery) {  
-          query = query.ilike("name", `%${searchQuery}%`);  
-        }  
-
-        const { data, error } = await query;  
         if (error) throw error;  
 
-        products = data || [];  
-        if (products.length > 0) maxId = products[0].id;  
+        allProducts = data || [];  
+        if (allProducts.length > 0) maxId = allProducts[0].id;  
 
-        renderCatalogView(products, searchQuery);  
-        checkUrlProductParam(); // Verificar si viene de un link compartido  
+        // Poblar categorías localmente sin llamadas extra
+        populateCategoriesLocal();  
+        filterAndRender();  
+        checkUrlProductParam();  
       } catch (e) {  
         container.innerHTML = `<div style="text-align:center; padding: 30px;">❌ Error al cargar los productos.</div>`;  
       }  
     }  
 
-    function renderCatalogView(list, searchQuery) {  
+    function populateCategoriesLocal() {  
+      const categories = [...new Set(allProducts.map(p => p.category).filter(Boolean))].sort();  
+      const select = document.getElementById("categorySelect");  
+      let html = `<option value="all" ${currentCategory === 'all' ? 'selected' : ''}>📂 Todas las categorías</option>`;  
+        
+      categories.forEach(cat => {  
+        const selected = currentCategory === cat ? 'selected' : '';  
+        html += `<option value="${escapeHTML(cat)}" ${selected}>🏷️ ${escapeHTML(cat)}</option>`;  
+      });  
+
+      select.innerHTML = html;  
+    }  
+
+    function filterAndRender() {  
       const container = document.getElementById("catalogContainer");  
+      const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();  
+
+      let list = allProducts;  
+
+      if (currentCategory !== 'all') {  
+        list = list.filter(p => p.category === currentCategory);  
+      }  
+
+      if (searchQuery) {  
+        list = list.filter(p => (p.name || '').toLowerCase().includes(searchQuery));  
+      }  
 
       if (!list.length) {  
         container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px;">No se encontraron productos.</div>`;  
         return;  
       }  
 
-      // SI HAY BÚSQUEDA O UNA CATEGORÍA ESPECÍFICA SELECCIONADA -> MOSTRAR EN GRID TRADICIONAL  
+      // SI HAY BÚSQUEDA O CATEGORÍA ÚNICA SELECCIONADA -> MOSTRAR EN GRID  
       if (currentCategory !== 'all' || searchQuery !== '') {  
-        container.innerHTML = `<div class="grid">${list.map(p => renderProductCard(p, false)).join('')}</div>`;  
+        container.innerHTML = `<div class="grid">${list.map(p => renderProductCard(p)).join('')}</div>`;  
         return;  
       }  
 
-      // SI ESTÁ EN "TODAS LAS CATEGORÍAS" -> AGRUPAR POR CATEGORÍA EN CARRUSELES HORIZONTALES  
+      // EN "TODAS LAS CATEGORÍAS" -> CARRUSELES HORIZONTALES POR CATEGORÍA
       const grouped = {};  
       list.forEach(p => {  
         const cat = p.category || 'Varios';  
@@ -776,7 +792,7 @@
               <button class="btn-see-all" onclick="selectCategory('${escapeHTML(catName)}')">Ver todos ➔</button>  
             </div>  
             <div class="horizontal-scroll">  
-              ${grouped[catName].map(p => renderProductCard(p, true)).join('')}  
+              ${grouped[catName].map(p => renderProductCard(p)).join('')}  
             </div>  
           </section>  
         `;  
@@ -785,7 +801,7 @@
       container.innerHTML = html;  
     }  
 
-    function renderProductCard(p, isHorizontal) {  
+    function renderProductCard(p) {  
       const images = getImagesArray(p, 'card');  
       const mainImg = images[0] || 'https://via.placeholder.com/300?text=Sin+Imagen';  
       const isNew = maxId > 0 && (maxId - p.id) < 5;  
@@ -805,43 +821,19 @@
       `;  
     }  
 
-    async function fetchAllCategories() {  
-      if (!supabaseClient) {  
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);  
-      }  
-
-      try {  
-        const { data, error } = await supabaseClient.from("products").select("category").eq("active", true);  
-        if (error) throw error;  
-
-        const categories = [...new Set(data.map(p => p.category).filter(Boolean))].sort();  
-        const select = document.getElementById("categorySelect");  
-        let html = `<option value="all" ${currentCategory === 'all' ? 'selected' : ''}>📂 Todas las categorías</option>`;  
-          
-        categories.forEach(cat => {  
-          const selected = currentCategory === cat ? 'selected' : '';  
-          html += `<option value="${escapeHTML(cat)}" ${selected}>🏷️ ${escapeHTML(cat)}</option>`;  
-        });  
-
-        select.innerHTML = html;  
-      } catch (err) {  
-        console.error("Error al cargar categorías:", err);  
-      }  
-    }  
-
     function selectCategory(cat) {  
       currentCategory = cat;  
       document.getElementById("categorySelect").value = cat;  
-      loadCatalog();  
+      filterAndRender();  
     }  
 
     function debounceSearch() {  
       clearTimeout(searchTimeout);  
-      searchTimeout = setTimeout(() => { loadCatalog(); }, 350);  
+      searchTimeout = setTimeout(() => { filterAndRender(); }, 150);  
     }  
 
     function addToCart(id) {  
-      const p = products.find(x => x.id === id);  
+      const p = allProducts.find(x => x.id === id);  
       if (!p || Number(p.stock || 0) <= 0) return;  
 
       const item = cart.find(x => x.id === id);  
@@ -943,7 +935,7 @@
     }  
 
     function openModal(id) {  
-      const p = products.find(x => x.id === id);  
+      const p = allProducts.find(x => x.id === id);  
       if (!p) return;  
 
       currentSelectedProduct = p;  
@@ -983,7 +975,6 @@
       }  
     }  
 
-    /* COMPARTIR PRODUCTO CON WEB SHARE API O COPIAR AL PORTAPAPELES */  
     async function shareCurrentProduct() {  
       if (!currentSelectedProduct) return;  
         
@@ -1001,7 +992,6 @@
           await navigator.share(shareData);  
         } catch (err) {}  
       } else {  
-        // Fallback: copiar enlace al portapapeles  
         navigator.clipboard.writeText(shareUrl);  
         shareBtn.textContent = "✓ ¡Copiado!";  
         setTimeout(() => { shareBtn.textContent = "🔗 Compartir"; }, 1500);  
@@ -1083,11 +1073,10 @@
         .replace(/"/g, "&quot;");  
     }  
 
-    document.addEventListener("DOMContentLoaded", async () => {  
+    document.addEventListener("DOMContentLoaded", () => {  
       initTheme();  
       loadSavedCart();  
-      await fetchAllCategories();  
-      await loadCatalog();  
+      loadCatalog();  
     });  
   </script>  
 </body>  
