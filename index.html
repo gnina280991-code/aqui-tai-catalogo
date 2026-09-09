@@ -303,7 +303,6 @@
       border-radius: 12px;
     }
 
-    /* BOTÓN FLOTANTE WHATSAPP */
     .ws-float-btn {
       position: fixed;
       bottom: 20px;
@@ -327,7 +326,7 @@
     .ws-float-btn:active { transform: scale(0.95); }
     .ws-float-btn svg { width: 28px; height: 28px; fill: currentColor; }
 
-    /* MODALES General */
+    /* MODALES GENERAL */
     .modal {
       position: fixed;
       inset: 0;
@@ -497,7 +496,7 @@
       color: var(--text-muted);
     }
 
-    /* VISOR LIGHTBOX (PANTALLA COMPLETA) */
+    /* VISOR LIGHTBOX CON SOPORTE GESTUAL */
     .lightbox-modal {
       position: fixed;
       inset: 0;
@@ -507,6 +506,7 @@
       justify-content: center;
       z-index: 500;
       padding: 16px;
+      touch-action: pan-y; /* Previene scroll no deseado al deslizar lateralmente */
     }
 
     .lightbox-modal.open { display: flex; }
@@ -517,6 +517,8 @@
       object-fit: contain;
       border-radius: 8px;
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      user-select: none;
+      -webkit-user-drag: none;
     }
 
     .lightbox-close, .lightbox-btn, .lightbox-counter { z-index: 510; }
@@ -656,7 +658,12 @@
     </div>
   </div>
 
-  <div id="lightboxModal" class="lightbox-modal" onclick="if(event.target===this)closeLightbox()">
+  <!-- LIGHTBOX CON GESTOS TÁCTILES -->
+  <div id="lightboxModal" class="lightbox-modal" 
+       onclick="if(event.target===this)closeLightbox()"
+       ontouchstart="handleTouchStart(event)"
+       ontouchmove="handleTouchMove(event)"
+       ontouchend="handleTouchEnd()">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     <button class="lightbox-btn prev" onclick="changeLightboxImg(-1)">◀</button>
     <img id="lightboxImg" class="lightbox-img" src="" alt="Vista Completa" loading="eager" decoding="async">
@@ -679,7 +686,11 @@
     let activeImageIndex = 0;
     let currentPage = 0;
     let hasMoreProducts = true;
-    let maxId = 0; // Para calcular las publicaciones recientes
+    let maxId = 0;
+
+    /* VARIABLES PARA DETECCIÓN DE GESTOS TÁCTILES (SWIPE) */
+    let touchStartX = 0;
+    let touchEndX = 0;
 
     const lightboxModal = document.getElementById("lightboxModal");
     const lightboxImg = document.getElementById("lightboxImg");
@@ -687,11 +698,10 @@
 
     document.getElementById("wsDirectLink").href = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent('¡Hola! Vengo desde el catálogo online y quisiera hacer una consulta.')}`;
 
-    /* INTERCEPCIÓN DEL BOTÓN ATRÁS DEL NAVEGADOR / CELULAR */
+    /* GESTIÓN DE BOTÓN ATRÁS EN NAVEGADOR Y MÓVILES */
     window.addEventListener('popstate', (e) => {
       const viewModal = document.getElementById('viewModal');
       const cartModal = document.getElementById('cartModal');
-      const lightboxModal = document.getElementById('lightboxModal');
 
       if (lightboxModal && lightboxModal.classList.contains('open')) {
         lightboxModal.classList.remove('open');
@@ -769,7 +779,7 @@
         products = loadMore ? [...products, ...data] : data;
 
         if (products.length > 0 && currentPage === 0) {
-          maxId = products[0].id; // El id más alto se usa de referencia para "Nuevos"
+          maxId = products[0].id;
         }
 
         buildCategoriesMenu();
@@ -825,7 +835,7 @@
         const fetchPriority = index < 4 ? 'fetchpriority="high"' : '';
         const loadingMode = index < 4 ? 'eager' : 'lazy';
 
-        const isNew = maxId > 0 && (maxId - p.id) < 5; // Muestra "¡Nuevo!" en los últimos 5 ítems cargados
+        const isNew = maxId > 0 && (maxId - p.id) < 5;
         const isOutOfStock = Number(p.stock || 0) <= 0;
 
         return `
@@ -997,6 +1007,7 @@
       }
     }
 
+    /* VISOR LIGHTBOX Y MANEJO DE SWIPE TÁCTIL */
     function openLightbox(index) {
       if (!currentSelectedProduct) return;
       activeGalleryImages = getImagesArray(currentSelectedProduct, 'full');
@@ -1028,6 +1039,30 @@
     function updateLightbox() {
       lightboxImg.src = activeGalleryImages[activeImageIndex];
       lightboxCounter.textContent = `${activeImageIndex + 1} / ${activeGalleryImages.length}`;
+    }
+
+    /* MANEJADORES DE EVENTOS DE TOQUE */
+    function handleTouchStart(e) {
+      touchStartX = e.changedTouches[0].screenX;
+    }
+
+    function handleTouchMove(e) {
+      touchEndX = e.changedTouches[0].screenX;
+    }
+
+    function handleTouchEnd() {
+      const swipeThreshold = 40; // Distancia mínima en píxeles
+      
+      if (touchStartX - touchEndX > swipeThreshold && touchEndX !== 0) {
+        // Deslizar a la izquierda -> Siguiente foto
+        changeLightboxImg(1);
+      } else if (touchEndX - touchStartX > swipeThreshold && touchEndX !== 0) {
+        // Deslizar a la derecha -> Foto anterior
+        changeLightboxImg(-1);
+      }
+      
+      touchStartX = 0;
+      touchEndX = 0;
     }
 
     function orderSingleWhatsapp() {
