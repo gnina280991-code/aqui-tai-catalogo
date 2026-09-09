@@ -766,47 +766,67 @@
       const to = from + PAGE_SIZE - 1;
 
       try {
-        const { data, error } = await supabaseClient
+        let query = supabaseClient
           .from("products")
           .select("id, name, price, stock, category, description, images, image, active")
           .eq("active", true)
-          .order("id", { ascending: false })
-          .range(from, to);
+          .order("id", { ascending: false });
+
+        if (currentCategory !== 'all') {
+          query = query.eq("category", currentCategory);
+        }
+
+        const { data, error } = await query.range(from, to);
 
         if (error) throw error;
 
         hasMoreProducts = data.length >= PAGE_SIZE;
         products = loadMore ? [...products, ...data] : data;
 
-        if (products.length > 0 && currentPage === 0) {
+        if (products.length > 0 && currentPage === 0 && currentCategory === 'all') {
           maxId = products[0].id;
         }
 
-        buildCategoriesMenu();
         filterProducts();
       } catch (e) {
         grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding: 30px;">❌ Error al cargar los productos.</div>`;
       }
     }
 
-    /* CONSTRUYE EL DESPLEGABLE CON LAS CATEGORÍAS DISPONIBLES EN BASE DE DATOS */
-    function buildCategoriesMenu() {
-      const select = document.getElementById("categorySelect");
-      const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
+    /* OBTENER TODAS LAS CATEGORÍAS REGISTRADAS EN LA BASE DE DATOS DE SUPABASE */
+    async function fetchAllCategories() {
+      if (!supabaseClient) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
 
-      let html = `<option value="all" ${currentCategory === 'all' ? 'selected' : ''}>📂 Todas las categorías</option>`;
-      
-      categories.forEach(cat => {
-        const selected = currentCategory === cat ? 'selected' : '';
-        html += `<option value="${escapeHTML(cat)}" ${selected}>🏷️ ${escapeHTML(cat)}</option>`;
-      });
+      try {
+        const { data, error } = await supabaseClient
+          .from("products")
+          .select("category")
+          .eq("active", true);
 
-      select.innerHTML = html;
+        if (error) throw error;
+
+        // Extraer lista de categorías únicas filtrando nulos/vacíos
+        const categories = [...new Set(data.map(p => p.category).filter(Boolean))].sort();
+
+        const select = document.getElementById("categorySelect");
+        let html = `<option value="all" ${currentCategory === 'all' ? 'selected' : ''}>📂 Todas las categorías</option>`;
+        
+        categories.forEach(cat => {
+          const selected = currentCategory === cat ? 'selected' : '';
+          html += `<option value="${escapeHTML(cat)}" ${selected}>🏷️ ${escapeHTML(cat)}</option>`;
+        });
+
+        select.innerHTML = html;
+      } catch (err) {
+        console.error("Error al cargar menú de categorías:", err);
+      }
     }
 
     function selectCategory(cat) {
       currentCategory = cat;
-      filterProducts();
+      loadCatalog(false);
     }
 
     function filterProducts() {
@@ -852,7 +872,7 @@
         `;
       }).join("");
 
-      if (hasMoreProducts && currentCategory === 'all' && !document.getElementById("searchInput").value) {
+      if (hasMoreProducts && !document.getElementById("searchInput").value) {
         html += `<button class="btn-load-more" onclick="loadNextPage()">Cargar más productos</button>`;
       }
 
@@ -1103,10 +1123,11 @@
         .replace(/"/g, "&quot;");
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       initTheme();
       loadSavedCart();
-      loadCatalog();
+      await fetchAllCategories();
+      await loadCatalog();
     });
   </script>
 </body>
