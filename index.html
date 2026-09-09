@@ -120,35 +120,33 @@
       opacity: 0.6;
     }
 
-    /* FILTRO DE CATEGORÍAS */
-    .categories-bar {
+    /* MENÚ DESPLEGABLE DE CATEGORÍAS */
+    .category-select-wrapper {
       max-width: 1000px;
-      margin: 12px auto 0;
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
+      margin: 10px auto 0;
     }
 
-    .categories-bar::-webkit-scrollbar { display: none; }
-
-    .cat-btn {
+    .category-select {
+      width: 100%;
+      padding: 10px 14px;
       background: var(--bg-main);
       border: 1px solid var(--border-color);
+      border-radius: 10px;
       color: var(--text-main);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
-      white-space: nowrap;
+      outline: none;
       cursor: pointer;
-      transition: all .2s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff9d00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      transition: border-color 0.3s, background-color 0.3s;
     }
 
-    .cat-btn.active {
-      background: var(--accent-color);
-      color: #0f172a;
+    .category-select:focus {
       border-color: var(--accent-color);
     }
 
@@ -496,7 +494,7 @@
       color: var(--text-muted);
     }
 
-    /* VISOR LIGHTBOX CON SOPORTE GESTUAL */
+    /* VISOR LIGHTBOX CON GESTOS TÁCTILES */
     .lightbox-modal {
       position: fixed;
       inset: 0;
@@ -506,7 +504,7 @@
       justify-content: center;
       z-index: 500;
       padding: 16px;
-      touch-action: pan-y; /* Previene scroll no deseado al deslizar lateralmente */
+      touch-action: pan-y;
     }
 
     .lightbox-modal.open { display: flex; }
@@ -586,8 +584,10 @@
       <input type="text" id="searchInput" class="search-input" placeholder="Buscar producto..." oninput="filterProducts()">
     </div>
 
-    <div class="categories-bar" id="categoriesBar">
-      <button class="cat-btn active" onclick="selectCategory('all', this)">Todos</button>
+    <div class="category-select-wrapper">
+      <select id="categorySelect" class="category-select" onchange="selectCategory(this.value)">
+        <option value="all">📂 Todas las categorías</option>
+      </select>
     </div>
   </header>
 
@@ -789,23 +789,23 @@
       }
     }
 
+    /* CONSTRUYE EL DESPLEGABLE CON LAS CATEGORÍAS DISPONIBLES EN BASE DE DATOS */
     function buildCategoriesMenu() {
-      const bar = document.getElementById("categoriesBar");
-      const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+      const select = document.getElementById("categorySelect");
+      const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
 
-      let html = `<button class="cat-btn ${currentCategory === 'all' ? 'active' : ''}" onclick="selectCategory('all', this)">Todos</button>`;
+      let html = `<option value="all" ${currentCategory === 'all' ? 'selected' : ''}>📂 Todas las categorías</option>`;
+      
       categories.forEach(cat => {
-        const active = currentCategory === cat ? 'active' : '';
-        html += `<button class="cat-btn ${active}" onclick="selectCategory('${escapeHTML(cat)}', this)">${escapeHTML(cat)}</button>`;
+        const selected = currentCategory === cat ? 'selected' : '';
+        html += `<option value="${escapeHTML(cat)}" ${selected}>🏷️ ${escapeHTML(cat)}</option>`;
       });
 
-      bar.innerHTML = html;
+      select.innerHTML = html;
     }
 
-    function selectCategory(cat, btn) {
+    function selectCategory(cat) {
       currentCategory = cat;
-      document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
       filterProducts();
     }
 
@@ -1051,13 +1051,11 @@
     }
 
     function handleTouchEnd() {
-      const swipeThreshold = 40; // Distancia mínima en píxeles
+      const swipeThreshold = 40;
       
       if (touchStartX - touchEndX > swipeThreshold && touchEndX !== 0) {
-        // Deslizar a la izquierda -> Siguiente foto
         changeLightboxImg(1);
       } else if (touchEndX - touchStartX > swipeThreshold && touchEndX !== 0) {
-        // Deslizar a la derecha -> Foto anterior
         changeLightboxImg(-1);
       }
       
