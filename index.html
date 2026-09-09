@@ -500,7 +500,7 @@
       color: var(--text-muted);
     }
 
-    /* VISOR LIGHTBOX CON SOPORTE DE ZOOM */
+    /* VISOR LIGHTBOX CON SOPORTE DE ZOOM Y SWIPE */
     .lightbox-modal {
       position: fixed;
       inset: 0;
@@ -522,6 +522,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      touch-action: pan-y; /* Permite desplazamiento vertical sin romper el gesto táctil */
     }
 
     .lightbox-img {
@@ -673,7 +674,7 @@
     </div>
   </div>
 
-  <!-- LIGHTBOX CON SOPORTE DE ZOOM -->
+  <!-- LIGHTBOX CON SOPORTE DE ZOOM Y SWIPE TÁCTIL -->
   <div id="lightboxModal" class="lightbox-modal" onclick="if(event.target===this)closeLightbox()">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     <button class="lightbox-btn prev" onclick="changeLightboxImg(-1)">◀</button>
@@ -704,6 +705,10 @@
     let maxId = 0;
     let pzInstance = null;
 
+    /* VARIABLES PARA DETECCIÓN DE SWIPE EN EL LIGHTBOX */
+    let touchStartX = 0;
+    let touchEndX = 0;
+
     const lightboxModal = document.getElementById("lightboxModal");
     const lightboxImg = document.getElementById("lightboxImg");
     const lightboxContainer = document.getElementById("lightboxContainer");
@@ -722,6 +727,7 @@
 
       if (lightboxModal && lightboxModal.classList.contains('open')) {
         lightboxModal.classList.remove('open');
+        if (pzInstance) { pzInstance.destroy(); pzInstance = null; }
         return;
       }
 
@@ -878,7 +884,7 @@
           <div class="prod-card">
             ${isNew ? '<span class="badge-new">✨ Nuevo</span>' : ''}
             ${isOutOfStock ? '<span class="badge-out">Agotado</span>' : ''}
-            <img class="prod-img" src="${escapeHTML(mainImg)}" alt="${escapeHTML(p.name)}" ${fetchPriority} loading="${loadingMode}" decoding="async" onclick="openModal(${p.id})">
+            <img class="prod-img" src="${escapeHTML(mainImg)}" alt="${escapeHTML(p.name)}" ${fetchPriority} loading="${loadingMode}" decoding="async" onclick="openModal(${p.id})" onerror="this.onerror=null;this.src='https://via.placeholder.com/300?text=Sin+Imagen';">
             <div class="prod-title" onclick="openModal(${p.id})">${escapeHTML(p.name)}</div>
             <div class="prod-price">Bs ${Number(p.price || 0).toFixed(2)}</div>
             <button class="btn-add-card" onclick="addToCart(${p.id})" ${isOutOfStock ? 'disabled' : ''}>
@@ -964,7 +970,7 @@
 
         return `
           <div class="cart-item">
-            <img src="${escapeHTML(img)}" class="cart-item-img" loading="lazy" decoding="async">
+            <img src="${escapeHTML(img)}" class="cart-item-img" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://via.placeholder.com/100?text=Sin+Imagen';">
             <div class="cart-item-info">
               <div class="cart-item-title">${escapeHTML(item.name)}</div>
               <div class="cart-item-price">Bs ${Number(item.price || 0).toFixed(2)}</div>
@@ -1022,7 +1028,7 @@
 
       if (activeGalleryImages.length) {
         gallery.innerHTML = activeGalleryImages.map((img, idx) => `
-          <img src="${escapeHTML(img)}" class="modal-img" loading="lazy" decoding="async" onclick="openLightbox(${idx})">
+          <img src="${escapeHTML(img)}" class="modal-img" loading="lazy" decoding="async" onclick="openLightbox(${idx})" onerror="this.onerror=null;this.src='https://via.placeholder.com/300?text=Sin+Imagen';">
         `).join("");
         gallery.style.display = "flex";
       } else {
@@ -1043,7 +1049,7 @@
       }
     }
 
-    /* VISOR LIGHTBOX CON ZOOM INTEGRADO */
+    /* VISOR LIGHTBOX CON ZOOM Y SWIPE TÁCTIL */
     function openLightbox(index) {
       if (!currentSelectedProduct) return;
       activeGalleryImages = getImagesArray(currentSelectedProduct, 'full');
@@ -1061,6 +1067,29 @@
           minZoom: 1,
           maxZoom: 4
         });
+      }
+
+      // --- DETECCIÓN DE DESLIZAMIENTO CON EL DEDO (SWIPE) ---
+      lightboxContainer.ontouchstart = (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      };
+
+      lightboxContainer.ontouchend = (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      };
+    }
+
+    function handleSwipe() {
+      const swipeThreshold = 50; // Umbral en píxeles para validar el deslizamiento
+      
+      // Si la imagen tiene zoom aplicado, se inhabilita el cambio de foto para permitir paneo
+      if (pzInstance && pzInstance.zoomFactor > 1.05) return;
+
+      if (touchStartX - touchEndX > swipeThreshold) {
+        changeLightboxImg(1);  // Deslizar izquierda -> Foto siguiente
+      } else if (touchEndX - touchStartX > swipeThreshold) {
+        changeLightboxImg(-1); // Deslizar derecha -> Foto anterior
       }
     }
 
