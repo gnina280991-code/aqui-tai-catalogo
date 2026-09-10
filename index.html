@@ -652,6 +652,9 @@
     const SUPABASE_URL = "https://ztsthkoejosgwkhmzfbd.supabase.co";  
     const SUPABASE_KEY = "sb_publishable_PUxkUNfWJbdoNYuYGynqAA_3Z02D4MA";  
     const PHONE_NUMBER = "59171440907";  
+    const CACHE_KEY = "aqui_ta_products_cache";
+    const CACHE_TIME_KEY = "aqui_ta_cache_time";
+    const CACHE_DURATION_MS = 10 * 60 * 1000; // 10 minutos de caché local
   
     let supabaseClient = null;  
     let allProducts = [];  
@@ -671,7 +674,6 @@
   
     document.getElementById("wsDirectLink").href = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent('¡Hola! Vengo desde el catálogo online y quisiera hacer una consulta.')}`;  
   
-    // GESTIÓN DEL BOTÓN ATRÁS DEL TELÉFONO / NAVEGADOR
     window.addEventListener('popstate', (e) => {  
       const viewModal = document.getElementById('viewModal');  
       const cartModal = document.getElementById('cartModal');  
@@ -725,16 +727,32 @@
     }  
   
     async function loadCatalog() {  
+      const container = document.getElementById("catalogContainer");  
+
+      // 1. Intentar cargar desde Caché Local para AHORRAR EGRESS de Supabase
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      const cacheTime = localStorage.getItem(CACHE_TIME_KEY);
+      const isCacheValid = cacheTime && (Date.now() - Number(cacheTime) < CACHE_DURATION_MS);
+
+      if (cachedData && isCacheValid) {
+        allProducts = JSON.parse(cachedData);
+        if (allProducts.length > 0) maxId = allProducts[0].id;
+        populateCategoriesLocal();  
+        filterAndRender();  
+        checkUrlProductParam();
+        return;
+      }
+
+      // 2. Si la caché expiró o no existe, consultar a Supabase
       if (!supabaseClient) {  
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);  
       }  
-  
-      const container = document.getElementById("catalogContainer");  
 
       try {  
+        // OPTIMIZACIÓN: Solo pedimos columnas estrictamente necesarias para el catálogo (no description)
         const { data, error } = await supabaseClient  
           .from("products")  
-          .select("id, name, price, stock, category, description, images, image, active")  
+          .select("id, name, price, stock, category, images, image")  
           .eq("active", true)  
           .order("id", { ascending: false });  
 
@@ -742,6 +760,10 @@
 
         allProducts = data || [];  
         if (allProducts.length > 0) maxId = allProducts[0].id;  
+
+        // Guardar en caché local
+        localStorage.setItem(CACHE_KEY, JSON.stringify(allProducts));
+        localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
 
         populateCategoriesLocal();  
         filterAndRender();  
@@ -796,7 +818,6 @@
         return;  
       }  
 
-      // SI SE FILTRA POR CATEGORÍA O BÚSQUEDA
       if (currentCategory !== 'all' || searchQuery !== '') {  
         let backBtn = currentCategory !== 'all' ? 
           `<button class="btn-back-cat" onclick="selectCategory('all')">⬅️ Volver a todas las categorías</button>` : '';
@@ -805,7 +826,6 @@
         return;  
       }  
 
-      // EN "TODAS LAS CATEGORÍAS" -> CARRUSELES HORIZONTALES POR CATEGORÍA
       const grouped = {};  
       list.forEach(p => {  
         const cat = p.category || 'Varios';  
@@ -833,7 +853,7 @@
 
     function renderProductCard(p) {  
       const images = getImagesArray(p, 'card');  
-      const mainImg = images[0] || 'https://via.placeholder.com/300?text=Sin+Imagen';  
+      const mainImg = images[0] || 'https://via.placeholder.com/250?text=Sin+Imagen';  
       const isNew = maxId > 0 && (maxId - p.id) < 5;  
       const isOutOfStock = Number(p.stock || 0) <= 0;  
 
@@ -923,7 +943,7 @@
 
         return `  
           <div class="cart-item">  
-            <img src="${escapeHTML(img)}" class="cart-item-img" loading="lazy">  
+            <img src="${escapeHTML(img)}" class="cart-item-img" loading="lazy" decoding="async">  
             <div class="cart-item-info">  
               <div class="cart-item-title">${escapeHTML(item.name)}</div>  
               <div class="cart-item-price">Bs ${Number(item.price || 0).toFixed(2)}</div>  
@@ -958,9 +978,17 @@
       window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');  
     }  
 
-    function openModal(id) {  
-      const p = allProducts.find(x => x.id === id);  
+    async function openModal(id) {  
+      let p = allProducts.find(x => x.id === id);  
       if (!p) return;  
+
+      // Cargar descripción bajo demanda si aún no existe en el objeto cargado
+      if (p.description === undefined && supabaseClient) {
+        try {
+          const { data } = await supabaseClient.from("products").select("description").eq("id", id).single();
+          if (data) p.description = data.description;
+        } catch (e) {}
+      }
 
       currentSelectedProduct = p;  
       activeGalleryImages = getImagesArray(p, 'modal');  
@@ -980,7 +1008,7 @@
       const gallery = document.getElementById("modalGallery");  
       if (activeGalleryImages.length) {  
         gallery.innerHTML = activeGalleryImages.map((img, idx) => `  
-          <img src="${escapeHTML(img)}" class="modal-img" loading="lazy" onclick="openLightbox(${idx})">  
+          <img src="${escapeHTML(img)}" class="modal-img" loading="lazy" decoding="async" onclick="openLightbox(${idx})">  
         `).join("");  
         gallery.style.display = "flex";  
       } else {  
@@ -1044,13 +1072,13 @@
       }  
     }  
 
-    function closeLightbox() {  
+    closeLightbox = function() {  
       if (lightboxModal && lightboxModal.classList.contains('open')) {  
         lightboxModal.classList.remove('open');  
         if (pzInstance) { pzInstance.destroy(); pzInstance = null; }  
         if (history.state && history.state.modalOpen) history.back();  
       }  
-    }  
+    };
 
     function changeLightboxImg(step) {  
       activeImageIndex += step;  
@@ -1071,6 +1099,7 @@
       window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');  
     }  
 
+    // OPTIMIZACIÓN DE TRAFICO/EGRESS DE IMÁGENES
     function getImagesArray(product, mode = 'full') {  
       let list = [];  
       if (Array.isArray(product.images)) list = product.images;  
@@ -1081,9 +1110,9 @@
       return list.map(url => {  
         if (typeof url === 'string' && url.includes("/storage/v1/object/public/")) {  
           const renderUrl = url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");  
-          if (mode === 'card') return `${renderUrl}?width=300&height=300&resize=contain&quality=70&format=webp`;  
-          if (mode === 'modal') return `${renderUrl}?width=600&height=600&resize=contain&quality=80&format=webp`;  
-          if (mode === 'thumb') return `${renderUrl}?width=100&height=100&resize=contain&quality=60&format=webp`;  
+          if (mode === 'card') return `${renderUrl}?width=250&height=250&resize=contain&quality=60&format=webp`;  
+          if (mode === 'modal') return `${renderUrl}?width=500&height=500&resize=contain&quality=75&format=webp`;  
+          if (mode === 'thumb') return `${renderUrl}?width=100&height=100&resize=contain&quality=50&format=webp`;  
         }  
         return url;  
       });  
