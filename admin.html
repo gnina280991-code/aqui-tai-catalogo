@@ -1229,7 +1229,7 @@
       });
     }
 
-    /* SUBIDA DE IMÁGENES A IMGBB */
+    /* SUBIDA DE IMÁGENES A IMGBB EN PARALELO (CONCURRENTE) */
     async function uploadToImgBB(fileBlob) {
       const formData = new FormData();
       formData.append("image", fileBlob, "product.jpg");
@@ -1254,29 +1254,36 @@
       const maxDim = parseInt(document.getElementById("imgQuality").value || "800");
       const saveBtn = document.getElementById("saveBtn");
       saveBtn.disabled = true;
-      saveBtn.textContent = "⏳ Comprimiendo y subiendo fotos a ImgBB...";
+      saveBtn.textContent = "⏳ Procesando y subiendo fotos en paralelo...";
 
-      for (const file of files) {
+      const uploadPromises = files.map(async (file) => {
         try {
           const compressedBlob = await compressImage(file, maxDim, 0.8);
           const publicUrl = await uploadToImgBB(compressedBlob);
-
-          if (publicUrl) {
-            currentImages.push(publicUrl);
-          }
+          return publicUrl;
         } catch (err) {
-          showToast(`❌ Error al procesar ${file.name}: ${err.message}`);
+          showToast(`❌ Error con ${file.name}: ${err.message}`);
+          return null;
         }
+      });
+
+      try {
+        const results = await Promise.all(uploadPromises);
+        const successfulUrls = results.filter(url => url !== null);
+        
+        if (successfulUrls.length > 0) {
+          currentImages.push(...successfulUrls);
+          renderImagePreviews();
+          showToast(`📷 ${successfulUrls.length} foto(s) subida(s) con éxito`);
+        }
+      } catch (err) {
+        showToast("❌ Error general en la subida concurrente");
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "💾 Guardar e Insertar al Catálogo";
+        document.getElementById("fileInput").value = "";
+        document.getElementById("cameraInput").value = "";
       }
-
-      saveBtn.disabled = false;
-      saveBtn.textContent = "💾 Guardar e Insertar al Catálogo";
-
-      document.getElementById("fileInput").value = "";
-      document.getElementById("cameraInput").value = "";
-
-      renderImagePreviews();
-      showToast("📷 Fotos subidas correctamente a ImgBB");
     }
 
     document.getElementById("fileInput").addEventListener("change", handleFileSelect);
