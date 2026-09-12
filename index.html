@@ -748,7 +748,7 @@
       btn.textContent = isLight ? "☀️" : "🌙";
     }
 
-    /* CARGAR CATÁLOGO DESDE FIRESTORE (OPTIMIZADO CON LÍMITE Y CACHÉ) */
+    /* CARGAR CATÁLOGO DESDE FIRESTORE CON CACHÉ LOCAL */
     async function loadCatalog() {
       const grid = document.getElementById("catalogGrid");
       
@@ -759,18 +759,15 @@
           products = JSON.parse(cachedProducts);
           populateCategories();
           filterProducts();
-          return; // Salimos rápido si ya tenemos datos en caché
+          return;
         }
       } catch (e) {}
 
       grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">⏳ Cargando catálogo...</div>`;
 
       try {
-        // Consulta optimizada: Trae solo los primeros 30 productos ordenados por fecha para que vuele
-        const snapshot = await db.collection("products")
-          .orderBy("createdAt", "desc")
-          .limit(30)
-          .get();
+        // Carga general sin bloqueos de índices requeridos por orderBy
+        const snapshot = await db.collection("products").get();
 
         products = [];
         snapshot.forEach(doc => {
@@ -780,7 +777,10 @@
           }
         });
 
-        // Guardar en caché de sesión para agilizar siguientes vistas del usuario
+        // Ordenamiento local seguro por fecha
+        products.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+        // Guardar en caché de sesión
         try {
           sessionStorage.setItem("aqui_ta_products_cache", JSON.stringify(products));
         } catch (e) {}
