@@ -749,9 +749,11 @@
       window.location.reload();
     }
 
-    /* REGISTRAR Y MOSTRAR VISITAS */
+    /* REGISTRAR Y MOSTRAR VISITAS (CON MANEJO ROBUSTO DE ERRORES) */
     async function registrarVisita() {
+      const visitsElement = document.getElementById("visitsCount");
       const visitRef = db.collection("stats").doc("visitas");
+      
       try {
         let finalCount = 0;
         await db.runTransaction(async (transaction) => {
@@ -765,15 +767,24 @@
           }
         });
         
-        // Actualizar en el HTML de forma limpia
-        const visitsElement = document.getElementById("visitsCount");
         if (visitsElement) {
           visitsElement.textContent = finalCount.toLocaleString();
         }
       } catch (e) {
-        console.error("Error al registrar visita:", e);
-        const visitsElement = document.getElementById("visitsCount");
-        if (visitsElement) visitsElement.textContent = "-";
+        console.error("Error al registrar visita por transacción, intentando lectura simple:", e);
+        // Respaldo: Intentar leer el valor actual si la transacción falla por permisos u otro motivo
+        try {
+          const docSnap = await visitRef.get();
+          if (docSnap.exists) {
+            const count = docSnap.data().count || 0;
+            if (visitsElement) visitsElement.textContent = count.toLocaleString();
+          } else {
+            if (visitsElement) visitsElement.textContent = "1";
+          }
+        } catch (err) {
+          console.error("Error definitivo al cargar visitas:", err);
+          if (visitsElement) visitsElement.textContent = "-";
+        }
       }
     }
 
