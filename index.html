@@ -157,11 +157,14 @@
       border-color: var(--accent-color);
     }
 
-    /* GRID DE PRODUCTOS */
-    .grid {
+    /* CONTENEDOR PRINCIPAL Y GRID */
+    .main-container {
       max-width: 1000px;
       margin: 16px auto;
       padding: 0 16px;
+    }
+
+    .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 14px;
@@ -250,6 +253,27 @@
       background: var(--accent-color) !important;
       color: #0f172a !important;
     }
+
+    /* BOTÓN CARGAR MÁS */
+    .load-more-wrap {
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .btn-load-more {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-load-more:active { transform: scale(0.95); }
+    .btn-load-more:hover { border-color: var(--accent-color); }
 
     /* BOTONES FLOTANTES */
     .cart-float-btn {
@@ -580,8 +604,14 @@
     </div>
   </header>
 
-  <main class="grid" id="catalogGrid">
-    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">⏳ Cargando catálogo...</div>
+  <main class="main-container">
+    <div class="grid" id="catalogGrid">
+      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">⏳ Cargando catálogo...</div>
+    </div>
+    
+    <div class="load-more-wrap" id="loadMoreWrap" style="display: none;">
+      <button class="btn-load-more" onclick="loadMoreProducts()">📂 Cargar más productos</button>
+    </div>
   </main>
 
   <a href="#" id="wsDirectLink" class="ws-float-btn" target="_blank" title="Consultar por WhatsApp">
@@ -678,6 +708,8 @@
     const PHONE_NUMBER = "59171440907";
 
     let products = [];
+    let filteredProducts = [];
+    let displayedLimit = 12; // Cantidad de productos a mostrar por bloque
     let cart = [];
     let currentCategory = 'all';
     let currentSelectedProduct = null;
@@ -793,29 +825,42 @@
 
     function selectCategory(cat) {
       currentCategory = cat;
+      displayedLimit = 12; // Reiniciar límite al cambiar categoría
       filterProducts();
     }
 
     function filterProducts() {
       const query = document.getElementById("searchInput").value.toLowerCase();
+      displayedLimit = 12; // Reiniciar límite al buscar
 
-      const filtered = products.filter(p => {
+      filteredProducts = products.filter(p => {
         const matchesCat = currentCategory === 'all' || p.category === currentCategory;
         const text = [p.name, p.category, p.description].filter(Boolean).join(" ").toLowerCase();
         return matchesCat && (!query || text.includes(query));
       });
 
-      renderCatalog(filtered);
+      renderCatalog();
     }
 
-    function renderCatalog(list) {
+    function loadMoreProducts() {
+      displayedLimit += 12; // Incrementar la cantidad mostrada
+      renderCatalog();
+    }
+
+    function renderCatalog() {
       const grid = document.getElementById("catalogGrid");
-      if (!list.length) {
+      const loadMoreWrap = document.getElementById("loadMoreWrap");
+
+      if (!filteredProducts.length) {
         grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:30px;">No se encontraron productos.</div>`;
+        loadMoreWrap.style.display = "none";
         return;
       }
 
-      let html = list.map((p, index) => {
+      // Tomar solo los elementos hasta el límite actual
+      const currentList = filteredProducts.slice(0, displayedLimit);
+
+      let html = currentList.map((p, index) => {
         const images = getImagesArray(p);
         const mainImg = images[0] || 'https://via.placeholder.com/300?text=Sin+Imagen';
 
@@ -838,6 +883,13 @@
       }).join("");
 
       grid.innerHTML = html;
+
+      // Mostrar u ocultar el botón "Cargar más" dependiendo de si quedan productos ocultos
+      if (filteredProducts.length > displayedLimit) {
+        loadMoreWrap.style.display = "block";
+      } else {
+        loadMoreWrap.style.display = "none";
+      }
     }
 
     function addToCart(id) {
