@@ -180,20 +180,6 @@
       contain-intrinsic-size: 220px;
     }
 
-    .badge-new {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      background: var(--accent-color);
-      color: #0f172a;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      z-index: 10;
-    }
-
     .badge-out {
       position: absolute;
       top: 14px;
@@ -768,17 +754,19 @@
       grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">⏳ Cargando catálogo...</div>`;
 
       try {
-        // Consultamos la colección 'products' en Firestore donde active sea true
-        const snapshot = await db.collection("products")
-          .where("active", "==", true)
-          .get();
+        // Traemos todos los documentos de la colección 'products' sin filtro estricto de active
+        const snapshot = await db.collection("products").get();
 
         products = [];
         snapshot.forEach(doc => {
-          products.push({ id: doc.id, ...doc.data() });
+          const data = doc.data();
+          // Si el producto tiene un campo active explícitamente en false, lo omitimos (opcional), de lo contrario lo cargamos
+          if (data.active !== false) {
+            products.push({ id: doc.id, ...data });
+          }
         });
 
-        // Ordenar de más reciente a más antiguo si tienen un campo de fecha o id numérico/timestamp
+        // Ordenar de más reciente a más antiguo si tienen un campo de fecha o timestamp
         products.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
         populateCategories();
