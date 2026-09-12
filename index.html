@@ -749,7 +749,7 @@
       window.location.reload();
     }
 
-    /* REGISTRAR Y MOSTRAR VISITAS (CON MANEJO ROBUSTO DE ERRORES) */
+    /* REGISTRAR Y MOSTRAR VISITAS (CON DIAGNÓSTICO EN PANTALLA) */
     async function registrarVisita() {
       const visitsElement = document.getElementById("visitsCount");
       const visitRef = db.collection("stats").doc("visitas");
@@ -771,19 +771,9 @@
           visitsElement.textContent = finalCount.toLocaleString();
         }
       } catch (e) {
-        console.error("Error al registrar visita por transacción, intentando lectura simple:", e);
-        // Respaldo: Intentar leer el valor actual si la transacción falla por permisos u otro motivo
-        try {
-          const docSnap = await visitRef.get();
-          if (docSnap.exists) {
-            const count = docSnap.data().count || 0;
-            if (visitsElement) visitsElement.textContent = count.toLocaleString();
-          } else {
-            if (visitsElement) visitsElement.textContent = "1";
-          }
-        } catch (err) {
-          console.error("Error definitivo al cargar visitas:", err);
-          if (visitsElement) visitsElement.textContent = "-";
+        console.error("Error detallado de Firebase:", e);
+        if (visitsElement) {
+          visitsElement.textContent = "Err: " + (e.code || e.message || "Desconocido").substring(0, 15);
         }
       }
     }
@@ -1174,7 +1164,7 @@
     document.addEventListener("DOMContentLoaded", async () => {
       initTheme();
       loadSavedCart();
-      await registrarVisita(); // Registra y muestra la visita automáticamente
+      await registrarVisita();
       await loadCatalog();
     });
   </script>
