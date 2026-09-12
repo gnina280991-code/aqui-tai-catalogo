@@ -938,7 +938,6 @@
         categorySelect.add(new Option(`📦 ${cleanCat}`, cleanCat));
         categorySelect.value = cleanCat;
         
-        // Agregar píldora de filtro dinámicamente
         const chipsContainer = document.getElementById("filterChipsContainer");
         const pill = document.createElement('button');
         pill.className = 'filter-pill';
@@ -974,7 +973,6 @@
               categorySelect.add(new Option(`📦 ${cat}`, cat));
             }
 
-            // Verificar si la píldora ya existe
             let pillExists = Array.from(chipsContainer.querySelectorAll('.filter-pill')).some(btn => btn.getAttribute('onclick')?.includes(`'${cat}'`));
             if (!pillExists) {
               const pill = document.createElement('button');
@@ -1070,9 +1068,9 @@
             </td>
             <td>
               <div class="action-btns">
-                <button class="btn-icon" onclick="viewDetails('${p.id}')" title="Ver">👁️</button>
-                <button class="btn-icon" onclick="editProduct('${p.id}')" title="Editar">✏️</button>
-                <button class="btn-icon" onclick="deleteProductPrompt('${p.id}')" title="Eliminar">🗑️</button>
+                <button class="btn-icon" onclick="viewDetails('${p.id}')" title="Ver ficha">👁️</button>
+                <button class="btn-icon" onclick="editProduct('${p.id}')" title="Editar producto">✏️</button>
+                <button class="btn-icon" onclick="deleteProductPrompt('${p.id}')" title="Eliminar producto" style="color:var(--danger-color);">🗑️</button>
               </div>
             </td>
           </tr>
