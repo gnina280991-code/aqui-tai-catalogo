@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aquí tái | Tienda en Línea</title>
 
-  <!-- SDKs de Firebase (compatibles con v9+ modular vía CDN) -->
+  <!-- SDKs de Firebase (compatibles v9+ modular vía CDN) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -23,6 +23,7 @@
       --accent-color: #ff9d00;
       --whatsapp-color: #25d366;
       --danger-color: #ef4444;
+      --new-color: #10b981;
     }
 
     /* VISTA TEMA CLARO */
@@ -211,10 +212,25 @@
       z-index: 10;
     }
 
+    /* ETIQUETA NUEVO */
+    .badge-new {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: var(--new-color);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(16, 185, 129, 0.4);
+    }
+
     .prod-img {
       width: 100%;
       height: 135px;
-      object-fit: contain;
+      object-fit: cover;
       border-radius: 10px;
       background: var(--bg-main);
       cursor: pointer;
@@ -407,7 +423,7 @@
       width: 50px;
       height: 50px;
       border-radius: 8px;
-      object-fit: contain;
+      object-fit: cover;
       background: var(--bg-main);
     }
 
@@ -455,7 +471,7 @@
       max-width: 100%;
       height: 180px;
       border-radius: 12px;
-      object-fit: contain;
+      object-fit: cover;
       background: var(--bg-main);
       border: 1px solid var(--border-color);
       flex-shrink: 0;
@@ -749,7 +765,7 @@
       window.location.reload();
     }
 
-    /* REGISTRAR Y MOSTRAR VISITAS (CON DIAGNÓSTICO EN PANTALLA) */
+    /* REGISTRAR Y MOSTRAR VISITAS */
     async function registrarVisita() {
       const visitsElement = document.getElementById("visitsCount");
       const visitRef = db.collection("stats").doc("visitas");
@@ -771,9 +787,9 @@
           visitsElement.textContent = finalCount.toLocaleString();
         }
       } catch (e) {
-        console.error("Error detallado de Firebase:", e);
+        console.error("Error al registrar visita:", e);
         if (visitsElement) {
-          visitsElement.textContent = "Err: " + (e.code || e.message || "Desconocido").substring(0, 15);
+          visitsElement.textContent = "—";
         }
       }
     }
@@ -840,7 +856,7 @@
       grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">⏳ Cargando catálogo...</div>`;
 
       try {
-        const snapshot = await db.collection("products").get();
+        const snapshot = await db.collection("products").orderBy("createdAt", "desc").get();
 
         products = [];
         snapshot.forEach(doc => {
@@ -852,11 +868,30 @@
 
         products.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
+        currentCategory = 'all';
+        displayedLimit = 12;
+
         populateCategories();
         filterProducts();
       } catch (e) {
         console.error("Error al cargar productos de Firebase:", e);
-        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding: 30px;">❌ Error al cargar los productos desde Firebase.</div>`;
+        try {
+          const fallbackSnapshot = await db.collection("products").get();
+          products = [];
+          fallbackSnapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.active !== false) {
+              products.push({ id: doc.id, ...data });
+            }
+          });
+          products.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          currentCategory = 'all';
+          displayedLimit = 12;
+          populateCategories();
+          filterProducts();
+        } catch (err) {
+          grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding: 30px;">❌ Error al cargar los productos desde Firebase.</div>`;
+        }
       }
     }
 
@@ -908,6 +943,8 @@
       }
 
       const currentList = filteredProducts.slice(0, displayedLimit);
+      const now = Date.now();
+      const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
       let html = currentList.map((p, index) => {
         const images = getImagesArray(p);
@@ -917,10 +954,13 @@
         const loadingMode = index < 4 ? 'eager' : 'lazy';
 
         const isOutOfStock = Number(p.stock || 0) <= 0;
+        
+        // Verificar si es nuevo (menos de 3 días desde su creación)
+        const isNew = p.createdAt && (now - p.createdAt < THREE_DAYS_MS);
 
         return `
           <div class="prod-card">
-            ${isOutOfStock ? '<span class="badge-out">Agotado</span>' : ''}
+            ${isOutOfStock ? '<span class="badge-out">Agotado</span>' : (isNew ? '<span class="badge-new">¡Nuevo!</span>' : '')}
             <img class="prod-img" src="${escapeHTML(mainImg)}" alt="${escapeHTML(p.name)}" ${fetchPriority} loading="${loadingMode}" decoding="async" onclick="openModal('${p.id}')">
             <div class="prod-title" onclick="openModal('${p.id}')">${escapeHTML(p.name)}</div>
             <div class="prod-price">Bs ${Number(p.price || 0).toFixed(2)}</div>
