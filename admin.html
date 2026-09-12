@@ -379,40 +379,41 @@
       background: var(--bg-card);
       border-radius: var(--radius);
       border: 1px solid var(--border-color);
-      overflow: hidden;
+      overflow-x: auto; /* Permite desplazamiento si fuera necesario pero optimizado */
       box-shadow: var(--shadow);
     }
 
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); }
-    th { background: var(--bg-main); font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 520px; }
+    th, td { padding: 10px 10px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+    th { background: var(--bg-main); font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
 
     .prod-img {
-      width: 48px;
-      height: 48px;
+      width: 42px;
+      height: 42px;
       border-radius: 8px;
       object-fit: cover;
       background: var(--bg-main);
       cursor: pointer;
     }
 
-    .clickable-name { cursor: pointer; font-weight: 700; }
+    .clickable-name { cursor: pointer; font-weight: 700; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .clickable-name:hover { color: var(--accent-color); text-decoration: underline; }
 
     .status-select {
-      padding: 6px 8px;
-      border-radius: 8px;
-      font-size: 11px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      font-size: 10px;
       font-weight: bold;
       cursor: pointer;
       border: 1px solid var(--border-color);
+      margin-top: 4px;
     }
     .status-select.active { background: #d1fae5; color: #065f46; border-color: #34d399; }
     .status-select.inactive { background: #fee2e2; color: #991b1b; border-color: #f87171; }
 
     .qty-table { display: flex; align-items: center; gap: 2px; background: var(--bg-main); padding: 2px 4px; border-radius: 8px; border: 1px solid var(--border-color); width: fit-content; }
     .btn-qty-mini {
-      width: 24px; height: 24px;
+      width: 22px; height: 22px;
       border-radius: 6px; border: 0;
       background: var(--bg-card); color: var(--text-main);
       font-weight: bold; cursor: pointer; font-size: 11px;
@@ -688,21 +689,22 @@
         <button class="filter-pill" onclick="setQuickFilter('inactive', this)">🔴 Ocultos</button>
       </div>
 
+      <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px; text-align: right;">👉 Desliza la tabla horizontalmente para ver los botones de editar/borrar</div>
+      
       <section class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Imagen</th>
-              <th>Producto / Categoría</th>
+              <th>Img</th>
+              <th>Producto</th>
               <th>Precio</th>
               <th>Stock</th>
-              <th>Estado</th>
-              <th>Acciones</th>
+              <th>Acciones / Estado</th>
             </tr>
           </thead>
           <tbody id="inventoryTable">
             <tr>
-              <td colspan="6" style="text-align:center; padding:30px;">⏳ Cargando inventario...</td>
+              <td colspan="5" style="text-align:center; padding:30px;">⏳ Cargando inventario...</td>
             </tr>
           </tbody>
         </table>
@@ -987,7 +989,7 @@
         updateMetrics();
         filterTable();
       } catch (e) {
-        inventoryTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger-color);">❌ Error al cargar datos</td></tr>`;
+        inventoryTable.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--danger-color);">❌ Error al cargar datos</td></tr>`;
       }
     }
 
@@ -1032,7 +1034,7 @@
 
     function renderTable(list) {
       if (!list.length) {
-        inventoryTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">No hay productos para mostrar.</td></tr>`;
+        inventoryTable.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">No hay productos para mostrar.</td></tr>`;
         return;
       }
 
@@ -1047,8 +1049,8 @@
               <img class="prod-img" src="${escapeHTML(mainImg)}" alt="Foto" loading="lazy" onclick="viewDetails('${p.id}')">
             </td>
             <td>
-              <span class="clickable-name" onclick="viewDetails('${p.id}')">${escapeHTML(p.name)}</span><br>
-              <small style="color:var(--text-muted);">${escapeHTML(p.category || 'General')}</small>
+              <span class="clickable-name" onclick="viewDetails('${p.id}')">${escapeHTML(p.name)}</span>
+              <small style="color:var(--text-muted); display:block;">${escapeHTML(p.category || 'General')}</small>
             </td>
             <td>
               <b>Bs ${Number(p.price || 0).toFixed(2)}</b>
@@ -1056,22 +1058,20 @@
             <td>
               <div class="qty-table" onclick="openStockModal('${p.id}')" title="Toca para cambiar stock rápido">
                 <button class="btn-qty-mini" onclick="event.stopPropagation(); quickStockChange('${p.id}', -1)">-</button>
-                <b style="padding:0 6px; font-size:13px; cursor:pointer;">${stock}</b>
+                <b style="padding:0 4px; font-size:12px; cursor:pointer;">${stock}</b>
                 <button class="btn-qty-mini" onclick="event.stopPropagation(); quickStockChange('${p.id}', 1)">+</button>
               </div>
             </td>
             <td>
+              <div class="action-btns" style="margin-bottom: 4px;">
+                <button class="btn-icon" onclick="viewDetails('${p.id}')" title="Ver ficha">👁️</button>
+                <button class="btn-icon" onclick="editProduct('${p.id}')" title="Editar producto" style="background:var(--accent-color); color:#111; font-weight:bold;">✏️</button>
+                <button class="btn-icon" onclick="deleteProductPrompt('${p.id}')" title="Eliminar" style="color:var(--danger-color);">🗑️</button>
+              </div>
               <select class="status-select ${p.active ? 'active' : 'inactive'}" onchange="toggleActive('${p.id}', this.value === 'true')">
                 <option value="true" ${p.active ? 'selected' : ''}>🟢 Activo</option>
                 <option value="false" ${!p.active ? 'selected' : ''}>🔴 Oculto</option>
               </select>
-            </td>
-            <td>
-              <div class="action-btns">
-                <button class="btn-icon" onclick="viewDetails('${p.id}')" title="Ver ficha">👁️</button>
-                <button class="btn-icon" onclick="editProduct('${p.id}')" title="Editar producto">✏️</button>
-                <button class="btn-icon" onclick="deleteProductPrompt('${p.id}')" title="Eliminar producto" style="color:var(--danger-color);">🗑️</button>
-              </div>
             </td>
           </tr>
         `;
@@ -1264,7 +1264,7 @@
     function renderImagePreviews() {
       previewContainer.innerHTML = currentImages.map((img, idx) => `
         <div class="preview-thumb-wrap" data-id="${idx}">
-          <img src="${escapeHTML(img)}" class="preview-thumb">
+          <img src="${escapeHTML(img)}" class="prev-thumb" style="width:64px;height:64px;border-radius:10px;object-fit:cover;border:1px solid var(--border-color);">
           ${idx === 0 ? '<span class="badge-main">PORTADA</span>' : ''}
           <button type="button" class="preview-remove" onclick="removeImage(${idx})">✕</button>
         </div>
