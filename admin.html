@@ -827,12 +827,13 @@
     <div id="lightboxCounter" class="lightbox-counter">1 / 1</div>
   </div>
 
-  <!-- SCRIPT CON FIREBASE SDK V10 -->
+  <!-- SCRIPT CON FIREBASE SDK V10 E INTEGRACIÓN CON IMGBB -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+    const IMGBB_API_KEY = "0646b6e79e803c4c305a9566067591a6";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDwBYBJPe8_m6qvx6UIzCvwivOAXHAFKcM",
@@ -848,7 +849,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
 
     let products = [];
     let currentImages = [];
@@ -1219,7 +1219,7 @@
                 if (blob) resolve(blob);
                 else reject(new Error("Error de compresión Blob"));
               },
-              "image/webp",
+              "image/jpeg",
               quality
             );
           };
@@ -1229,6 +1229,24 @@
       });
     }
 
+    /* SUBIDA DE IMÁGENES A IMGBB */
+    async function uploadToImgBB(fileBlob) {
+      const formData = new FormData();
+      formData.append("image", fileBlob, "product.jpg");
+
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        return data.data.url;
+      } else {
+        throw new Error(data.error?.message || "Error al subir la imagen");
+      }
+    }
+
     async function handleFileSelect(event) {
       const files = Array.from(event.target.files);
       if (!files.length) return;
@@ -1236,22 +1254,18 @@
       const maxDim = parseInt(document.getElementById("imgQuality").value || "800");
       const saveBtn = document.getElementById("saveBtn");
       saveBtn.disabled = true;
-      saveBtn.textContent = "⏳ Comprimiendo y subiendo fotos...";
+      saveBtn.textContent = "⏳ Comprimiendo y subiendo fotos a ImgBB...";
 
       for (const file of files) {
         try {
           const compressedBlob = await compressImage(file, maxDim, 0.8);
-          const fileName = `products/prod_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.webp`;
-          const imageRef = ref(storage, fileName);
-
-          await uploadBytes(imageRef, compressedBlob, { contentType: "image/webp" });
-          const publicUrl = await getDownloadURL(imageRef);
+          const publicUrl = await uploadToImgBB(compressedBlob);
 
           if (publicUrl) {
             currentImages.push(publicUrl);
           }
         } catch (err) {
-          showToast(`❌ Error al procesar ${file.name}`);
+          showToast(`❌ Error al procesar ${file.name}: ${err.message}`);
         }
       }
 
@@ -1262,7 +1276,7 @@
       document.getElementById("cameraInput").value = "";
 
       renderImagePreviews();
-      showToast("📷 Fotos subidas correctamente");
+      showToast("📷 Fotos subidas correctamente a ImgBB");
     }
 
     document.getElementById("fileInput").addEventListener("change", handleFileSelect);
