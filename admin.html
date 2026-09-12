@@ -8,6 +8,9 @@
   <!-- SORTABLE JS -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" defer></script>
 
+  <!-- QUILL.JS (EDITOR ENRIQUECIDO) CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+
   <style>
     /* VARIABLES Y MODO OSCURO */
     :root {
@@ -258,7 +261,7 @@
 
     label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
 
-    input[type=text], input[type=number], input[type=email], input[type=password], select, textarea {
+    input[type=text], input[type=number], input[type=email], input[type=password], select {
       padding: 12px;
       border: 1px solid var(--border-color);
       background: var(--bg-main);
@@ -269,8 +272,30 @@
       transition: border-color 0.2s;
     }
 
-    input:focus, select:focus, textarea:focus { border-color: var(--accent-color); }
-    textarea { min-height: 80px; resize: vertical; }
+    input:focus, select:focus { border-color: var(--accent-color); }
+
+    /* ESTILOS QUILL EDITOR PARA MODO CLARO / OSCURO */
+    .quill-container {
+      background: var(--bg-main);
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+    .quill-container .ql-toolbar {
+      border: none !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      background: var(--bg-card);
+    }
+    .quill-container .ql-container {
+      border: none !important;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-main);
+      min-height: 120px;
+    }
+    body.dark-mode .quill-container .ql-stroke { stroke: #fff !important; }
+    body.dark-mode .quill-container .ql-fill { fill: #fff !important; }
+    body.dark-mode .quill-container .ql-picker { color: #fff !important; }
 
     .chips-wrap { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
 
@@ -484,7 +509,8 @@
       display: flex; justify-content: space-between; padding: 8px 0;
       border-bottom: 1px solid var(--border-color); font-size: 13px;
     }
-    .detail-desc { margin-top: 10px; line-height: 1.5; color: var(--text-muted); font-size: 13px; white-space: pre-line; }
+    .detail-desc { margin-top: 10px; line-height: 1.5; color: var(--text-muted); font-size: 13px; word-break: break-word; }
+    .detail-desc ul { padding-left: 20px; margin: 4px 0; }
 
     /* LIGHTBOX */
     .lightbox-modal {
@@ -508,6 +534,9 @@
       position: absolute; bottom: 20px; color: #fff; font-size: 13px; background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 20px;
     }
   </style>
+
+  <!-- QUILL.JS SCRIPT -->
+  <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 </head>
 <body>
 
@@ -663,8 +692,10 @@
             </div>
 
             <div class="form-group full">
-              <label>Descripción / Detalles</label>
-              <textarea id="description" placeholder="Detalles de la caja o contenido..."></textarea>
+              <label>Descripción / Detalles (Con formato y viñetas)</label>
+              <div class="quill-container">
+                <div id="editor"></div>
+              </div>
             </div>
           </div>
 
@@ -716,7 +747,7 @@
   <!-- BOTÓN FLOTANTE (FAB) PARA IR DIRECTO A CREAR PRODUCTO -->
   <button class="fab-btn" onclick="openNewProductTab()" title="Agregar nuevo producto">➕</button>
 
-  <!-- MODAL NUEVA CATEGORÍA (DISEÑO LIMPIO) -->
+  <!-- MODAL NUEVA CATEGORÍA -->
   <div id="categoryModal" class="modal" onclick="if(event.target===this)closeCategoryModal()">
     <div class="modal-content" style="width: min(100%, 320px);">
       <div class="modal-header">
@@ -731,7 +762,7 @@
     </div>
   </div>
 
-  <!-- MODAL MODIFICAR STOCK RÁPIDO (+5, +10, Personalizado) -->
+  <!-- MODAL MODIFICAR STOCK RÁPIDO -->
   <div id="stockModal" class="modal" onclick="if(event.target===this)closeStockModal()">
     <div class="modal-content" style="width: min(100%, 320px);">
       <div class="modal-header">
@@ -806,6 +837,18 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Inicializar Quill Editor
+    const quill = new Quill('#editor', {
+      theme: 'snow',
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['clean']
+        ]
+      }
+    });
+
     let products = [];
     let currentImages = [];
     let activeGalleryImages = [];
@@ -821,7 +864,6 @@
     const categorySelect = document.getElementById("category");
     const priceInput = document.getElementById("price");
     const stockInput = document.getElementById("stock");
-    const descInput = document.getElementById("description");
     const activeSelect = document.getElementById("active");
     const previewContainer = document.getElementById("previewContainer");
     const formTitle = document.getElementById("formTitle");
@@ -1078,7 +1120,7 @@
       }).join("");
     }
 
-    /* GESTIÓN DE STOCK RÁPIDO AVANZADO */
+    /* GESTIÓN DE STOCK RÁPIDO */
     window.openStockModal = function(id) {
       const p = products.find(x => x.id === id);
       if (!p) return;
@@ -1127,7 +1169,9 @@
       document.getElementById("modalPrice").textContent = "Bs " + Number(p.price || 0).toFixed(2);
       document.getElementById("modalStock").textContent = (p.stock || 0) + " unidades";
       document.getElementById("modalStatus").textContent = p.active ? "🟢 Visible" : "🔴 Oculto";
-      document.getElementById("modalDesc").textContent = p.description || "Sin descripción.";
+      
+      // Renderizar HTML guardado (mantiene viñetas y formato)
+      document.getElementById("modalDesc").innerHTML = p.description || "Sin descripción.";
 
       const gallery = document.getElementById("modalGallery");
       if (activeGalleryImages.length) {
@@ -1303,12 +1347,16 @@
       saveBtn.textContent = "⏳ Guardando...";
 
       const id = productId.value;
+      
+      // Obtener contenido HTML enriquecido del editor Quill
+      const descriptionHtml = quill.root.innerHTML;
+
       const payload = {
         name: nameInput.value.trim(),
         category: categorySelect.value.trim(),
         price: parseFloat(priceInput.value),
         stock: parseInt(stockInput.value),
-        description: descInput.value.trim(),
+        description: descriptionHtml,
         active: activeSelect.value === "true",
         images: currentImages,
         image: currentImages[0] || null
@@ -1344,7 +1392,10 @@
 
       priceInput.value = p.price || "";
       stockInput.value = p.stock || 0;
-      descInput.value = p.description || "";
+      
+      // Cargar descripción con formato en Quill
+      quill.root.innerHTML = p.description || "";
+
       activeSelect.value = String(p.active);
 
       currentImages = getImagesArray(p);
@@ -1358,6 +1409,7 @@
     window.resetForm = function() {
       productId.value = "";
       productForm.reset();
+      quill.setText(''); // Limpiar editor
       currentImages = [];
       previewContainer.innerHTML = "";
       formTitle.querySelector("span").textContent = "📦 Agregar Producto";
