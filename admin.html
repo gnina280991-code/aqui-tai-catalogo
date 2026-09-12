@@ -692,7 +692,12 @@
             </div>
 
             <div class="form-group full">
-              <label>Descripción / Detalles (Con formato y viñetas)</label>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label>Descripción / Detalles (Con formato y viñetas)</label>
+                <button type="button" class="btn-cancel" onclick="cleanDescriptionText()" style="font-size: 11px; padding: 4px 8px; font-weight: bold; color: var(--danger-color); border-color: var(--danger-color);">
+                  🧹 Limpiar Enlaces / Basura
+                </button>
+              </div>
               <div class="quill-container">
                 <div id="editor"></div>
               </div>
@@ -913,6 +918,15 @@
     window.openNewProductTab = function() {
       resetForm();
       switchTab('tab-form');
+    };
+
+    // Función global para limpiar enlaces molestos y basura de texto copiado de Google
+    window.cleanDescriptionText = function() {
+      let text = quill.getText();
+      text = text.replace(/https?:\/\/[^\s]+/g, '');
+      text = text.replace(/\[\d+\]\s*\(https?:\/\/[^\)]+\)/g, '');
+      quill.setText(text.trim());
+      showToast("🧹 Texto limpiado de enlaces");
     };
 
     onAuthStateChanged(auth, (user) => {
@@ -1170,7 +1184,6 @@
       document.getElementById("modalStock").textContent = (p.stock || 0) + " unidades";
       document.getElementById("modalStatus").textContent = p.active ? "🟢 Visible" : "🔴 Oculto";
       
-      // Renderizar HTML guardado (mantiene viñetas y formato)
       document.getElementById("modalDesc").innerHTML = p.description || "Sin descripción.";
 
       const gallery = document.getElementById("modalGallery");
@@ -1347,8 +1360,6 @@
       saveBtn.textContent = "⏳ Guardando...";
 
       const id = productId.value;
-      
-      // Obtener contenido HTML enriquecido del editor Quill
       const descriptionHtml = quill.root.innerHTML;
 
       const payload = {
@@ -1393,7 +1404,6 @@
       priceInput.value = p.price || "";
       stockInput.value = p.stock || 0;
       
-      // Cargar descripción con formato en Quill
       quill.root.innerHTML = p.description || "";
 
       activeSelect.value = String(p.active);
@@ -1409,7 +1419,7 @@
     window.resetForm = function() {
       productId.value = "";
       productForm.reset();
-      quill.setText(''); // Limpiar editor
+      quill.setText('');
       currentImages = [];
       previewContainer.innerHTML = "";
       formTitle.querySelector("span").textContent = "📦 Agregar Producto";
