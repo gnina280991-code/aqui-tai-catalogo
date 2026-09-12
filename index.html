@@ -703,6 +703,10 @@
 
       if (lightboxModal && lightboxModal.classList.contains('open')) {
         lightboxModal.classList.remove('open');
+        if (pzInstance) {
+          pzInstance.destroy();
+          pzInstance = null;
+        }
         return;
       }
 
@@ -754,19 +758,16 @@
       grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">⏳ Cargando catálogo...</div>`;
 
       try {
-        // Traemos todos los documentos de la colección 'products' sin filtro estricto de active
         const snapshot = await db.collection("products").get();
 
         products = [];
         snapshot.forEach(doc => {
           const data = doc.data();
-          // Si el producto tiene un campo active explícitamente en false, lo omitimos (opcional), de lo contrario lo cargamos
           if (data.active !== false) {
             products.push({ id: doc.id, ...data });
           }
         });
 
-        // Ordenar de más reciente a más antiguo si tienen un campo de fecha o timestamp
         products.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
         populateCategories();
