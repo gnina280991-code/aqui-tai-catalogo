@@ -928,8 +928,6 @@
       }
 
       const currentList = filteredProducts.slice(0, displayedLimit);
-      const now = Date.now();
-      const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
       let html = currentList.map((p, index) => {
         const images = getImagesArray(p);
@@ -940,8 +938,8 @@
 
         const isOutOfStock = Number(p.stock || 0) <= 0;
         
-        // Verificar si es nuevo (menos de 3 días desde su creación)
-        const isNew = p.createdAt && (now - p.createdAt < THREE_DAYS_MS);
+        // Forzar etiqueta "¡Nuevo!" en los primeros 4 productos de la lista
+        const isNew = index < 4;
 
         return `
           <div class="prod-card">
