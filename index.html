@@ -214,7 +214,7 @@
     .prod-img {
       width: 100%;
       height: 135px;
-      object-fit: contain;
+      object-fit: cover; /* CARGA FLUIDA E INSTANTÁNEA */
       border-radius: 10px;
       background: var(--bg-main);
       cursor: pointer;
@@ -407,7 +407,7 @@
       width: 50px;
       height: 50px;
       border-radius: 8px;
-      object-fit: contain;
+      object-fit: cover;
       background: var(--bg-main);
     }
 
@@ -455,7 +455,7 @@
       max-width: 100%;
       height: 180px;
       border-radius: 12px;
-      object-fit: contain;
+      object-fit: cover;
       background: var(--bg-main);
       border: 1px solid var(--border-color);
       flex-shrink: 0;
@@ -749,7 +749,7 @@
       window.location.reload();
     }
 
-    /* REGISTRAR Y MOSTRAR VISITAS (CON DIAGNÓSTICO EN PANTALLA) */
+    /* REGISTRAR Y MOSTRAR VISITAS */
     async function registrarVisita() {
       const visitsElement = document.getElementById("visitsCount");
       const visitRef = db.collection("stats").doc("visitas");
@@ -771,9 +771,9 @@
           visitsElement.textContent = finalCount.toLocaleString();
         }
       } catch (e) {
-        console.error("Error detallado de Firebase:", e);
+        console.error("Error al registrar visita:", e);
         if (visitsElement) {
-          visitsElement.textContent = "Err: " + (e.code || e.message || "Desconocido").substring(0, 15);
+          visitsElement.textContent = "—";
         }
       }
     }
