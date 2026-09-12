@@ -80,6 +80,21 @@
     .brand { font-size: 20px; font-weight: 800; line-height: 1.1; }
     .sub { font-size: 11px; color: var(--text-muted); }
 
+    /* CONTADOR DE VISITAS ESTILO CHIP */
+    .visits-badge {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
     /* BOTÓN MODO NOCTURNO */
     .theme-toggle-btn {
       background: var(--bg-main);
@@ -589,6 +604,12 @@
         <div class="brand">Aquí tái</div>
         <div class="sub">Catálogo Oficial · Bolivia</div>
       </div>
+      
+      <!-- CONTADOR DE VISITAS EN EL HEADER -->
+      <div class="visits-badge" title="Visitas totales">
+        👁️ <span id="visitsCount">...</span>
+      </div>
+
       <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
     </div>
 
@@ -650,7 +671,6 @@
       </div>
 
       <div class="detail-desc-title">📝 Descripción / Características:</div>
-      <!-- CORREGIDO AQUÍ: innerHTML para interpretar etiquetas HTML correctamente -->
       <div id="modalDesc" class="detail-desc"></div>
 
       <button id="modalAddBtn" class="btn-add-modal" onclick="addCurrentProductToCart()">🛒 Agregar al Carrito</button>
@@ -729,21 +749,31 @@
       window.location.reload();
     }
 
-    /* REGISTRAR VISITAS */
+    /* REGISTRAR Y MOSTRAR VISITAS */
     async function registrarVisita() {
       const visitRef = db.collection("stats").doc("visitas");
       try {
+        let finalCount = 0;
         await db.runTransaction(async (transaction) => {
           const doc = await transaction.get(visitRef);
           if (!doc.exists) {
             transaction.set(visitRef, { count: 1 });
+            finalCount = 1;
           } else {
-            const newCount = (doc.data().count || 0) + 1;
-            transaction.update(visitRef, { count: newCount });
+            finalCount = (doc.data().count || 0) + 1;
+            transaction.update(visitRef, { count: finalCount });
           }
         });
+        
+        // Actualizar en el HTML de forma limpia
+        const visitsElement = document.getElementById("visitsCount");
+        if (visitsElement) {
+          visitsElement.textContent = finalCount.toLocaleString();
+        }
       } catch (e) {
         console.error("Error al registrar visita:", e);
+        const visitsElement = document.getElementById("visitsCount");
+        if (visitsElement) visitsElement.textContent = "-";
       }
     }
 
@@ -1023,7 +1053,6 @@
       document.getElementById("modalPrice").textContent = "Bs " + Number(p.price || 0).toFixed(2);
       document.getElementById("modalStock").textContent = isOutOfStock ? "❌ Agotado" : (p.stock + " unidades");
       
-      // Renderizado correcto de etiquetas HTML en la descripción
       document.getElementById("modalDesc").innerHTML = p.description || "Sin descripción registrada.";
 
       modalAddBtn.disabled = isOutOfStock;
@@ -1134,7 +1163,7 @@
     document.addEventListener("DOMContentLoaded", async () => {
       initTheme();
       loadSavedCart();
-      await registrarVisita(); // Registra la visita automáticamente al entrar
+      await registrarVisita(); // Registra y muestra la visita automáticamente
       await loadCatalog();
     });
   </script>
