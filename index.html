@@ -748,26 +748,42 @@
       btn.textContent = isLight ? "☀️" : "🌙";
     }
 
-    /* CARGAR CATÁLOGO DESDE FIRESTORE */
+    /* CARGAR CATÁLOGO DESDE FIRESTORE (OPTIMIZADO CON LÍMITE Y CACHÉ) */
     async function loadCatalog() {
       const grid = document.getElementById("catalogGrid");
+      
+      // 1. Verificar si hay caché local previa para carga instantánea
+      try {
+        const cachedProducts = sessionStorage.getItem("aqui_ta_products_cache");
+        if (cachedProducts) {
+          products = JSON.parse(cachedProducts);
+          populateCategories();
+          filterProducts();
+          return; // Salimos rápido si ya tenemos datos en caché
+        }
+      } catch (e) {}
+
       grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">⏳ Cargando catálogo...</div>`;
 
       try {
-        // Traemos todos los documentos de la colección 'products' sin filtro estricto de active
-        const snapshot = await db.collection("products").get();
+        // Consulta optimizada: Trae solo los primeros 30 productos ordenados por fecha para que vuele
+        const snapshot = await db.collection("products")
+          .orderBy("createdAt", "desc")
+          .limit(30)
+          .get();
 
         products = [];
         snapshot.forEach(doc => {
           const data = doc.data();
-          // Si el producto tiene un campo active explícitamente en false, lo omitimos (opcional), de lo contrario lo cargamos
           if (data.active !== false) {
             products.push({ id: doc.id, ...data });
           }
         });
 
-        // Ordenar de más reciente a más antiguo si tienen un campo de fecha o timestamp
-        products.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        // Guardar en caché de sesión para agilizar siguientes vistas del usuario
+        try {
+          sessionStorage.setItem("aqui_ta_products_cache", JSON.stringify(products));
+        } catch (e) {}
 
         populateCategories();
         filterProducts();
