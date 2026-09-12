@@ -1005,7 +1005,7 @@
       document.getElementById("modalCat").textContent = p.category || "General";
       document.getElementById("modalPrice").textContent = "Bs " + Number(p.price || 0).toFixed(2);
       document.getElementById("modalStock").textContent = isOutOfStock ? "❌ Agotado" : (p.stock + " unidades");
-      document.getElementById("modalDesc").textContent = p.description || "Sin descripción registrada.";
+      document.getElementById("modalDesc").innerHTML = p.description || "Sin descripción registrada.";
 
       modalAddBtn.disabled = isOutOfStock;
       modalAddBtn.textContent = isOutOfStock ? "❌ Producto Agotado" : "🛒 Agregar al Carrito";
