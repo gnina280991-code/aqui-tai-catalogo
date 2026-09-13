@@ -1146,7 +1146,7 @@
       }).join("");
     }
 
-    /* GESTIÓN DE STOCK RÁPIDO */
+    /* GESTIÓN DE STOCK RÁPIDO (OPTIMIZADA EN MEMORIA) */
     window.openStockModal = function(id) {
       const p = products.find(x => x.id === id);
       if (!p) return;
@@ -1173,8 +1173,10 @@
 
       try {
         await updateDoc(doc(db, "products", stockEditingProductId), { stock: exactVal });
+        
         const p = products.find(x => x.id === stockEditingProductId);
         if (p) p.stock = exactVal;
+        
         updateMetrics();
         filterTable();
         closeStockModal();
@@ -1374,7 +1376,6 @@
       const id = productId.value;
       const descriptionHtml = quill.root.innerHTML;
 
-      // Mantiene la fecha original si se edita, o asigna el tiempo actual si es nuevo
       const existingProduct = id ? products.find(x => x.id === id) : null;
       const createdAtTimestamp = existingProduct?.createdAt || Date.now();
 
@@ -1446,12 +1447,14 @@
       cancelEditBtn.style.display = "none";
     };
 
+    /* BOTONES RÁPIDOS DE STOCK EN TABLA (OPTIMIZADO EN MEMORIA) */
     window.quickStockChange = async function(id, delta) {
       const p = products.find(x => x.id === id);
       if (!p) return;
       const newStock = Math.max(0, Number(p.stock || 0) + delta);
       try {
         await updateDoc(doc(db, "products", id), { stock: newStock });
+        
         p.stock = newStock;
         updateMetrics();
         filterTable();
@@ -1460,11 +1463,14 @@
       }
     };
 
+    /* CAMBIO DE ESTADO ACTIVO/OCULTO (OPTIMIZADO EN MEMORIA) */
     window.toggleActive = async function(id, newStatus) {
       try {
         await updateDoc(doc(db, "products", id), { active: newStatus });
+        
         const p = products.find(x => x.id === id);
         if (p) p.active = newStatus;
+        
         updateMetrics();
         filterTable();
         showToast(newStatus ? "🟢 Visible" : "🔴 Oculto");
