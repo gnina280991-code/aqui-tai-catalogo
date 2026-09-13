@@ -818,7 +818,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const IMGBB_API_KEY = "0646b6e79e803c4c305a9566067591a6";
 
@@ -849,7 +849,6 @@
       }
     });
 
-    // Corrección para que el botón Tx funcione perfectamente en celulares al tocarse
     setTimeout(() => {
       const cleanBtn = document.querySelector('.ql-clean');
       if (cleanBtn) {
@@ -1014,14 +1013,14 @@
       closeCategoryModal();
     };
 
-    /* CARGAR INVENTARIO */
+    /* CARGAR INVENTARIO ORDENADO POR FECHA */
     async function loadInventory() {
       try {
-        const querySnapshot = await getDocs(collection(db, "products"));
+        const qRef = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(qRef);
         products = [];
         querySnapshot.forEach((docSnap) => {
-          // MODIFICADO: Usamos unshift para que los documentos leídos entren al principio
-          products.unshift({ id: docSnap.id, ...docSnap.data() });
+          products.push({ id: docSnap.id, ...docSnap.data() });
         });
 
         document.getElementById("countBadge").textContent = products.length;
@@ -1366,6 +1365,10 @@
       const id = productId.value;
       const descriptionHtml = quill.root.innerHTML;
 
+      // Mantiene la fecha original si se edita, o asigna el tiempo actual si es nuevo
+      const existingProduct = id ? products.find(x => x.id === id) : null;
+      const createdAtTimestamp = existingProduct?.createdAt || Date.now();
+
       const payload = {
         name: nameInput.value.trim(),
         category: categorySelect.value.trim(),
@@ -1374,27 +1377,21 @@
         description: descriptionHtml,
         active: activeSelect.value === "true",
         images: currentImages,
-        image: currentImages[0] || null
+        image: currentImages[0] || null,
+        createdAt: createdAtTimestamp
       };
 
       try {
         if (id) {
           await updateDoc(doc(db, "products", id), payload);
-          // MODIFICADO: Actualizar localmente y mover al inicio al editar
-          const index = products.findIndex(x => x.id === id);
-          if (index > -1) products.splice(index, 1);
-          products.unshift({ id: id, ...payload });
         } else {
-          const docRef = await addDoc(collection(db, "products"), payload);
-          // MODIFICADO: Agregar el nuevo producto al inicio del arreglo local
-          products.unshift({ id: docRef.id, ...payload });
+          await addDoc(collection(db, "products"), payload);
         }
 
         showToast("✅ ¡Producto guardado!");
         resetForm();
-        updateMetrics();
-        filterTable();
-        switchTab('tab-list'); // Te lleva directo a la pestaña de inventario para corroborarlo arriba
+        await loadInventory(); // Recarga desde Firestore ordenado por fecha de subida
+        switchTab('tab-list'); 
       } catch (error) {
         showToast("❌ Error al guardar: " + error.message);
       } finally {
