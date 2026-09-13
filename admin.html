@@ -1020,7 +1020,8 @@
         const querySnapshot = await getDocs(collection(db, "products"));
         products = [];
         querySnapshot.forEach((docSnap) => {
-          products.push({ id: docSnap.id, ...docSnap.data() });
+          // MODIFICADO: Usamos unshift para que los documentos leídos entren al principio
+          products.unshift({ id: docSnap.id, ...docSnap.data() });
         });
 
         document.getElementById("countBadge").textContent = products.length;
@@ -1377,13 +1378,23 @@
       };
 
       try {
-        if (id) await updateDoc(doc(db, "products", id), payload);
-        else await addDoc(collection(db, "products"), payload);
+        if (id) {
+          await updateDoc(doc(db, "products", id), payload);
+          // MODIFICADO: Actualizar localmente y mover al inicio al editar
+          const index = products.findIndex(x => x.id === id);
+          if (index > -1) products.splice(index, 1);
+          products.unshift({ id: id, ...payload });
+        } else {
+          const docRef = await addDoc(collection(db, "products"), payload);
+          // MODIFICADO: Agregar el nuevo producto al inicio del arreglo local
+          products.unshift({ id: docRef.id, ...payload });
+        }
 
         showToast("✅ ¡Producto guardado!");
         resetForm();
-        loadInventory();
-        switchTab('tab-list');
+        updateMetrics();
+        filterTable();
+        switchTab('tab-list'); // Te lleva directo a la pestaña de inventario para corroborarlo arriba
       } catch (error) {
         showToast("❌ Error al guardar: " + error.message);
       } finally {
